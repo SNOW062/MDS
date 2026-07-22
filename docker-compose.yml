@@ -1,0 +1,14 @@
+services:
+  coolify-rust:
+    build:
+      context: .
+      dockerfile: coolify-rust/Dockerfile
+    container_name: coolify-rust-engine
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    environment:
+      - RUST_LOG=info
+      - PORT=8000
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock
