@@ -93,8 +93,8 @@ def get_git_info(abs_path):
         cmd_author = f'git log -n 1 --pretty=format:"%an|%cr|%s" -- "{rel_file}"'
         cmd_count = f'git rev-list --count HEAD -- "{rel_file}"'
         
-        author_out = subprocess.check_output(cmd_author, cwd=dir_path, shell=True, stderr=subprocess.DEVNULL).decode("utf-8", errors="ignore").strip()
-        count_out = subprocess.check_output(cmd_count, cwd=dir_path, shell=True, stderr=subprocess.DEVNULL).decode("utf-8", errors="ignore").strip()
+        author_out = subprocess.check_output(cmd_author, cwd=dir_path, shell=True, stderr=subprocess.DEVNULL, timeout=0.5).decode("utf-8", errors="ignore").strip()
+        count_out = subprocess.check_output(cmd_count, cwd=dir_path, shell=True, stderr=subprocess.DEVNULL, timeout=0.5).decode("utf-8", errors="ignore").strip()
         
         if author_out:
             parts = author_out.split("|")
@@ -436,6 +436,7 @@ def build_tree_hierarchy(root_dir, force_rescan=False):
         "children": {}
     }
 
+    scanned_count = 0
     for dirpath, dirnames, filenames in os.walk(root_dir):
         dirnames[:] = [d for d in dirnames if d not in skip_dirs and not d.startswith(".")]
         
@@ -465,6 +466,10 @@ def build_tree_hierarchy(root_dir, force_rescan=False):
             ext = os.path.splitext(f)[1].lower()
             abs_p = os.path.join(dirpath, f).replace("\\", "/")
             
+            scanned_count += 1
+            if scanned_count % 100 == 0:
+                log_message("INFO", f"Fayl Analiz Prosesi Davam Edir: {scanned_count} fayl analiz olundu... ({f_rel})")
+
             ai_info = perform_max_ai_file_analysis(abs_p, ext, f_rel, descriptions, force=force_rescan)
             vscode_url = f"vscode://file/{abs_p}"
             
@@ -1188,11 +1193,11 @@ if __name__ == "__main__":
 
     def project_files_watcher():
         while True:
+            time.sleep(300)
             try:
                 generate_files(root_dir)
             except Exception as e:
                 log_message("WARNING", "Fayl izleyici xetasi", e)
-            time.sleep(10)
 
     t_files = threading.Thread(target=project_files_watcher, daemon=True)
     t_files.start()

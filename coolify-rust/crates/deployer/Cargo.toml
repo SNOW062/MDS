@@ -1,15 +1,13 @@
 [package]
-name = "coolify-core"
+name = "coolify-deployer"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+coolify-core = { path = "../core" }
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-sqlx.workspace = true
-chrono.workspace = true
-uuid.workspace = true
 anyhow.workspace = true
-thiserror.workspace = true
 tracing.workspace = true
+chrono.workspace = true
