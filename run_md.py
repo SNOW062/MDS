@@ -17,7 +17,7 @@ def print_log(prefix, color, message):
     print(f"{color}[{timestamp}] [{prefix}]{COLOR_RESET} {message}")
 
 def run_docker():
-    print_log("MD-DOCKER", COLOR_CYAN, "Building and launching Coolify Rust inside Docker Container...")
+    print_log("MD-DOCKER", COLOR_CYAN, "Building and launching MasterDeploy inside Docker Container...")
     cmd = "docker compose up --build"
     process = subprocess.Popen(
         cmd,
@@ -42,7 +42,7 @@ def main():
     try:
         run_docker()
     except KeyboardInterrupt:
-        print_log("MD-SYSTEM", COLOR_RED, "\nStopping Docker services...")
+        print_log("MD-SYSTEM", COLOR_RED, "\nStopping MasterDeploy Docker services...")
         subprocess.run("docker compose down", cwd=BASE_DIR, shell=True)
         sys.exit(0)
 
