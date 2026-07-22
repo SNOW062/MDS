@@ -84,7 +84,7 @@ async fn list_applications() -> Json<Vec<Application>> {
     let apps = vec![Application {
         id: 1,
         uuid: uuid::Uuid::new_v4().to_string(),
-        name: "Coolify Dashboard Frontend",
+        name: "Coolify Dashboard Frontend".to_string(),
         git_repository: "SNOW062/MDS".to_string(),
         git_branch: "main".to_string(),
         build_pack: "nixpacks".to_string(),

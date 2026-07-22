@@ -219,6 +219,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "chrono",
  "coolify-core",
  "coolify-deployer",
  "coolify-scheduler",
@@ -229,6 +230,7 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
