@@ -8,22 +8,14 @@ Cargo.lock
 **/node_modules/
 dist/
 build/
-.output/
 
 # Environment & Secrets
 .env
 .env.local
-*.pem
-*.key
+.gh_token
 
 # Source Repositories & Logs
 /coolify-source/
 *.log
 *.sqlite
 *.db
-
-# IDE & System
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
