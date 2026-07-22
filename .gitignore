@@ -14,7 +14,6 @@ build/
 .gh_token
 
 # Source Repositories & Logs
-/coolify-source/
 *.log
 *.sqlite
 *.db
