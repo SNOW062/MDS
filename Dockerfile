@@ -14,7 +14,7 @@ WORKDIR /app
 COPY MD/Cargo.toml ./
 COPY MD/crates ./crates
 COPY MD/ui ./ui
-RUN cargo build --release --bin md-api
+RUN cargo build --release --bin coolify-api
 
 # 3. Final Production Container
 FROM debian:bookworm-slim
@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=backend-builder /app/target/release/md-api /app/md-api
+COPY --from=backend-builder /app/target/release/coolify-api /app/md-api
 COPY --from=frontend-builder /app/ui/dist /app/ui/dist
 
 EXPOSE 8000 3000 5173
