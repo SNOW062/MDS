@@ -1,0 +1,29 @@
+# Rust Build Artifacts
+/target/
+**/target/
+Cargo.lock
+
+# Node / React Frontend
+/node_modules/
+**/node_modules/
+dist/
+build/
+.output/
+
+# Environment & Secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Source Repositories & Logs
+/coolify-source/
+*.log
+*.sqlite
+*.db
+
+# IDE & System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
