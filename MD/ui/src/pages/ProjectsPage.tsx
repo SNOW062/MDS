@@ -8,60 +8,23 @@ interface ProjectsPageProps {
 }
 
 export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onSelectApplication, onNewResource }) => {
-  const mockProjects: Project[] = [
-    {
-      id: 'proj-1',
-      name: 'Default Project',
-      description: 'Main production environment for web services & API',
-      environments: [
-        {
-          id: 'env-prod',
-          name: 'production',
-          applications: [
-            {
-              id: 'app-1',
-              name: 'coolify-rust-backend',
-              gitRepository: 'github.com/coolify/rust-core',
-              gitBranch: 'main',
-              buildPack: 'nixpacks',
-              fqdn: 'https://api.coolify.local',
-              ports: '8000:8000',
-              status: 'running',
-              serverId: 'srv-local',
-              environmentId: 'env-prod',
-              createdAt: '2026-07-22',
-            },
-            {
-              id: 'app-2',
-              name: 'postgres-database-standalone',
-              gitRepository: 'docker.io/library/postgres:15-alpine',
-              gitBranch: 'latest',
-              buildPack: 'dockerfile',
-              fqdn: 'https://db.coolify.local',
-              ports: '5432:5432',
-              status: 'running',
-              serverId: 'srv-local',
-              environmentId: 'env-prod',
-              createdAt: '2026-07-22',
-            },
-            {
-              id: 'app-3',
-              name: 'redis-cache-service',
-              gitRepository: 'docker.io/library/redis:7',
-              gitBranch: 'latest',
-              buildPack: 'dockerfile',
-              fqdn: '',
-              ports: '6379:6379',
-              status: 'stopped',
-              serverId: 'srv-local',
-              environmentId: 'env-prod',
-              createdAt: '2026-07-22',
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  const [projects, setProjects] = React.useState<Project[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('/api/v1/projects');
+        const data = await res.json();
+        setProjects(data);
+      } catch (err) {
+        console.error("Failed to load projects", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -83,7 +46,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onSelectApplication,
       </div>
 
       {/* Projects List */}
-      {mockProjects.map((project) => (
+      {projects.map((project) => (
         <div key={project.id} className="bg-[#18181b] border border-[#27272a] rounded-xl overflow-hidden shadow-lg">
           {/* Project Header */}
           <div className="px-6 py-4 border-b border-[#27272a] flex items-center justify-between bg-[#141416]">
@@ -192,6 +155,69 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onSelectApplication,
                     );
                   })}
                 </div>
+
+                {/* Databases Grid */}
+                {env.databases && env.databases.length > 0 && (
+                  <div className="space-y-3 mt-6">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 font-mono">
+                        Databases
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {env.databases.map((db) => {
+                        const isRunning = db.status === 'running';
+                        return (
+                          <div
+                            key={db.id}
+                            className="bg-[#1b1b1e] border border-[#27272a] hover:border-orange-500/40 p-4 rounded-xl transition-all hover:scale-[1.01] hover:shadow-xl group relative overflow-hidden"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center space-x-2.5">
+                                <div className="w-9 h-9 rounded-lg bg-[#27272a] flex items-center justify-center text-zinc-300 font-bold group-hover:text-orange-400 transition-colors uppercase">
+                                  {db.engine[0]}
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-bold text-zinc-100 group-hover:text-orange-400 transition-colors truncate max-w-[160px]">
+                                    {db.name}
+                                  </h4>
+                                  <div className="text-[10px] text-zinc-500 font-mono mt-0.5">
+                                    Engine: <span className="text-orange-400 capitalize">{db.engine}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div
+                                className={`flex items-center space-x-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium border ${
+                                  isRunning
+                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                    : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                                }`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    isRunning ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
+                                  }`}
+                                />
+                                <span className="capitalize">{db.status}</span>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 pt-3 border-t border-[#27272a]/60 space-y-1.5 text-xs">
+                              <div className="flex items-center justify-between text-zinc-400">
+                                <span className="text-[11px] font-mono text-zinc-500">Port Mapping:</span>
+                                <span className="font-mono text-zinc-300 bg-zinc-800 px-1.5 py-0.5 rounded text-[11px]">
+                                  {db.ports}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

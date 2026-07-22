@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Bell, Plus, Globe } from 'lucide-react';
-import { useLanguage, type Language } from '../context/LanguageContext';
+import { useLanguage } from '../context/LanguageContext';
+import type { Language } from '../i18n/translations';
 
 interface HeaderProps {
   currentTab: string;
@@ -29,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onOpenSearch, onNewP
 
       {/* Actions, Language & Search */}
       <div className="flex items-center space-x-4">
-        {/* Language Selector */}
+        {/* Global Language Selector */}
         <div className="flex items-center space-x-1 bg-[#18181b] border border-[#27272a] p-1 rounded-lg">
           <Globe size={14} className="text-zinc-500 ml-1 mr-0.5" />
           {languages.map((lang) => (
@@ -62,16 +63,16 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onOpenSearch, onNewP
           </kbd>
         </button>
 
-        {/* New Resource Button */}
+        {/* Global + New Resource Button (Coolify Style) */}
         <button
           onClick={onNewProject}
-          className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition-all shadow-md shadow-orange-600/20 active:scale-95"
+          className="bg-orange-600 hover:bg-orange-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md shadow-orange-600/20 active:scale-95"
         >
           <Plus size={15} />
           <span>{t('newResource')}</span>
         </button>
 
-        {/* User Menu & Avatar */}
+        {/* Notifications & Avatar */}
         <div className="flex items-center space-x-3 pl-2 border-l border-[#242427]">
           <button className="p-2 rounded-lg bg-[#18181b] border border-[#27272a] text-zinc-400 hover:text-white transition-colors relative">
             <Bell size={16} />

@@ -1,0 +1,62 @@
+export const coolifyOfficialTranslations = {
+  az: {
+    "auth.login": "Daxil ol",
+    "auth.already_registered": "Qeytiyatınız var?",
+    "auth.confirm_password": "Şifrəni təsdiqləyin",
+    "auth.forgot_password_link": "Şifrəmi unutdum?",
+    "auth.forgot_password_heading": "Şifrəni bərpa et",
+    "auth.register_now": "Qeydiyyat",
+    "auth.logout": "Çıxış",
+    "input.name": "Ad",
+    "input.email": "E-poçt",
+    "input.password": "Şifrə",
+    "button.save": "Yadda saxla",
+    "service.stop": "Bu xidmət dayandırılacaq.",
+    "resource.docker_cleanup": "Docker təmizlənməsini işə salın (istifadə olunmayan şəkillər və builder keşini silin)."
+  },
+  en: {
+    "auth.login": "Login",
+    "auth.already_registered": "Already registered?",
+    "auth.confirm_password": "Confirm password",
+    "auth.forgot_password_link": "Forgot password?",
+    "auth.forgot_password_heading": "Password recovery",
+    "auth.register_now": "Register",
+    "auth.logout": "Logout",
+    "input.name": "Name",
+    "input.email": "Email",
+    "input.password": "Password",
+    "button.save": "Save",
+    "service.stop": "This service will be stopped.",
+    "resource.docker_cleanup": "Run Docker Cleanup (remove unused images and builder cache)."
+  },
+  tr: {
+    "auth.login": "Giriş",
+    "auth.already_registered": "Zaten kayıtlı mısınız?",
+    "auth.confirm_password": "Şifreyi Onayla",
+    "auth.forgot_password_link": "Şifrenizi mi unuttunuz?",
+    "auth.forgot_password_heading": "Şifre Kurtarma",
+    "auth.register_now": "Kayıt Ol",
+    "auth.logout": "Çıkış Yap",
+    "input.name": "İsim",
+    "input.email": "E-posta",
+    "input.password": "Şifre",
+    "button.save": "Kaydet",
+    "service.stop": "Bu servis durdurulacak.",
+    "resource.docker_cleanup": "Docker temizliği çalıştır (kullanılmayan imajları ve oluşturucu önbelleğini kaldır)."
+  },
+  ru: {
+    "auth.login": "Войти",
+    "auth.already_registered": "Уже зарегистрированы?",
+    "auth.confirm_password": "Подтвердите пароль",
+    "auth.forgot_password_link": "Забыли пароль?",
+    "auth.forgot_password_heading": "Восстановление пароля",
+    "auth.register_now": "Регистрация",
+    "auth.logout": "Выйти",
+    "input.name": "Имя",
+    "input.email": "Эл. почта",
+    "input.password": "Пароль",
+    "button.save": "Сохранить",
+    "service.stop": "Эта служба будет остановлена.",
+    "resource.docker_cleanup": "Запустить очистку Docker (удалить неиспользуемые образы и кэш сборщика)."
+  }
+};

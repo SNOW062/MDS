@@ -27,6 +27,13 @@ pub struct Server {
     pub private_key_id: Option<String>,
     pub is_reachable: bool,
     pub is_build_server: bool,
+    pub proxy_type: String,
+    pub proxy_version: Option<String>,
+    pub sentinel_enabled: bool,
+    pub sentinel_token: Option<String>,
+    pub sentinel_metrics_refresh_rate: i32,
+    pub sentinel_metrics_history_days: i32,
+    pub sentinel_push_interval: i32,
     pub created_at: Option<i64>,
 }
 
@@ -67,4 +74,19 @@ pub struct Deployment {
     pub logs: Option<String>,
     pub started_at: Option<i64>,
     pub finished_at: Option<i64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Database {
+    pub id: String,
+    pub name: String,
+    pub engine: String,
+    pub status: String,
+    pub ports_exposes: Option<String>,
+    pub db_user: Option<String>,
+    pub db_password: Option<String>,
+    pub db_name: Option<String>,
+    pub created_at: Option<i64>,
+    pub environment_id: String,
+    pub server_id: String,
 }

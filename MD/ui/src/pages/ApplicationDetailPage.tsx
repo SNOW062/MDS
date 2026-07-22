@@ -26,27 +26,100 @@ export const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = ({ ap
   const [activeTab, setActiveTab] = useState<'general' | 'env' | 'deployments' | 'logs' | 'settings'>('general');
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
 
-  const [envVars, setEnvVars] = useState<EnvVariable[]>([
-    { id: '1', key: 'PORT', value: '8000', isBuildTime: false, isSecret: false },
-    { id: '2', key: 'DATABASE_URL', value: 'postgres://coolify:password@postgres:5432/coolify', isBuildTime: false, isSecret: true },
-    { id: '3', key: 'JWT_SECRET', value: 'super-secret-key-coolify-rust-2026', isBuildTime: true, isSecret: true },
-  ]);
+  const [envVars, setEnvVars] = useState<EnvVariable[]>([]);
+  const [gitRepository, setGitRepository] = useState(app.gitRepository);
+  const [gitBranch, setGitBranch] = useState(app.gitBranch);
+  const [fqdn, setFqdn] = useState(app.fqdn);
+  const [ports, setPorts] = useState(app.ports);
+  const [name, setName] = useState(app.name);
 
   const [newKey, setNewKey] = useState('');
   const [newValue, setNewValue] = useState('');
 
-  const handleAddEnv = () => {
-    if (!newKey.trim()) return;
-    setEnvVars([
-      ...envVars,
-      { id: Date.now().toString(), key: newKey, value: newValue, isBuildTime: false, isSecret: false },
-    ]);
-    setNewKey('');
-    setNewValue('');
+  const fetchEnvVars = async () => {
+    try {
+      const res = await fetch(`/api/v1/applications/${app.id}/env`);
+      const data = await res.json();
+      setEnvVars(data.map((item: any) => ({
+        id: item.id,
+        key: item.key,
+        value: item.value,
+        isBuildTime: item.is_build_time,
+        isSecret: item.is_secret
+      })));
+    } catch (err) {
+      console.error("Failed to load env vars", err);
+    }
   };
 
-  const handleDeleteEnv = (id: string) => {
-    setEnvVars(envVars.filter((e) => e.id !== id));
+  React.useEffect(() => {
+    fetchEnvVars();
+  }, [app.id]);
+
+  const handleSaveGeneral = async () => {
+    try {
+      const res = await fetch(`/api/v1/applications/${app.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          git_repository: gitRepository,
+          git_branch: gitBranch,
+          fqdn,
+          ports_exposes: ports,
+        }),
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        alert('Application settings updated successfully!');
+      } else {
+        alert('Failed to update settings: ' + data.message);
+      }
+    } catch (err: any) {
+      alert('Error updating settings: ' + err.message);
+    }
+  };
+
+  const handleAddEnv = async () => {
+    if (!newKey.trim()) return;
+    try {
+      const res = await fetch(`/api/v1/applications/${app.id}/env`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: newKey,
+          value: newValue,
+          is_build_time: false,
+          is_secret: false,
+        }),
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        fetchEnvVars();
+        setNewKey('');
+        setNewValue('');
+      } else {
+        alert('Failed to add env var: ' + data.message);
+      }
+    } catch (err: any) {
+      alert('Error adding env var: ' + err.message);
+    }
+  };
+
+  const handleDeleteEnv = async (id: string) => {
+    try {
+      const res = await fetch(`/api/v1/applications/${app.id}/env/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        fetchEnvVars();
+      } else {
+        alert('Failed to delete env var: ' + data.message);
+      }
+    } catch (err: any) {
+      alert('Error deleting env var: ' + err.message);
+    }
   };
 
   const mockLogs = [
@@ -138,7 +211,8 @@ export const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = ({ ap
               <label className="text-xs font-mono text-zinc-400 block mb-1">Git Repository URL</label>
               <input
                 type="text"
-                defaultValue={app.gitRepository}
+                value={gitRepository}
+                onChange={(e) => setGitRepository(e.target.value)}
                 className="w-full bg-[#101010] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
             </div>
@@ -147,7 +221,8 @@ export const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = ({ ap
               <label className="text-xs font-mono text-zinc-400 block mb-1">Git Branch</label>
               <input
                 type="text"
-                defaultValue={app.gitBranch}
+                value={gitBranch}
+                onChange={(e) => setGitBranch(e.target.value)}
                 className="w-full bg-[#101010] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
             </div>
@@ -156,7 +231,8 @@ export const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = ({ ap
               <label className="text-xs font-mono text-zinc-400 block mb-1">Domains / FQDN</label>
               <input
                 type="text"
-                defaultValue={app.fqdn}
+                value={fqdn}
+                onChange={(e) => setFqdn(e.target.value)}
                 className="w-full bg-[#101010] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
             </div>
@@ -165,13 +241,17 @@ export const ApplicationDetailPage: React.FC<ApplicationDetailPageProps> = ({ ap
               <label className="text-xs font-mono text-zinc-400 block mb-1">Port Mapping (Exposed:Container)</label>
               <input
                 type="text"
-                defaultValue={app.ports}
+                value={ports}
+                onChange={(e) => setPorts(e.target.value)}
                 className="w-full bg-[#101010] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
             </div>
           </div>
 
-          <button className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-xs font-semibold">
+          <button
+            onClick={handleSaveGeneral}
+            className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-xs font-semibold"
+          >
             Save Changes
           </button>
         </div>

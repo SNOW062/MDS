@@ -14,6 +14,14 @@ export interface Application {
   createdAt: string;
 }
 
+export interface Database {
+  id: string;
+  name: string;
+  engine: 'postgres' | 'redis' | 'mysql' | 'mongodb';
+  status: 'running' | 'stopped' | 'error';
+  ports: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -22,6 +30,7 @@ export interface Project {
     id: string;
     name: string;
     applications: Application[];
+    databases?: Database[];
   }[];
 }
 

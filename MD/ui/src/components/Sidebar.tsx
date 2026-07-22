@@ -56,9 +56,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const footerMenuItems = [
-    { id: 'whats-new', label: "What's New", icon: Sparkles },
-    { id: 'sponsor', label: 'Sponsor us', icon: Heart, color: 'text-pink-500' },
-    { id: 'feedback', label: 'Feedback', icon: MessageSquare },
+    { id: 'whats-new', labelKey: 'whatsNew', icon: Sparkles },
+    { id: 'sponsor', labelKey: 'sponsor', icon: Heart, color: 'text-pink-500' },
+    { id: 'feedback', labelKey: 'feedback', icon: MessageSquare },
   ];
 
   return (
@@ -68,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }`}
     >
       <div className="flex-1 overflow-y-auto scrollbar-none">
-        {/* Logo Header - Click opens About Modal */}
+        {/* Logo Header */}
         <div className="h-14 flex items-center justify-between px-3 border-b border-[#242427] sticky top-0 bg-[#101012] z-10">
           <button
             onClick={onOpenAbout}
@@ -138,15 +138,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-2 border-t border-[#242427] bg-[#101012] space-y-0.5">
         {footerMenuItems.map((item) => {
           const Icon = item.icon;
+          const label = t(item.labelKey);
           return (
             <button
               key={item.id}
               onClick={() => onSelectTab(item.id)}
               className="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-lg text-xs text-zinc-400 hover:bg-[#1a1a1d] hover:text-zinc-200 transition-colors"
-              title={collapsed ? item.label : undefined}
+              title={collapsed ? label : undefined}
             >
               <Icon size={16} className={item.color || 'text-zinc-400'} />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span>{label}</span>}
             </button>
           );
         })}
@@ -154,10 +155,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={() => alert('Logged out')}
           className="w-full flex items-center space-x-3 px-2.5 py-1.5 rounded-lg text-xs text-rose-400 hover:bg-rose-500/10 transition-colors"
-          title={collapsed ? 'Logout' : undefined}
+          title={collapsed ? t('logout') : undefined}
         >
           <LogOut size={16} />
-          {!collapsed && <span>Logout</span>}
+          {!collapsed && <span>{t('logout')}</span>}
         </button>
       </div>
     </aside>

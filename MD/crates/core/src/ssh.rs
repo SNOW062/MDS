@@ -109,10 +109,103 @@ fi
         }
     }
 
+    pub fn build_proxy_setup_script(proxy_type: &str) -> String {
+        match proxy_type.to_lowercase().as_str() {
+            "traefik" => {
+                r#"#!/bin/sh
+set -e
+echo "Setting up Traefik proxy..."
+docker network create masterdeploy || true
+docker stop masterdeploy-proxy || true
+docker rm masterdeploy-proxy || true
+docker run -d \
+  --name masterdeploy-proxy \
+  --restart always \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  -p 80:80 \
+  -p 443:443 \
+  -p 8080:8080 \
+  traefik:v2.10 \
+  --api.insecure=true \
+  --providers.docker=true \
+  --providers.docker.exposedbydefault=false \
+  --entrypoints.web.address=:80 \
+  --entrypoints.websecure.address=:443
+echo "Traefik proxy started successfully."
+"#.to_string()
+            }
+            "caddy" => {
+                r#"#!/bin/sh
+set -e
+echo "Setting up Caddy proxy..."
+docker network create masterdeploy || true
+docker stop masterdeploy-proxy || true
+docker rm masterdeploy-proxy || true
+docker run -d \
+  --name masterdeploy-proxy \
+  --restart always \
+  -p 80:80 \
+  -p 443:443 \
+  caddy:2-alpine \
+  caddy reverse-proxy --from :80 --to :8080
+echo "Caddy proxy started successfully."
+"#.to_string()
+            }
+            _ => {
+                r#"#!/bin/sh
+echo "Stopping proxy if running..."
+docker stop masterdeploy-proxy || true
+docker rm masterdeploy-proxy || true
+echo "Proxy disabled."
+"#.to_string()
+            }
+        }
+    }
+
+    pub fn build_sentinel_setup_script(token: &str, url: &str, interval: i32) -> String {
+        format!(
+            r#"#!/bin/sh
+set -e
+echo "Deploying Sentinel Daemon..."
+docker stop masterdeploy-sentinel || true
+docker rm masterdeploy-sentinel || true
+docker run -d \
+  --name masterdeploy-sentinel \
+  --restart always \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  -v /:/rootfs:ro \
+  --env SENTINEL_TOKEN="{}" \
+  --env COLLECTOR_URL="{}" \
+  --env PUSH_INTERVAL="{}" \
+  glances/glances:latest-full
+echo "Sentinel Daemon deployed successfully."
+"#,
+            token, url, interval
+        )
+    }
+
     pub async fn execute_command(&self, cmd: &str) -> Result<String> {
-        let full_cmd = self.build_ssh_command(cmd);
-        tracing::info!("Executing remote SSH: {}", full_cmd);
-        Ok(format!("Executed '{}' on {}@{}", cmd, self.user, self.host))
+        let mut command = tokio::process::Command::new("ssh");
+        command.arg("-p").arg(self.port.to_string())
+               .arg("-o").arg("StrictHostKeyChecking=no")
+               .arg("-o").arg("ConnectTimeout=10");
+        
+        if let Some(ref key) = self.private_key_path {
+            command.arg("-i").arg(key);
+        }
+        
+        let destination = format!("{}@{}", self.user, self.host);
+        tracing::info!("Executing real remote SSH command on: {}", destination);
+        command.arg(destination).arg(cmd);
+
+        let output = command.output().await?;
+        if output.status.success() {
+            let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+            Ok(stdout)
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+            anyhow::bail!("SSH command failed: {}", stderr)
+        }
     }
 }
 
