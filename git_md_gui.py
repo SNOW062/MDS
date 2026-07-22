@@ -203,7 +203,6 @@ class GitGuiApp:
         gitignore_content = """# Rust Build Artifacts
 /target/
 **/target/
-Cargo.lock
 
 # Node / React Frontend
 /node_modules/
