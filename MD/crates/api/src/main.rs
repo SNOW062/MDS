@@ -12,13 +12,13 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    tracing::info!("🚀 Coolify-Rust API Server starting...");
+    tracing::info!("🚀 MasterDeploy (MD) API Server starting...");
 
     let app = Router::new()
         .route("/health", get(health_check))
         .route("/api/v1/version", get(version_handler));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
     tracing::info!("Listening on http://{}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
@@ -33,8 +33,8 @@ async fn health_check() -> &'static str {
 
 async fn version_handler() -> Json<Value> {
     Json(json!({
-        "name": "Coolify-Rust",
-        "version": "0.1.0",
+        "name": "MasterDeploy (MD)",
+        "version": "1.0.0",
         "status": "active"
     }))
 }

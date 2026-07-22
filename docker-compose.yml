@@ -1,11 +1,12 @@
 services:
-  coolify-rust:
+  masterdeploy:
     build:
       context: .
-      dockerfile: coolify-rust/Dockerfile
-    container_name: coolify-rust-engine
+      dockerfile: Dockerfile
+    container_name: masterdeploy-engine
     ports:
       - "8000:8000"
+      - "5173:5173"
     restart: unless-stopped
     environment:
       - RUST_LOG=info
