@@ -1,5 +1,6 @@
 use axum::{
     extract::Json,
+    response::Html,
     routing::{get, post},
     Router,
 };
@@ -11,6 +12,8 @@ use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+const DASHBOARD_HTML: &str = include_str!("../../../ui/index.html");
 
 #[derive(Serialize)]
 struct SystemHealth {
@@ -37,6 +40,7 @@ async fn main() -> anyhow::Result<()> {
         .allow_headers(Any);
 
     let app = Router::new()
+        .route("/", get(serve_ui))
         .route("/health", get(health_check))
         .route("/api/v1/servers", get(list_servers).post(create_server))
         .route("/api/v1/applications", get(list_applications))
@@ -44,12 +48,16 @@ async fn main() -> anyhow::Result<()> {
         .layer(cors);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
-    info!("⚡ Coolify Rust REST API listening on http://{}", addr);
+    info!("⚡ Coolify Rust Control Center listening on http://localhost:8000");
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
 
     Ok(())
+}
+
+async fn serve_ui() -> Html<&'static str> {
+    Html(DASHBOARD_HTML)
 }
 
 async fn health_check() -> Json<SystemHealth> {
