@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { CommandPalette } from './components/CommandPalette';
 import { AboutModal } from './components/AboutModal';
+import { NewResourceModal } from './components/modals/NewResourceModal';
 import { LanguageProvider } from './context/LanguageContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -16,126 +17,118 @@ import { TeamsPage } from './pages/TeamsPage';
 import { TerminalPage } from './pages/TerminalPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ApplicationDetailPage } from './pages/ApplicationDetailPage';
+import { DestinationsPage, StoragePage, KeysPage, ProfilePage } from './pages/MissingPages';
+
 import type { Application } from './types';
 
+// Synchronous Path Resolution for Instant F5 Persistence (Coolify Style)
+const parseCurrentPath = () => {
+  if (typeof window === 'undefined') return 'dashboard';
+  
+  let path = window.location.pathname.replace(/^\//, '');
+  if (!path) {
+    path = window.location.hash.replace(/^#\//, '');
+  }
+  
+  return path || localStorage.getItem('md_active_path') || 'dashboard';
+};
+
 export function App() {
-  const [currentTab, setCurrentTab] = useState('dashboard');
-  const [collapsed, setCollapsed] = useState(false);
+  const [currentPath, setCurrentPath] = useState<string>(parseCurrentPath);
+  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [collapsed, setCollapsed] = useState(() => {
+    return localStorage.getItem('md_sidebar_collapsed') === 'true';
+  });
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
-  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [isNewResourceOpen, setIsNewResourceOpen] = useState(false);
 
-  // Synchronize React Navigation state with browser URL Hash route on mount & changes
   useEffect(() => {
-    const parseHashRoute = () => {
-      const hash = window.location.hash;
-      if (!hash || hash === '#/' || hash === '#/dashboard') {
-        setCurrentTab('dashboard');
-        window.history.replaceState(null, '', '#/dashboard');
-      } else {
-        const route = hash.replace('#/', '');
-        setCurrentTab(route);
-      }
+    const handleUrlChange = () => {
+      const newPath = parseCurrentPath();
+      setCurrentPath(newPath);
+      localStorage.setItem('md_active_path', newPath);
     };
 
-    parseHashRoute();
-    window.addEventListener('hashchange', parseHashRoute);
-    return () => window.removeEventListener('hashchange', parseHashRoute);
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
   }, []);
 
-  const navigateTo = (tab: string) => {
-    window.location.hash = `#/${tab}`;
+  const navigateTo = (path: string) => {
+    setCurrentPath(path);
+    localStorage.setItem('md_active_path', path);
+    window.history.pushState(null, '', `/#/${path}`);
   };
+
+  const handleToggleCollapse = () => {
+    setCollapsed(prev => {
+      const next = !prev;
+      localStorage.setItem('md_sidebar_collapsed', String(next));
+      return next;
+    });
+  };
+
+  const activeTabGroup = currentPath.split('/')[0];
 
   return (
     <LanguageProvider>
-      <div className="min-h-screen bg-[#0f0f11] text-zinc-100 flex">
+      <div className="min-h-screen bg-[#0f0f11] text-zinc-100 flex select-none font-sans antialiased">
         {/* Sidebar */}
         <Sidebar
-          currentTab={currentTab.split('/')[0]} // Highlight correct parent tab in sidebar
+          currentTab={activeTabGroup}
           onSelectTab={(tab) => {
             navigateTo(tab);
             setSelectedApp(null);
           }}
           collapsed={collapsed}
-          onToggleCollapse={() => setCollapsed(!collapsed)}
+          onToggleCollapse={handleToggleCollapse}
           onOpenAbout={() => setIsAboutOpen(true)}
         />
 
-        {/* Main Area */}
-        <div className={`flex-1 transition-all duration-200 ${collapsed ? 'ml-16' : 'ml-56'}`}>
+        {/* Main Area (Coolify Full Width Fluid Layout) */}
+        <div className={`flex-1 transition-all duration-150 ease-out min-w-0 ${collapsed ? 'ml-16' : 'ml-56'}`}>
           <Header
-            currentTab={currentTab.split('/')[0]}
+            currentTab={activeTabGroup}
             onOpenSearch={() => setIsSearchOpen(true)}
-            onNewProject={() => alert('New Resource Modal')}
+            onNewProject={() => setIsNewResourceOpen(true)}
           />
 
-          <main className="p-8 max-w-7xl mx-auto">
+          <main className="p-6 md:p-8 w-full">
             <ErrorBoundary>
               {selectedApp ? (
                 <ApplicationDetailPage app={selectedApp} onBack={() => setSelectedApp(null)} />
               ) : (
                 <>
-                  {currentTab === 'dashboard' && (
+                  {(activeTabGroup === 'dashboard' || activeTabGroup === '') && (
                     <DashboardPage
                       onGoToProjects={() => navigateTo('projects')}
                       onGoToServers={() => navigateTo('servers')}
                     />
                   )}
 
-                  {currentTab === 'projects' && (
+                  {activeTabGroup === 'projects' && (
                     <ProjectsPage
                       onSelectApplication={(app) => setSelectedApp(app)}
-                      onNewResource={() => alert('New Application Modal')}
+                      onNewResource={() => setIsNewResourceOpen(true)}
                     />
                   )}
 
-                  {currentTab.startsWith('servers') && <ServersPage />}
-                  {currentTab === 'sources' && <SourcesPage />}
-                  
-                  {currentTab === 'destinations' && (
-                    <div className="bg-[#18181b] border border-[#27272a] p-12 rounded-xl text-center space-y-3">
-                      <h2 className="text-xl font-bold text-white">Destinations</h2>
-                      <p className="text-xs text-zinc-400">Configure Docker Swarm, Standalone Docker, or Kubernetes clusters.</p>
-                    </div>
-                  )}
-
-                  {currentTab === 'storage' && (
-                    <div className="bg-[#18181b] border border-[#27272a] p-12 rounded-xl text-center space-y-3">
-                      <h2 className="text-xl font-bold text-white">S3 Storages</h2>
-                      <p className="text-xs text-zinc-400">Configure Amazon S3, MinIO, or Cloudflare R2 backup targets.</p>
-                    </div>
-                  )}
-
-                  {currentTab === 'shared-variables' && <SharedVariablesPage />}
-                  {currentTab === 'notifications' && <NotificationsPage />}
-
-                  {currentTab === 'keys' && (
-                    <div className="bg-[#18181b] border border-[#27272a] p-12 rounded-xl text-center space-y-3">
-                      <h2 className="text-xl font-bold text-white">Keys & API Tokens</h2>
-                      <p className="text-xs text-zinc-400">Manage SSH Private Keys for VPS deployment nodes.</p>
-                    </div>
-                  )}
-
-                  {currentTab === 'tags' && (
-                    <div className="bg-[#18181b] border border-[#27272a] p-12 rounded-xl text-center space-y-3">
-                      <h2 className="text-xl font-bold text-white">Tags Manager</h2>
-                      <p className="text-xs text-zinc-400">Tag applications and servers for quick group filtering.</p>
-                    </div>
-                  )}
-
-                  {currentTab === 'terminal' && <TerminalPage />}
-
-                  {currentTab === 'profile' && (
-                    <div className="bg-[#18181b] border border-[#27272a] p-12 rounded-xl text-center space-y-3">
-                      <h2 className="text-xl font-bold text-white">User Profile & 2FA</h2>
-                      <p className="text-xs text-zinc-400">Manage your account email, password, and two-factor authentication.</p>
-                    </div>
-                  )}
-
-                  {currentTab === 'teams' && <TeamsPage />}
-
-                  {currentTab === 'settings' && <SettingsPage />}
+                  {activeTabGroup === 'servers' && <ServersPage />}
+                  {activeTabGroup === 'sources' && <SourcesPage />}
+                  {activeTabGroup === 'destinations' && <DestinationsPage />}
+                  {activeTabGroup === 'storage' && <StoragePage />}
+                  {activeTabGroup === 'shared-variables' && <SharedVariablesPage />}
+                  {activeTabGroup === 'notifications' && <NotificationsPage />}
+                  {activeTabGroup === 'keys' && <KeysPage />}
+                  {activeTabGroup === 'terminal' && <TerminalPage />}
+                  {activeTabGroup === 'profile' && <ProfilePage />}
+                  {activeTabGroup === 'teams' && <TeamsPage />}
+                  {activeTabGroup === 'settings' && <SettingsPage />}
                 </>
               )}
             </ErrorBoundary>
@@ -163,6 +156,13 @@ export function App() {
               });
             }
           }}
+        />
+
+        {/* New Resource Modal */}
+        <NewResourceModal
+          isOpen={isNewResourceOpen}
+          onClose={() => setIsNewResourceOpen(false)}
+          onSelectType={() => setIsNewResourceOpen(false)}
         />
 
         {/* About MD Logo Modal */}

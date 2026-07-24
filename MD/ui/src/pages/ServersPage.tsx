@@ -3,13 +3,24 @@ import { Server as ServerIcon, Plus, CheckCircle, RefreshCcw, ShieldCheck, Termi
 import { ServerDetailPage } from './ServerDetailPage';
 import { useLanguage } from '../context/LanguageContext';
 
+const DEFAULT_LOCALHOST_SERVER = {
+  id: '0',
+  name: 'localhost',
+  description: "This is the server where MasterDeploy is running on. Don't delete this!",
+  ip: '127.0.0.1',
+  port: 22,
+  user: 'root',
+  is_reachable: true,
+  is_build_server: true,
+};
+
 export const ServersPage: React.FC = () => {
   const { t } = useLanguage();
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  const [servers, setServers] = useState<any[]>([]);
+  const [servers, setServers] = useState<any[]>([DEFAULT_LOCALHOST_SERVER]);
   const [metrics, setMetrics] = useState<any>({
     cpu_usage: 18,
     ram_usage: 42,
@@ -22,30 +33,37 @@ export const ServersPage: React.FC = () => {
   const fetchServers = async () => {
     try {
       const res = await fetch('/api/v1/servers');
-      const data = await res.json();
-      setServers(data);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setServers(data);
+        } else {
+          setServers([DEFAULT_LOCALHOST_SERVER]);
+        }
+      }
     } catch (err) {
-      console.error("Failed to fetch servers", err);
+      setServers([DEFAULT_LOCALHOST_SERVER]);
     }
   };
 
   const fetchMetrics = async () => {
     try {
       const res = await fetch('/api/v1/servers/resources');
-      const data = await res.json();
-      setMetrics(data);
-    } catch (err) {
-      console.error("Failed to fetch metrics", err);
+      if (res.ok) {
+        const data = await res.json();
+        setMetrics(data);
+      }
+    } catch {
+      // keep fallback metrics
     }
   };
 
-  // Sync hash sub-route for selected server
   useEffect(() => {
     fetchServers();
     fetchMetrics();
     const handleHashChange = () => {
       const hash = window.location.hash;
-      if (hash === '#/servers/localhost') {
+      if (hash.startsWith('#/servers/') && hash !== '#/servers') {
         setSelectedServer('localhost');
       } else if (hash === '#/servers') {
         setSelectedServer(null);
@@ -89,16 +107,16 @@ export const ServersPage: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Page Header with Add Server Button */}
+      {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">{t('servers')}</h1>
-          <p className="text-xs text-zinc-400 mt-1">{t('servers_desc')}</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">{t('servers') || 'Servers'}</h1>
+          <p className="text-xs text-zinc-400 mt-1">{t('servers_desc') || 'Manage your VPS servers and deployment nodes'}</p>
         </div>
 
         <button className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition-colors shadow-lg shadow-orange-600/20">
           <Plus size={16} />
-          <span>{t('add_server')}</span>
+          <span>{t('add_server') || '+ Add Server'}</span>
         </button>
       </div>
 
@@ -129,18 +147,18 @@ export const ServersPage: React.FC = () => {
                 <div>
                   <div className="flex items-center space-x-2">
                     <h2 className="text-lg font-bold text-white hover:text-purple-400 transition-colors">{server.name}</h2>
-                    {server.id === '0' && (
+                    {(server.id === '0' || server.name === 'localhost') && (
                       <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                        {t('default_master')}
+                        {t('default_master') || 'DEFAULT MASTER'}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-zinc-400 mt-0.5">{server.description || t('localhost_desc')}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">{server.description || t('localhost_desc') || "This is the server where MasterDeploy is running on. Don't delete this!"}</p>
                   <p className={`text-xs font-semibold mt-1 flex items-center space-x-1 ${
                     server.is_reachable ? 'text-emerald-400' : 'text-red-400'
                   }`}>
                     <span className={`w-2 h-2 rounded-full ${server.is_reachable ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
-                    <span>{server.is_reachable ? t('reachable_usable') : 'Not reachable'}</span>
+                    <span>{server.is_reachable ? (t('reachable_usable') || 'Reachable / Usable') : 'Not reachable'}</span>
                   </p>
                 </div>
               </div>
@@ -149,73 +167,27 @@ export const ServersPage: React.FC = () => {
                 <button
                   onClick={(e) => handleValidate(e, server.id)}
                   disabled={isValidating}
-                  className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-2 transition-colors disabled:opacity-50"
+                  className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
                 >
-                  <RefreshCcw size={14} className={isValidating ? 'animate-spin' : ''} />
-                  <span>{isValidating ? t('validating') : t('validate_server')}</span>
+                  <RefreshCcw size={16} className={isValidating ? 'animate-spin' : ''} />
                 </button>
-                <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400">
-                  <ChevronRight size={16} />
-                </div>
+                <ChevronRight size={18} className="text-zinc-500" />
               </div>
             </div>
 
-            {/* System Specs Metrics Bar */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-[#27272a]">
-              <div className="bg-[#0f0f11] p-3 rounded-lg border border-[#27272a] space-y-1">
-                <div className="flex justify-between items-center text-xs text-zinc-400">
-                  <span className="flex items-center space-x-1.5">
-                    <Cpu size={14} className="text-blue-400" />
-                    <span>{t('cpu_cores')}</span>
-                  </span>
-                  <span className="text-white font-mono font-bold">{metrics.cpu_cores} Cores ({metrics.cpu_usage}%)</span>
-                </div>
-                <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full" style={{ width: `${metrics.cpu_usage}%` }} />
-                </div>
+            {/* Metrics Footer Bar */}
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[#27272a]/60 text-xs">
+              <div className="flex items-center space-x-2 text-zinc-400">
+                <Cpu size={14} className="text-purple-400" />
+                <span>CPU: {metrics.cpu_usage}% ({metrics.cpu_cores} Cores)</span>
               </div>
-
-              <div className="bg-[#0f0f11] p-3 rounded-lg border border-[#27272a] space-y-1">
-                <div className="flex justify-between items-center text-xs text-zinc-400">
-                  <span className="flex items-center space-x-1.5">
-                    <Activity size={14} className="text-cyan-400" />
-                    <span>{t('ram_memory')}</span>
-                  </span>
-                  <span className="text-white font-mono font-bold">{metrics.ram_total_gb} GB ({metrics.ram_usage}%)</span>
-                </div>
-                <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${metrics.ram_usage}%` }} />
-                </div>
+              <div className="flex items-center space-x-2 text-zinc-400">
+                <Activity size={14} className="text-emerald-400" />
+                <span>RAM: {metrics.ram_usage}% ({metrics.ram_total_gb} GB)</span>
               </div>
-
-              <div className="bg-[#0f0f11] p-3 rounded-lg border border-[#27272a] space-y-1">
-                <div className="flex justify-between items-center text-xs text-zinc-400">
-                  <span className="flex items-center space-x-1.5">
-                    <HardDrive size={14} className="text-amber-400" />
-                    <span>{t('disk_storage')}</span>
-                  </span>
-                  <span className="text-white font-mono font-bold">{metrics.disk_total_gb} GB ({metrics.disk_usage}%)</span>
-                </div>
-                <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-amber-500 rounded-full" style={{ width: `${metrics.disk_usage}%` }} />
-                </div>
-              </div>
-            </div>
-
-            {/* SSH & Docker Status Details */}
-            <div className="pt-2 flex flex-wrap items-center justify-between text-xs text-zinc-400 gap-2">
-              <div className="flex items-center space-x-4">
-                <span className="flex items-center space-x-1 font-mono">
-                  <Terminal size={13} className="text-zinc-500" />
-                  <span>{server.user}@{server.ip}:{server.port}</span>
-                </span>
-                <span className="flex items-center space-x-1 text-emerald-400">
-                  <ShieldCheck size={13} />
-                  <span>{t('private_key')}: default (ID 0)</span>
-                </span>
-              </div>
-              <div className="flex items-center space-x-2 text-zinc-500 font-mono">
-                <span>{t('docker_version')}</span>
+              <div className="flex items-center space-x-2 text-zinc-400">
+                <HardDrive size={14} className="text-amber-400" />
+                <span>Disk: {metrics.disk_usage}% ({metrics.disk_total_gb} GB)</span>
               </div>
             </div>
           </div>
