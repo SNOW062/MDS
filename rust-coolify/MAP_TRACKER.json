@@ -4932,7 +4932,7 @@
       "id": "file_0822",
       "path": "crates/db/src/models/application.rs",
       "source": "app/Models/Application.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0823",
@@ -4950,7 +4950,7 @@
       "id": "file_0825",
       "path": "crates/db/src/models/application_setting.rs",
       "source": "app/Models/ApplicationSetting.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0826",
@@ -4992,7 +4992,7 @@
       "id": "file_0832",
       "path": "crates/db/src/models/environment.rs",
       "source": "app/Models/Environment.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0833",
@@ -5016,7 +5016,7 @@
       "id": "file_0836",
       "path": "crates/db/src/models/instance_settings.rs",
       "source": "app/Models/InstanceSettings.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0837",
@@ -5046,13 +5046,13 @@
       "id": "file_0841",
       "path": "crates/db/src/models/private_key.rs",
       "source": "app/Models/PrivateKey.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0842",
       "path": "crates/db/src/models/project.rs",
       "source": "app/Models/Project.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0843",
@@ -5088,7 +5088,7 @@
       "id": "file_0848",
       "path": "crates/db/src/models/scheduled_task.rs",
       "source": "app/Models/ScheduledTask.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0849",
@@ -5112,19 +5112,19 @@
       "id": "file_0852",
       "path": "crates/db/src/models/server.rs",
       "source": "app/Models/Server.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0853",
       "path": "crates/db/src/models/server_setting.rs",
       "source": "app/Models/ServerSetting.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0854",
       "path": "crates/db/src/models/service.rs",
       "source": "app/Models/Service.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0855",
@@ -5226,13 +5226,13 @@
       "id": "file_0871",
       "path": "crates/db/src/models/tag.rs",
       "source": "app/Models/Tag.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0872",
       "path": "crates/db/src/models/team.rs",
       "source": "app/Models/Team.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0873",
@@ -5250,7 +5250,7 @@
       "id": "file_0875",
       "path": "crates/db/src/models/user.rs",
       "source": "app/Models/User.php",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "file_0876",
@@ -6107,170 +6107,2243 @@
     {
       "id": "ui_page_001",
       "path": "ui/src/pages/dashboard/DashboardPage.tsx",
-      "source": "resources/views/livewire/dashboard/dashboard",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_002",
       "path": "ui/src/pages/projects/ProjectsPage.tsx",
-      "source": "resources/views/livewire/projects/projects",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_003",
       "path": "ui/src/pages/projects/ProjectDetailPage.tsx",
-      "source": "resources/views/livewire/projects/projectdetail",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_004",
       "path": "ui/src/pages/projects/EnvironmentDetailPage.tsx",
-      "source": "resources/views/livewire/projects/environmentdetail",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_005",
       "path": "ui/src/pages/projects/ApplicationDetailPage.tsx",
-      "source": "resources/views/livewire/projects/applicationdetail",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_006",
       "path": "ui/src/pages/servers/ServersPage.tsx",
-      "source": "resources/views/livewire/servers/servers",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_007",
       "path": "ui/src/pages/servers/ServerDetailPage.tsx",
-      "source": "resources/views/livewire/servers/serverdetail",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_008",
       "path": "ui/src/pages/servers/ServerConfigurePage.tsx",
-      "source": "resources/views/livewire/servers/serverconfigure",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_009",
       "path": "ui/src/pages/databases/DatabasesPage.tsx",
-      "source": "resources/views/livewire/databases/databases",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_010",
       "path": "ui/src/pages/databases/DatabaseDetailPage.tsx",
-      "source": "resources/views/livewire/databases/databasedetail",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_011",
       "path": "ui/src/pages/services/ServicesPage.tsx",
-      "source": "resources/views/livewire/services/services",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_012",
       "path": "ui/src/pages/services/ServiceDetailPage.tsx",
-      "source": "resources/views/livewire/services/servicedetail",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_013",
       "path": "ui/src/pages/teams/TeamsPage.tsx",
-      "source": "resources/views/livewire/teams/teams",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_014",
       "path": "ui/src/pages/settings/SettingsPage.tsx",
-      "source": "resources/views/livewire/settings/settings",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_015",
       "path": "ui/src/pages/storage/StoragePage.tsx",
-      "source": "resources/views/livewire/storage/storage",
-      "status": "todo"
+      "source": "app/Http/Controllers/Api/CloudProviderTokensController.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_016",
       "path": "ui/src/pages/security/SecurityPage.tsx",
-      "source": "resources/views/livewire/security/security",
-      "status": "todo"
+      "source": "app/Http/Controllers/Api/SecurityController.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_017",
       "path": "ui/src/pages/security/ApiTokensPage.tsx",
-      "source": "resources/views/livewire/security/apitokens",
-      "status": "todo"
+      "source": "app/Http/Controllers/Api/SecurityController.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_page_018",
       "path": "ui/src/pages/security/SshKeysPage.tsx",
-      "source": "resources/views/livewire/security/sshkeys",
-      "status": "todo"
+      "source": "app/Http/Controllers/Api/SecurityController.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
     },
     {
       "id": "ui_comp_019",
       "path": "ui/src/components/Layout.tsx",
-      "source": "resources/views/components/layout",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_020",
       "path": "ui/src/components/Sidebar.tsx",
-      "source": "resources/views/components/sidebar",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_021",
       "path": "ui/src/components/Header.tsx",
-      "source": "resources/views/components/header",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_022",
       "path": "ui/src/components/Navbar.tsx",
-      "source": "resources/views/components/navbar",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_023",
       "path": "ui/src/components/Terminal.tsx",
-      "source": "resources/views/components/terminal",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_024",
       "path": "ui/src/components/ActivityMonitor.tsx",
-      "source": "resources/views/components/activitymonitor",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_025",
       "path": "ui/src/components/EnvironmentVariables.tsx",
-      "source": "resources/views/components/environmentvariables",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_026",
       "path": "ui/src/components/SslSettings.tsx",
-      "source": "resources/views/components/sslsettings",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_027",
       "path": "ui/src/components/BackupSettings.tsx",
-      "source": "resources/views/components/backupsettings",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
     },
     {
       "id": "ui_comp_028",
       "path": "ui/src/components/ServerStatus.tsx",
-      "source": "resources/views/components/serverstatus",
-      "status": "todo"
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_page_029",
+      "path": "ui/src/pages/auth/LoginPage.tsx",
+      "source": "resources/views/auth/login.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_030",
+      "path": "ui/src/pages/auth/RegisterPage.tsx",
+      "source": "resources/views/auth/register.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_031",
+      "path": "ui/src/pages/auth/ForgotPasswordPage.tsx",
+      "source": "resources/views/auth/forgot-password.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_032",
+      "path": "ui/src/pages/auth/ResetPasswordPage.tsx",
+      "source": "resources/views/auth/reset-password.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_033",
+      "path": "ui/src/pages/auth/TwoFactorPage.tsx",
+      "source": "resources/views/auth/two-factor-challenge.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_034",
+      "path": "ui/src/pages/OnboardingPage.tsx",
+      "source": "resources/views/livewire/boarding/index.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_035",
+      "path": "ui/src/pages/application/AppGeneralPage.tsx",
+      "source": "resources/views/livewire/project/application/general.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_036",
+      "path": "ui/src/pages/application/AppEnvVarsPage.tsx",
+      "source": "resources/views/livewire/project/application/general.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_037",
+      "path": "ui/src/pages/application/AppAdvancedPage.tsx",
+      "source": "resources/views/livewire/project/application/advanced.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_038",
+      "path": "ui/src/pages/application/AppDeploymentsPage.tsx",
+      "source": "resources/views/livewire/project/application/deployment/index.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_039",
+      "path": "ui/src/pages/application/DeploymentLogPage.tsx",
+      "source": "resources/views/livewire/project/application/deployment/show.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_040",
+      "path": "ui/src/pages/application/AppLogsPage.tsx",
+      "source": "resources/views/livewire/project/application/general.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_041",
+      "path": "ui/src/pages/application/AppRollbackPage.tsx",
+      "source": "resources/views/livewire/project/application/rollback.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_042",
+      "path": "ui/src/pages/application/AppPreviewsPage.tsx",
+      "source": "resources/views/livewire/project/application/previews.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_043",
+      "path": "ui/src/pages/database/DbConfigPage.tsx",
+      "source": "resources/views/livewire/project/database/configuration.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_044",
+      "path": "ui/src/pages/database/DbBackupsPage.tsx",
+      "source": "resources/views/livewire/project/database/scheduled-backups.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_045",
+      "path": "ui/src/pages/database/DbLogsPage.tsx",
+      "source": "resources/views/livewire/project/database/heading.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_046",
+      "path": "ui/src/pages/server/CreateServerPage.tsx",
+      "source": "resources/views/livewire/server/create.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_047",
+      "path": "ui/src/pages/server/ServerProxyPage.tsx",
+      "source": "resources/views/livewire/server/proxy.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_048",
+      "path": "ui/src/pages/server/ServerChartsPage.tsx",
+      "source": "resources/views/livewire/server/charts.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_049",
+      "path": "ui/src/pages/server/TerminalPage.tsx",
+      "source": "resources/views/livewire/terminal/index.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_050",
+      "path": "ui/src/pages/notifications/NotificationsPage.tsx",
+      "source": "resources/views/livewire/notifications/email.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_051",
+      "path": "ui/src/pages/profile/ProfilePage.tsx",
+      "source": "resources/views/livewire/profile/index.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_052",
+      "path": "ui/src/pages/admin/AdminPage.tsx",
+      "source": "resources/views/livewire/admin/index.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_053",
+      "path": "ui/src/pages/sources/SourcesPage.tsx",
+      "source": "app/Http/Controllers/Api/GithubController.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_comp_054",
+      "path": "ui/src/components/ui/Button.tsx",
+      "source": "resources/views/components/forms/button.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_055",
+      "path": "ui/src/components/ui/Input.tsx",
+      "source": "resources/views/components/forms/input.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_056",
+      "path": "ui/src/components/ui/Textarea.tsx",
+      "source": "resources/views/components/forms/textarea.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_057",
+      "path": "ui/src/components/ui/Select.tsx",
+      "source": "resources/views/components/forms/select.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_058",
+      "path": "ui/src/components/ui/Checkbox.tsx",
+      "source": "resources/views/components/forms/checkbox.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_059",
+      "path": "ui/src/components/ui/CopyButton.tsx",
+      "source": "resources/views/components/forms/copy-button.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_060",
+      "path": "ui/src/components/ui/Modal.tsx",
+      "source": "resources/views/components/modal.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_061",
+      "path": "ui/src/components/ui/ConfirmModal.tsx",
+      "source": "resources/views/components/confirm-modal.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_062",
+      "path": "ui/src/components/ui/SlideOver.tsx",
+      "source": "resources/views/components/slide-over.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_063",
+      "path": "ui/src/components/ui/Toast.tsx",
+      "source": "resources/views/components/toast.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_064",
+      "path": "ui/src/components/ui/StatusBadge.tsx",
+      "source": "resources/views/components/status-badge.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_065",
+      "path": "ui/src/components/ui/LoadingSpinner.tsx",
+      "source": "resources/views/components/loading.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_066",
+      "path": "ui/src/components/ui/Tabs.tsx",
+      "source": "resources/views/components/navbar.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_067",
+      "path": "ui/src/components/ui/Pagination.tsx",
+      "source": "resources/views/components/forms/datalist.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_068",
+      "path": "ui/src/components/editors/MonacoEditor.tsx",
+      "source": "resources/views/components/forms/monaco-editor.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_069",
+      "path": "ui/src/components/editors/EnvVarEditor.tsx",
+      "source": "resources/views/components/forms/env-var-input.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_070",
+      "path": "ui/src/components/charts/MetricsChart.tsx",
+      "source": "resources/views/livewire/server/charts.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_071",
+      "path": "ui/src/components/GlobalSearch.tsx",
+      "source": "resources/views/livewire/global-search.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_comp_072",
+      "path": "ui/src/components/DeploymentsIndicator.tsx",
+      "source": "resources/views/livewire/deployments-indicator.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 4: Ümumi Komponentlər (UI)",
+      "sequence": 4
+    },
+    {
+      "id": "ui_infra_073",
+      "path": "ui/src/router/index.tsx",
+      "source": "routes/web.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_infra_074",
+      "path": "ui/src/api/OpenApi.ts",
+      "source": "app/Http/Controllers/Api/OpenApi.php",
+      "status": "completed",
+      "phase": "Mərhələ 1: İnfrastruktur & Tiplər",
+      "sequence": 1
+    },
+    {
+      "id": "ui_infra_075",
+      "path": "ui/src/api/OauthController.ts",
+      "source": "app/Http/Controllers/OauthController.php",
+      "status": "completed",
+      "note": "Coolify Laravel Fortify istifade edir, ozel AuthController yoxdur",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_076",
+      "path": "ui/src/api/servers.ts",
+      "source": "app/Http/Controllers/Api/ServersController.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_077",
+      "path": "ui/src/api/applications.ts",
+      "source": "app/Http/Controllers/Api/ApplicationsController.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_078",
+      "path": "ui/src/api/databases.ts",
+      "source": "app/Http/Controllers/Api/DatabasesController.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_079",
+      "path": "ui/src/api/projects.ts",
+      "source": "app/Models/Project.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_080",
+      "path": "ui/src/api/services.ts",
+      "source": "app/Http/Controllers/Api/ServicesController.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_081",
+      "path": "ui/src/api/security.ts",
+      "source": "app/Http/Controllers/Api/SecurityController.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_082",
+      "path": "ui/src/api/notifications.ts",
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_083",
+      "path": "ui/src/api/storage.ts",
+      "source": "app/Http/Controllers/Api/CloudProviderTokensController.php",
+      "status": "todo",
+      "phase": "Mərhələ 2: API Sorğuları (Controllers)",
+      "sequence": 2
+    },
+    {
+      "id": "ui_infra_084",
+      "path": "ui/src/stores/authStore.ts",
+      "source": "app/Models/User.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_085",
+      "path": "ui/src/stores/toastStore.ts",
+      "source": "resources/views/components/toast.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_086",
+      "path": "ui/src/stores/deployStore.ts",
+      "source": "resources/views/livewire/deployments-indicator.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_087",
+      "path": "ui/src/stores/projectStore.ts",
+      "source": "app/Models/Project.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_088",
+      "path": "ui/src/types/Server.ts",
+      "source": "app/Models/Server.php",
+      "status": "completed",
+      "phase": "Mərhələ 1: İnfrastruktur & Tiplər",
+      "sequence": 1
+    },
+    {
+      "id": "ui_infra_089",
+      "path": "ui/src/types/Application.ts",
+      "source": "app/Models/Application.php",
+      "status": "completed",
+      "phase": "Mərhələ 1: İnfrastruktur & Tiplər",
+      "sequence": 1
+    },
+    {
+      "id": "ui_infra_090",
+      "path": "ui/src/types/StandalonePostgresql.ts",
+      "source": "app/Models/StandalonePostgresql.php",
+      "status": "completed",
+      "phase": "Mərhələ 1: İnfrastruktur & Tiplər",
+      "sequence": 1
+    },
+    {
+      "id": "ui_infra_091",
+      "path": "ui/src/types/Project.ts",
+      "source": "app/Models/Project.php",
+      "status": "completed",
+      "phase": "Mərhələ 1: İnfrastruktur & Tiplər",
+      "sequence": 1
+    },
+    {
+      "id": "ui_infra_092",
+      "path": "ui/src/types/User.ts",
+      "source": "app/Models/User.php",
+      "status": "completed",
+      "phase": "Mərhələ 1: İnfrastruktur & Tiplər",
+      "sequence": 1
+    },
+    {
+      "id": "ui_infra_093",
+      "path": "ui/src/types/InstanceSettings.ts",
+      "source": "app/Models/InstanceSettings.php",
+      "status": "completed",
+      "phase": "Mərhələ 1: İnfrastruktur & Tiplər",
+      "sequence": 1
+    },
+    {
+      "id": "ui_infra_094",
+      "path": "ui/src/hooks/useAuth.ts",
+      "source": "app/Http/Middleware/Authenticate.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_095",
+      "path": "ui/src/hooks/useWebSocket.ts",
+      "source": "resources/views/livewire/deployments-indicator.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_096",
+      "path": "ui/src/hooks/useToast.ts",
+      "source": "resources/views/components/toast.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_097",
+      "path": "ui/src/hooks/useDebounce.ts",
+      "source": "resources/views/livewire/global-search.blade.php",
+      "status": "todo",
+      "phase": "Mərhələ 3: Store-lar & Hook-lar",
+      "sequence": 3
+    },
+    {
+      "id": "ui_infra_098",
+      "path": "ui/src/mocks/servers.ts",
+      "source": "app/Models/Server.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_infra_099",
+      "path": "ui/src/mocks/applications.ts",
+      "source": "app/Models/Application.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "ui_infra_100",
+      "path": "ui/src/mocks/projects.ts",
+      "source": "app/Models/Project.php",
+      "status": "todo",
+      "phase": "Mərhələ 5: Səhifələr & Görünüşlər",
+      "sequence": 5
+    },
+    {
+      "id": "meta_api_cargo_toml",
+      "path": "crates/api/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_api_readme_md",
+      "path": "crates/api/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1018",
+      "path": "crates/api/src/dto/mod.rs",
+      "source": "app/Http/Requests",
+      "status": "completed"
+    },
+    {
+      "id": "be_1019",
+      "path": "crates/api/src/main.rs",
+      "source": "bootstrap/app.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1020",
+      "path": "crates/api/src/middleware/auth.rs",
+      "source": "app/Http/Middleware",
+      "status": "completed"
+    },
+    {
+      "id": "be_1021",
+      "path": "crates/api/src/middleware/cors.rs",
+      "source": "app/Http/Middleware",
+      "status": "completed"
+    },
+    {
+      "id": "be_1022",
+      "path": "crates/api/src/middleware/mod.rs",
+      "source": "app/Http/Middleware",
+      "status": "completed"
+    },
+    {
+      "id": "be_1023",
+      "path": "crates/api/src/middleware/rate_limit.rs",
+      "source": "app/Http/Middleware",
+      "status": "completed"
+    },
+    {
+      "id": "be_1024",
+      "path": "crates/api/src/routes/applications.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1025",
+      "path": "crates/api/src/routes/databases.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1026",
+      "path": "crates/api/src/routes/deployments.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1027",
+      "path": "crates/api/src/routes/health.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1028",
+      "path": "crates/api/src/routes/mod.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1029",
+      "path": "crates/api/src/routes/private_keys.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1030",
+      "path": "crates/api/src/routes/projects.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1031",
+      "path": "crates/api/src/routes/scheduled_tasks.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1032",
+      "path": "crates/api/src/routes/servers.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1033",
+      "path": "crates/api/src/routes/services.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1034",
+      "path": "crates/api/src/routes/settings.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1035",
+      "path": "crates/api/src/routes/storage.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1036",
+      "path": "crates/api/src/routes/teams.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1037",
+      "path": "crates/api/src/routes/users.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1038",
+      "path": "crates/api/src/routes/webhooks.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1039",
+      "path": "crates/api/src/state.rs",
+      "source": "app/Providers/AppServiceProvider.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1040",
+      "path": "crates/api/src/websocket/deploy_log.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1041",
+      "path": "crates/api/src/websocket/mod.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "be_1042",
+      "path": "crates/api/src/websocket/terminal.rs",
+      "source": "app/Http/Controllers/Api",
+      "status": "completed"
+    },
+    {
+      "id": "meta_auth_cargo_toml",
+      "path": "crates/auth/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_auth_readme_md",
+      "path": "crates/auth/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1043",
+      "path": "crates/auth/src/lib.rs",
+      "source": "app",
+      "status": "completed"
+    },
+    {
+      "id": "be_1044",
+      "path": "crates/auth/src/oauth/github.rs",
+      "source": "app/Actions/Auth",
+      "status": "completed"
+    },
+    {
+      "id": "be_1045",
+      "path": "crates/auth/src/oauth/gitlab.rs",
+      "source": "app/Actions/Auth",
+      "status": "completed"
+    },
+    {
+      "id": "be_1046",
+      "path": "crates/auth/src/oauth/google.rs",
+      "source": "app/Actions/Auth",
+      "status": "completed"
+    },
+    {
+      "id": "be_1047",
+      "path": "crates/auth/src/oauth/mod.rs",
+      "source": "app/Actions/Auth",
+      "status": "completed"
+    },
+    {
+      "id": "be_1048",
+      "path": "crates/auth/src/password.rs",
+      "source": "app/Actions/Fortify/ResetUserPassword.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1049",
+      "path": "crates/auth/src/policies/mod.rs",
+      "source": "app/Policies",
+      "status": "completed"
+    },
+    {
+      "id": "be_1050",
+      "path": "crates/auth/src/session.rs",
+      "source": "app/Http/Controllers/Auth",
+      "status": "completed"
+    },
+    {
+      "id": "be_1051",
+      "path": "crates/auth/src/team/invitation.rs",
+      "source": "app/Actions/Team",
+      "status": "completed"
+    },
+    {
+      "id": "be_1052",
+      "path": "crates/auth/src/team/mod.rs",
+      "source": "app/Actions/Team",
+      "status": "completed"
+    },
+    {
+      "id": "be_1053",
+      "path": "crates/auth/src/team/roles.rs",
+      "source": "app/Actions/Team",
+      "status": "completed"
+    },
+    {
+      "id": "be_1054",
+      "path": "crates/auth/src/token.rs",
+      "source": "app/Models/PersonalAccessToken.php",
+      "status": "completed"
+    },
+    {
+      "id": "meta_core_cargo_toml",
+      "path": "crates/core/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_core_readme_md",
+      "path": "crates/core/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1055",
+      "path": "crates/core/src/docker/client.rs",
+      "source": "app/Actions/Docker",
+      "status": "completed"
+    },
+    {
+      "id": "be_1056",
+      "path": "crates/core/src/docker/container.rs",
+      "source": "app/Actions/Docker",
+      "status": "completed"
+    },
+    {
+      "id": "be_1057",
+      "path": "crates/core/src/docker/image.rs",
+      "source": "app/Actions/Docker",
+      "status": "completed"
+    },
+    {
+      "id": "be_1058",
+      "path": "crates/core/src/docker/logs.rs",
+      "source": "app/Actions/Docker",
+      "status": "completed"
+    },
+    {
+      "id": "be_1059",
+      "path": "crates/core/src/docker/mod.rs",
+      "source": "app/Actions/Docker",
+      "status": "completed"
+    },
+    {
+      "id": "be_1060",
+      "path": "crates/core/src/docker/network.rs",
+      "source": "app/Actions/Docker",
+      "status": "completed"
+    },
+    {
+      "id": "be_1061",
+      "path": "crates/core/src/docker/volume.rs",
+      "source": "app/Actions/Docker",
+      "status": "completed"
+    },
+    {
+      "id": "be_1062",
+      "path": "crates/core/src/helpers/mod.rs",
+      "source": "app/Helpers",
+      "status": "completed"
+    },
+    {
+      "id": "be_1063",
+      "path": "crates/core/src/helpers/ssh_retry.rs",
+      "source": "app/Helpers",
+      "status": "completed"
+    },
+    {
+      "id": "be_1064",
+      "path": "crates/core/src/helpers/ssl.rs",
+      "source": "app/Helpers",
+      "status": "completed"
+    },
+    {
+      "id": "be_1065",
+      "path": "crates/core/src/lib.rs",
+      "source": "app",
+      "status": "completed"
+    },
+    {
+      "id": "be_1066",
+      "path": "crates/core/src/process/mod.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1067",
+      "path": "crates/core/src/process/runner.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1068",
+      "path": "crates/core/src/ssh/client.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1069",
+      "path": "crates/core/src/ssh/key.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1070",
+      "path": "crates/core/src/ssh/mod.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1071",
+      "path": "crates/core/src/ssh/multiplexer.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1072",
+      "path": "crates/core/src/ssh/stream.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1073",
+      "path": "crates/core/src/system/install.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1074",
+      "path": "crates/core/src/system/mod.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1075",
+      "path": "crates/core/src/system/specs.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "meta_db_cargo_toml",
+      "path": "crates/db/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_db_readme_md",
+      "path": "crates/db/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1076",
+      "path": "crates/db/src/casts/mod.rs",
+      "source": "app/Casts",
+      "status": "completed"
+    },
+    {
+      "id": "be_1077",
+      "path": "crates/db/src/enums/build_pack.rs",
+      "source": "app/Enums",
+      "status": "completed"
+    },
+    {
+      "id": "be_1078",
+      "path": "crates/db/src/enums/database_engine.rs",
+      "source": "app/Enums",
+      "status": "completed"
+    },
+    {
+      "id": "be_1079",
+      "path": "crates/db/src/enums/deploy_status.rs",
+      "source": "app/Enums",
+      "status": "completed"
+    },
+    {
+      "id": "be_1080",
+      "path": "crates/db/src/enums/mod.rs",
+      "source": "app/Enums",
+      "status": "completed"
+    },
+    {
+      "id": "be_1081",
+      "path": "crates/db/src/enums/notification_channel.rs",
+      "source": "app/Enums",
+      "status": "completed"
+    },
+    {
+      "id": "be_1082",
+      "path": "crates/db/src/enums/proxy_type.rs",
+      "source": "app/Enums",
+      "status": "completed"
+    },
+    {
+      "id": "be_1083",
+      "path": "crates/db/src/lib.rs",
+      "source": "database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1084",
+      "path": "crates/db/src/models/api_token.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1085",
+      "path": "crates/db/src/models/cloud_provider.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1086",
+      "path": "crates/db/src/models/database.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1087",
+      "path": "crates/db/src/models/deployment.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1088",
+      "path": "crates/db/src/models/env_variable.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1089",
+      "path": "crates/db/src/models/mod.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1090",
+      "path": "crates/db/src/models/notification_settings.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1091",
+      "path": "crates/db/src/models/scheduled_backup.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1092",
+      "path": "crates/db/src/models/service_app.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1093",
+      "path": "crates/db/src/models/service_db.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1094",
+      "path": "crates/db/src/models/shared_env_variable.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1095",
+      "path": "crates/db/src/models/ssl_cert.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1096",
+      "path": "crates/db/src/models/storage.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1097",
+      "path": "crates/db/src/models/volume_backup.rs",
+      "source": "app/Models",
+      "status": "completed"
+    },
+    {
+      "id": "be_1098",
+      "path": "crates/db/src/repos/app_repo.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "be_1099",
+      "path": "crates/db/src/repos/db_repo.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "be_1100",
+      "path": "crates/db/src/repos/deploy_repo.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "be_1101",
+      "path": "crates/db/src/repos/mod.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "be_1102",
+      "path": "crates/db/src/repos/project_repo.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "be_1103",
+      "path": "crates/db/src/repos/server_repo.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "be_1104",
+      "path": "crates/db/src/repos/service_repo.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "be_1105",
+      "path": "crates/db/src/repos/user_repo.rs",
+      "source": "app/Repositories",
+      "status": "completed"
+    },
+    {
+      "id": "meta_deployer_cargo_toml",
+      "path": "crates/deployer/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_deployer_readme_md",
+      "path": "crates/deployer/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1106",
+      "path": "crates/deployer/src/actions/cleanup_preview.rs",
+      "source": "app/Actions/Application",
+      "status": "completed"
+    },
+    {
+      "id": "be_1107",
+      "path": "crates/deployer/src/actions/mod.rs",
+      "source": "app/Actions/Application",
+      "status": "completed"
+    },
+    {
+      "id": "be_1108",
+      "path": "crates/deployer/src/actions/restart_application.rs",
+      "source": "app/Actions/Application",
+      "status": "completed"
+    },
+    {
+      "id": "be_1109",
+      "path": "crates/deployer/src/actions/rollback.rs",
+      "source": "app/Actions/Application",
+      "status": "completed"
+    },
+    {
+      "id": "be_1110",
+      "path": "crates/deployer/src/actions/start_deployment.rs",
+      "source": "app/Actions/Application",
+      "status": "completed"
+    },
+    {
+      "id": "be_1111",
+      "path": "crates/deployer/src/actions/stop_application.rs",
+      "source": "app/Actions/Application",
+      "status": "completed"
+    },
+    {
+      "id": "be_1112",
+      "path": "crates/deployer/src/build/compose.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1113",
+      "path": "crates/deployer/src/build/detect.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1114",
+      "path": "crates/deployer/src/build/dockerfile.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1115",
+      "path": "crates/deployer/src/build/mod.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1116",
+      "path": "crates/deployer/src/build/nixpacks.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1117",
+      "path": "crates/deployer/src/build/static_html.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1118",
+      "path": "crates/deployer/src/config/env.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1119",
+      "path": "crates/deployer/src/config/labels.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1120",
+      "path": "crates/deployer/src/config/mod.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1121",
+      "path": "crates/deployer/src/engine.rs",
+      "source": "app/Jobs/ApplicationDeploymentJob.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1122",
+      "path": "crates/deployer/src/errors.rs",
+      "source": "app/Exceptions",
+      "status": "completed"
+    },
+    {
+      "id": "be_1123",
+      "path": "crates/deployer/src/events.rs",
+      "source": "app/Events",
+      "status": "completed"
+    },
+    {
+      "id": "be_1124",
+      "path": "crates/deployer/src/git/clone.rs",
+      "source": "app/Actions/Git",
+      "status": "completed"
+    },
+    {
+      "id": "be_1125",
+      "path": "crates/deployer/src/git/mod.rs",
+      "source": "app/Actions/Git",
+      "status": "completed"
+    },
+    {
+      "id": "be_1126",
+      "path": "crates/deployer/src/git/preview.rs",
+      "source": "app/Actions/Git",
+      "status": "completed"
+    },
+    {
+      "id": "be_1127",
+      "path": "crates/deployer/src/git/pull.rs",
+      "source": "app/Actions/Git",
+      "status": "completed"
+    },
+    {
+      "id": "be_1128",
+      "path": "crates/deployer/src/git/webhook.rs",
+      "source": "app/Actions/Git",
+      "status": "completed"
+    },
+    {
+      "id": "be_1129",
+      "path": "crates/deployer/src/lib.rs",
+      "source": "crates/deployer",
+      "status": "completed"
+    },
+    {
+      "id": "be_1130",
+      "path": "crates/deployer/src/log/mod.rs",
+      "source": "app/Jobs/ApplicationDeploymentJob.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1131",
+      "path": "crates/deployer/src/log/streamer.rs",
+      "source": "app/Jobs/ApplicationDeploymentJob.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1132",
+      "path": "crates/deployer/src/run/container.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1133",
+      "path": "crates/deployer/src/run/healthcheck.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1134",
+      "path": "crates/deployer/src/run/mod.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "be_1135",
+      "path": "crates/deployer/src/run/rollback.rs",
+      "source": "app/Actions/ApplicationDeployment",
+      "status": "completed"
+    },
+    {
+      "id": "meta_notify_cargo_toml",
+      "path": "crates/notify/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_notify_readme_md",
+      "path": "crates/notify/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1136",
+      "path": "crates/notify/src/channels/discord.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1137",
+      "path": "crates/notify/src/channels/email.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1138",
+      "path": "crates/notify/src/channels/in_app.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1139",
+      "path": "crates/notify/src/channels/mod.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1140",
+      "path": "crates/notify/src/channels/pushover.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1141",
+      "path": "crates/notify/src/channels/slack.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1142",
+      "path": "crates/notify/src/channels/telegram.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1143",
+      "path": "crates/notify/src/channels/webhook.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1144",
+      "path": "crates/notify/src/dispatcher.rs",
+      "source": "app/Notifications/SendEmailNotification.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1145",
+      "path": "crates/notify/src/events.rs",
+      "source": "app/Events",
+      "status": "completed"
+    },
+    {
+      "id": "be_1146",
+      "path": "crates/notify/src/lib.rs",
+      "source": "crates/notify",
+      "status": "completed"
+    },
+    {
+      "id": "be_1147",
+      "path": "crates/notify/src/templates/backup_done.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1148",
+      "path": "crates/notify/src/templates/deploy_failed.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1149",
+      "path": "crates/notify/src/templates/deploy_success.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1150",
+      "path": "crates/notify/src/templates/mod.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1151",
+      "path": "crates/notify/src/templates/server_unreachable.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "be_1152",
+      "path": "crates/notify/src/templates/ssl_expiring.rs",
+      "source": "app/Notifications",
+      "status": "completed"
+    },
+    {
+      "id": "meta_proxy_cargo_toml",
+      "path": "crates/proxy/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_proxy_readme_md",
+      "path": "crates/proxy/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1153",
+      "path": "crates/proxy/src/caddy/config.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1154",
+      "path": "crates/proxy/src/caddy/deploy.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1155",
+      "path": "crates/proxy/src/caddy/mod.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1156",
+      "path": "crates/proxy/src/lib.rs",
+      "source": "crates/proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1157",
+      "path": "crates/proxy/src/manager.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1158",
+      "path": "crates/proxy/src/nginx/config.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1159",
+      "path": "crates/proxy/src/nginx/mod.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1160",
+      "path": "crates/proxy/src/ssl/acme.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1161",
+      "path": "crates/proxy/src/ssl/cert_store.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1162",
+      "path": "crates/proxy/src/ssl/mod.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1163",
+      "path": "crates/proxy/src/ssl/renewal.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1164",
+      "path": "crates/proxy/src/traefik/config.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1165",
+      "path": "crates/proxy/src/traefik/deploy.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1166",
+      "path": "crates/proxy/src/traefik/dynamic.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1167",
+      "path": "crates/proxy/src/traefik/mod.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "be_1168",
+      "path": "crates/proxy/src/traefik/version.rs",
+      "source": "app/Actions/Proxy",
+      "status": "completed"
+    },
+    {
+      "id": "meta_scheduler_cargo_toml",
+      "path": "crates/scheduler/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_scheduler_readme_md",
+      "path": "crates/scheduler/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1169",
+      "path": "crates/scheduler/src/console/commands.rs",
+      "source": "app/Console/Commands",
+      "status": "completed"
+    },
+    {
+      "id": "be_1170",
+      "path": "crates/scheduler/src/console/mod.rs",
+      "source": "app/Console/Commands",
+      "status": "completed"
+    },
+    {
+      "id": "be_1171",
+      "path": "crates/scheduler/src/cron.rs",
+      "source": "app/Console/Kernel.php",
+      "status": "completed"
+    },
+    {
+      "id": "be_1172",
+      "path": "crates/scheduler/src/jobs/custom_task.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1173",
+      "path": "crates/scheduler/src/jobs/db_backup.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1174",
+      "path": "crates/scheduler/src/jobs/docker_cleanup.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1175",
+      "path": "crates/scheduler/src/jobs/log_drain.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1176",
+      "path": "crates/scheduler/src/jobs/mod.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1177",
+      "path": "crates/scheduler/src/jobs/sentinel_check.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1178",
+      "path": "crates/scheduler/src/jobs/server_check.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1179",
+      "path": "crates/scheduler/src/jobs/ssl_renewal.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1180",
+      "path": "crates/scheduler/src/jobs/update_check.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1181",
+      "path": "crates/scheduler/src/jobs/volume_backup.rs",
+      "source": "app/Jobs",
+      "status": "completed"
+    },
+    {
+      "id": "be_1182",
+      "path": "crates/scheduler/src/lib.rs",
+      "source": "crates/scheduler",
+      "status": "completed"
+    },
+    {
+      "id": "be_1183",
+      "path": "crates/scheduler/src/manager.rs",
+      "source": "app/Console/Kernel.php",
+      "status": "completed"
+    },
+    {
+      "id": "meta_sentinel_cargo_toml",
+      "path": "crates/sentinel/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_sentinel_readme_md",
+      "path": "crates/sentinel/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1184",
+      "path": "crates/sentinel/src/alerts.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1185",
+      "path": "crates/sentinel/src/collector.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1186",
+      "path": "crates/sentinel/src/daemon/agent.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1187",
+      "path": "crates/sentinel/src/daemon/mod.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1188",
+      "path": "crates/sentinel/src/history.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1189",
+      "path": "crates/sentinel/src/lib.rs",
+      "source": "crates/sentinel",
+      "status": "completed"
+    },
+    {
+      "id": "be_1190",
+      "path": "crates/sentinel/src/metrics/container.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1191",
+      "path": "crates/sentinel/src/metrics/cpu.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1192",
+      "path": "crates/sentinel/src/metrics/disk.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1193",
+      "path": "crates/sentinel/src/metrics/mod.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1194",
+      "path": "crates/sentinel/src/metrics/network.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "be_1195",
+      "path": "crates/sentinel/src/metrics/ram.rs",
+      "source": "app/Actions/Server",
+      "status": "completed"
+    },
+    {
+      "id": "meta_services_cargo_toml",
+      "path": "crates/services/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_services_readme_md",
+      "path": "crates/services/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1196",
+      "path": "crates/services/src/databases/clickhouse.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1197",
+      "path": "crates/services/src/databases/dragonfly.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1198",
+      "path": "crates/services/src/databases/keydb.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1199",
+      "path": "crates/services/src/databases/mariadb.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1200",
+      "path": "crates/services/src/databases/mod.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1201",
+      "path": "crates/services/src/databases/mongodb.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1202",
+      "path": "crates/services/src/databases/mysql.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1203",
+      "path": "crates/services/src/databases/postgres.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1204",
+      "path": "crates/services/src/databases/redis.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1205",
+      "path": "crates/services/src/engine.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1206",
+      "path": "crates/services/src/lib.rs",
+      "source": "crates/services",
+      "status": "completed"
+    },
+    {
+      "id": "be_1207",
+      "path": "crates/services/src/lifecycle/delete.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1208",
+      "path": "crates/services/src/lifecycle/mod.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1209",
+      "path": "crates/services/src/lifecycle/restart.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1210",
+      "path": "crates/services/src/lifecycle/start.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1211",
+      "path": "crates/services/src/lifecycle/stop.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1212",
+      "path": "crates/services/src/lifecycle/update.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1213",
+      "path": "crates/services/src/template/loader.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1214",
+      "path": "crates/services/src/template/mod.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1215",
+      "path": "crates/services/src/template/renderer.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "be_1216",
+      "path": "crates/services/src/template/validator.rs",
+      "source": "app/Actions/Service",
+      "status": "completed"
+    },
+    {
+      "id": "meta_storage_cargo_toml",
+      "path": "crates/storage/Cargo.toml",
+      "source": "Cargo.toml",
+      "status": "completed"
+    },
+    {
+      "id": "meta_storage_readme_md",
+      "path": "crates/storage/README.md",
+      "source": "README.md",
+      "status": "completed"
+    },
+    {
+      "id": "be_1217",
+      "path": "crates/storage/src/backup/database/clickhouse.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1218",
+      "path": "crates/storage/src/backup/database/dragonfly.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1219",
+      "path": "crates/storage/src/backup/database/keydb.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1220",
+      "path": "crates/storage/src/backup/database/mariadb.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1221",
+      "path": "crates/storage/src/backup/database/mod.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1222",
+      "path": "crates/storage/src/backup/database/mongodb.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1223",
+      "path": "crates/storage/src/backup/database/mysql.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1224",
+      "path": "crates/storage/src/backup/database/postgres.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1225",
+      "path": "crates/storage/src/backup/database/redis.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1226",
+      "path": "crates/storage/src/backup/mod.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1227",
+      "path": "crates/storage/src/backup/volume/create.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1228",
+      "path": "crates/storage/src/backup/volume/mod.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1229",
+      "path": "crates/storage/src/backup/volume/restore.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1230",
+      "path": "crates/storage/src/lib.rs",
+      "source": "crates/storage",
+      "status": "completed"
+    },
+    {
+      "id": "be_1231",
+      "path": "crates/storage/src/local/mod.rs",
+      "source": "app/Actions/Database",
+      "status": "completed"
+    },
+    {
+      "id": "be_1232",
+      "path": "crates/storage/src/s3/client.rs",
+      "source": "app/Actions/S3Storage",
+      "status": "completed"
+    },
+    {
+      "id": "be_1233",
+      "path": "crates/storage/src/s3/download.rs",
+      "source": "app/Actions/S3Storage",
+      "status": "completed"
+    },
+    {
+      "id": "be_1234",
+      "path": "crates/storage/src/s3/mod.rs",
+      "source": "app/Actions/S3Storage",
+      "status": "completed"
+    },
+    {
+      "id": "be_1235",
+      "path": "crates/storage/src/s3/upload.rs",
+      "source": "app/Actions/S3Storage",
+      "status": "completed"
     }
   ]
 }

@@ -1,0 +1,52 @@
+export interface StandalonePostgresql {
+  id: number;
+  uuid: string;
+  name: string;
+  description: string | null;
+  postgres_user: string;
+  postgres_password?: string | null;
+  postgres_db: string;
+  postgres_initdb_args: string | null;
+  postgres_host_auth_method: string | null;
+  postgres_conf: string | null;
+  init_scripts: any[] | null;
+  status: string;
+  image: string;
+  is_public: boolean;
+  public_port: number | null;
+  ports_mappings: string | null;
+  limits_memory: string | null;
+  limits_memory_swap: string | null;
+  limits_memory_swappiness: number | null;
+  limits_memory_reservation: string | null;
+  limits_cpus: string | null;
+  limits_cpuset: string | null;
+  limits_cpu_shares: number | null;
+  started_at: string | null;
+  restart_count: number;
+  last_restart_at: string | null;
+  last_restart_type: string | null;
+  last_online_at: string | null;
+  public_port_timeout: number;
+  enable_ssl: boolean;
+  ssl_mode: string;
+  is_log_drain_enabled: boolean;
+  is_include_timestamps: boolean;
+  custom_docker_run_options: string | null;
+  destination_type: string;
+  destination_id: number;
+  environment_id: number;
+  health_check_enabled: boolean;
+  health_check_interval: number;
+  health_check_timeout: number;
+  health_check_retries: number;
+  health_check_start_period: number;
+  created_at: string;
+  updated_at: string;
+  
+  // Appended attributes
+  internal_db_url?: string;
+  external_db_url?: string;
+  database_type?: string;
+  server_status?: string;
+}

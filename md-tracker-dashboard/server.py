@@ -9,18 +9,18 @@ from socketserver import TCPServer
 import urllib.parse
 import threading
 
-COOLIFY_DIR = "e:/MD/rust-coolify"
-COOLIFY_SOURCE_DIR = "e:/MD/coolify-source"
+COOLIFY_DIR = "d:/MDS/rust-coolify"
+COOLIFY_SOURCE_DIR = "d:/MDS/coolify-source"
 TRACKER_JSON = os.path.join(COOLIFY_DIR, "MAP_TRACKER.json")
 ASSIGNMENTS_JSON = os.path.join(COOLIFY_DIR, "ASSIGNMENTS.json")
 PORT = 2000
 
-STATIC_DIR = "e:/MD/md-tracker-dashboard/static"
+STATIC_DIR = "d:/MDS/md-tracker-dashboard/static"
 WATCHED_FILES = [
-    "e:/MD/md-tracker-dashboard/server.py",
-    "e:/MD/md-tracker-dashboard/static/app.js",
-    "e:/MD/md-tracker-dashboard/static/style.css",
-    "e:/MD/md-tracker-dashboard/static/index.html"
+    "d:/MDS/md-tracker-dashboard/server.py",
+    "d:/MDS/md-tracker-dashboard/static/app.js",
+    "d:/MDS/md-tracker-dashboard/static/style.css",
+    "d:/MDS/md-tracker-dashboard/static/index.html"
 ]
 
 def check_file_status(relative_path, file_id):
@@ -134,7 +134,15 @@ def generate_source_viewer_html(file_id, rust_path, php_path, php_content, rust_
                 border-bottom: 1px solid rgba(255, 255, 255, 0.05);
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
+                gap: 10px;
+            }}
+            .panel-title-wrap {{
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                min-width: 0;
+                flex: 1;
             }}
             .panel-title {{
                 font-weight: 600;
@@ -143,7 +151,16 @@ def generate_source_viewer_html(file_id, rust_path, php_path, php_content, rust_
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 70%;
+            }}
+            .panel-path {{
+                font-size: 10px;
+                font-family: 'JetBrains Mono', 'Consolas', monospace;
+                color: #7e8494;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                letter-spacing: 0.02em;
+                opacity: 0.85;
             }}
             .action-btn {{
                 padding: 6px 12px;
@@ -206,7 +223,10 @@ def generate_source_viewer_html(file_id, rust_path, php_path, php_content, rust_
         <div class="split-container">
             <div class="code-panel">
                 <div class="panel-header">
-                    <span class="panel-title" title="{abs_php_path}">PHP: {php_filename}</span>
+                    <div class="panel-title-wrap">
+                        <span class="panel-title" title="{abs_php_path}">PHP: {php_filename}</span>
+                        <span class="panel-path">{abs_php_path}</span>
+                    </div>
                     <div class="btn-group">
                         <button class="action-btn" id="btn-php-path" onclick="copyToClipboard('{abs_php_path.replace('\\\\', '\\\\')}', 'btn-php-path')">Fayl Yolunu Kopyala</button>
                         <button class="action-btn btn-success" id="btn-php-code" onclick="copyToClipboard(document.getElementById('php-code-raw').innerText, 'btn-php-code')">Kodu Kopyala</button>
@@ -217,7 +237,10 @@ def generate_source_viewer_html(file_id, rust_path, php_path, php_content, rust_
 
             <div class="code-panel">
                 <div class="panel-header">
-                    <span class="panel-title" style="color: #60a5fa;" title="{abs_rust_path}">Rust: {rust_filename}</span>
+                    <div class="panel-title-wrap">
+                        <span class="panel-title" style="color: #60a5fa;" title="{abs_rust_path}">Rust: {rust_filename}</span>
+                        <span class="panel-path" style="color: #93c5fd;">{abs_rust_path}</span>
+                    </div>
                     <div class="btn-group">
                         <button class="action-btn" id="btn-rust-path" onclick="copyToClipboard('{abs_rust_path.replace('\\\\', '\\\\')}', 'btn-rust-path')">Fayl Yolunu Kopyala</button>
                         <button class="action-btn btn-success" id="btn-rust-code" onclick="copyToClipboard(document.getElementById('rust-code-raw').innerText, 'btn-rust-code')">Kodu Kopyala</button>
@@ -263,7 +286,60 @@ class DashboardHTTPHandler(SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
                 return
 
-        if parsed_url.path == "/api/data":
+        if parsed_url.path == "/api/source-data":
+            query = urllib.parse.parse_qs(parsed_url.query)
+            file_id = query.get("id", [None])[0]
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            
+            response = {"success": False}
+            if file_id:
+                tracker_data = get_tracker_data()
+                file_entry = next((f for f in tracker_data["files"] if f["id"] == file_id), None)
+                if file_entry:
+                    full_php_path = os.path.join(COOLIFY_SOURCE_DIR, file_entry["source"])
+                    full_rust_path = os.path.join(COOLIFY_DIR, file_entry["path"])
+                    
+                    php_content = ""
+                    if os.path.exists(full_php_path) and not os.path.isdir(full_php_path):
+                        for encoding in ['utf-8', 'latin-1', 'cp1254']:
+                            try:
+                                with open(full_php_path, 'r', encoding=encoding) as f:
+                                    php_content = f.read()
+                                break
+                            except UnicodeDecodeError:
+                                continue
+                    else:
+                        php_content = "-- PHP Menbe faylı tapılmadı --"
+                        
+                    rust_content = ""
+                    if os.path.exists(full_rust_path) and not os.path.isdir(full_rust_path):
+                        for encoding in ['utf-8', 'latin-1', 'cp1254']:
+                            try:
+                                with open(full_rust_path, 'r', encoding=encoding) as f:
+                                    rust_content = f.read()
+                                break
+                            except UnicodeDecodeError:
+                                continue
+                    else:
+                        rust_content = "-- Rust / Frontend faylı hələ yaradılmayıb. --"
+                        
+                    response = {
+                        "success": True,
+                        "file_id": file_id,
+                        "php_filename": os.path.basename(file_entry["source"]),
+                        "rust_filename": os.path.basename(file_entry["path"]),
+                        "abs_php_path": os.path.normpath(full_php_path),
+                        "abs_rust_path": os.path.normpath(full_rust_path),
+                        "php_content": php_content,
+                        "rust_content": rust_content
+                    }
+            self.wfile.write(json.dumps(response).encode("utf-8"))
+            return
+
+        elif parsed_url.path == "/api/data":
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -272,13 +348,27 @@ class DashboardHTTPHandler(SimpleHTTPRequestHandler):
             tracker_data = get_tracker_data()
             assignments = load_assignments()
             
-            completed_count = sum(1 for f in tracker_data["files"] if f["status"] == "completed")
-            total_count = len(tracker_data["files"])
+            # Faylların ölçülərini dinamik hesablayaq
+            updated_files = []
+            for f in tracker_data["files"]:
+                f_copy = dict(f)
+                size_kb = 0
+                source_path = f.get("source")
+                if source_path and source_path not in ["app", "Cargo.toml", "README.md"]:
+                    full_path = os.path.join(COOLIFY_SOURCE_DIR, source_path)
+                    if os.path.exists(full_path) and os.path.isfile(full_path):
+                        size_bytes = os.path.getsize(full_path)
+                        size_kb = round(size_bytes / 1024, 1)
+                f_copy["size_kb"] = size_kb
+                updated_files.append(f_copy)
+            
+            completed_count = sum(1 for f in updated_files if f["status"] == "completed")
+            total_count = len(updated_files)
             percentage = round((completed_count / total_count) * 100, 1) if total_count > 0 else 0
             
             response = {
                 "project": tracker_data.get("project", "MasterDeploy"),
-                "files": tracker_data["files"],
+                "files": updated_files,
                 "completed_count": completed_count,
                 "total_count": total_count,
                 "percentage": percentage,
@@ -299,7 +389,7 @@ class DashboardHTTPHandler(SimpleHTTPRequestHandler):
                     full_rust_path = os.path.join(COOLIFY_DIR, file_entry["path"])
                     
                     php_content = ""
-                    if os.path.exists(full_php_path):
+                    if os.path.exists(full_php_path) and not os.path.isdir(full_php_path):
                         for encoding in ['utf-8', 'latin-1', 'cp1254']:
                             try:
                                 with open(full_php_path, 'r', encoding=encoding) as f:
@@ -311,7 +401,7 @@ class DashboardHTTPHandler(SimpleHTTPRequestHandler):
                         php_content = "-- PHP Menbe faylı tapılmadı --"
                         
                     rust_content = None
-                    if os.path.exists(full_rust_path):
+                    if os.path.exists(full_rust_path) and not os.path.isdir(full_rust_path):
                         for encoding in ['utf-8', 'latin-1', 'cp1254']:
                             try:
                                 with open(full_rust_path, 'r', encoding=encoding) as f:

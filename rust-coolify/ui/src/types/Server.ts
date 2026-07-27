@@ -1,0 +1,31 @@
+export interface Server {
+  id: number;
+  uuid: string;
+  name: string;
+  ip: string;
+  ip_previous: string | null;
+  port: number;
+  user: string;
+  description: string | null;
+  private_key_id: number | null;
+  cloud_provider_token_id: number | null;
+  team_id: number;
+  hetzner_server_id: number | null;
+  hetzner_server_status: string | null;
+  vultr_instance_id: number | null;
+  vultr_instance_status: string | null;
+  digitalocean_droplet_id: number | null;
+  digitalocean_droplet_status: string | null;
+  is_validating: boolean;
+  validation_logs: string | null;
+  detected_traefik_version: string | null;
+  traefik_outdated_info: any[] | null;
+  server_metadata: Record<string, any> | null;
+  delete_unused_volumes: boolean;
+  delete_unused_networks: boolean;
+  unreachable_notification_sent: boolean;
+  is_build_server: boolean;
+  force_disabled: boolean;
+  created_at: string;
+  updated_at: string;
+}

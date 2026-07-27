@@ -2,12 +2,8 @@
   "assignments": [
     {
       "agent_name": "ActiveAgent",
-      "file_ids": [
-        "ui_comp_024",
-        "ui_comp_027",
-        "ui_comp_025"
-      ],
-      "assigned_at": "2026-07-27T17:26:48.182052"
+      "file_ids": [],
+      "assigned_at": "2026-07-28T00:36:18.771473"
     }
   ]
 }

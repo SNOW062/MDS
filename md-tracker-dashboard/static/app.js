@@ -272,7 +272,22 @@ function createTreeNode(name, node, path = "", showCheckbox = true, isMasterColu
 
     const labelEl = document.createElement('span');
     labelEl.className = 'tree-label';
-    labelEl.innerText = name;
+    
+    if (isFile && node._file && node._file.source && node._file.source !== 'app' && node._file.source !== 'Cargo.toml' && node._file.source !== 'README.md') {
+        const phpName = node._file.source.split('/').pop();
+        const sizeKb = node._file.size_kb || 0;
+        
+        let sizeBadge = '';
+        if (sizeKb > 0) {
+            const badgeColor = sizeKb > 25 ? '#ef4444' : '#e59c0d'; // 25KB-dan böyüklər qırmızı, kiçiklər sarı
+            sizeBadge = `<span style="color: ${badgeColor}; font-weight: 800; font-size: 11px; margin-left: 8px;">[${sizeKb} KB]</span>`;
+        }
+        
+        labelEl.innerHTML = `<strong>${phpName}</strong>${sizeBadge} <span style="font-size: 11px; opacity: 0.5; font-weight: normal; margin-left: 6px;">(${name})</span>`;
+    } else {
+        labelEl.innerText = name;
+    }
+    
     headerEl.appendChild(labelEl);
 
     if (isFile) {
@@ -296,12 +311,15 @@ function createTreeNode(name, node, path = "", showCheckbox = true, isMasterColu
         badgeEl.className = `task-badge ${badgeClass}`;
         badgeEl.innerText = badgeText;
 
-        const coolifyLink = `/api/view-source?id=${encodeURIComponent(f.id)}`;
         const linkEl = document.createElement('a');
         linkEl.className = 'source-link';
-        linkEl.href = coolifyLink;
-        linkEl.target = '_blank';
+        linkEl.href = '#';
         linkEl.innerText = '🔗 PHP Source';
+        linkEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            showSourceViewer(f.id);
+        });
 
         headerEl.appendChild(idEl);
         headerEl.appendChild(badgeEl);
@@ -340,6 +358,19 @@ function createTreeNode(name, node, path = "", showCheckbox = true, isMasterColu
     return nodeEl;
 }
 
+let currentView = 'tree'; // 'tree' və ya 'sequence'
+
+function switchView(view) {
+    currentView = view;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (view === 'tree') {
+        document.getElementById('tab-tree').classList.add('active');
+    } else {
+        document.getElementById('tab-sequence').classList.add('active');
+    }
+    renderTree();
+}
+
 function renderTree() {
     const masterContainer = document.getElementById('master-tree-container');
     const todoContainer = document.getElementById('todo-tasks');
@@ -362,25 +393,72 @@ function renderTree() {
         return f.status === 'completed' && matchesSearch;
     });
 
-    const masterTree = buildTree(masterTodoFiles);
-    const todoTree = buildTree(assignedTodoFiles);
-    const completedTree = buildTree(completedFiles);
-    
     masterContainer.innerHTML = '';
     todoContainer.innerHTML = '';
     completedContainer.innerHTML = '';
-    
-    Object.keys(masterTree).sort().forEach(key => {
-        masterContainer.appendChild(createTreeNode(key, masterTree[key], "", true, true));
-    });
 
-    Object.keys(todoTree).sort().forEach(key => {
-        todoContainer.appendChild(createTreeNode(key, todoTree[key], "", true, false)); 
-    });
-    
-    Object.keys(completedTree).sort().forEach(key => {
-        completedContainer.appendChild(createTreeNode(key, completedTree[key], "", false, false)); 
-    });
+    if (currentView === 'tree') {
+        // --- 📂 STANDART QOVLUQ AĞACI GÖRÜNÜŞÜ ---
+        const masterTree = buildTree(masterTodoFiles);
+        const todoTree = buildTree(assignedTodoFiles);
+        const completedTree = buildTree(completedFiles);
+        
+        Object.keys(masterTree).sort().forEach(key => {
+            masterContainer.appendChild(createTreeNode(key, masterTree[key], "", true, true));
+        });
+
+        Object.keys(todoTree).sort().forEach(key => {
+            todoContainer.appendChild(createTreeNode(key, todoTree[key], "", true, false)); 
+        });
+        
+        Object.keys(completedTree).sort().forEach(key => {
+            completedContainer.appendChild(createTreeNode(key, completedTree[key], "", false, false)); 
+        });
+    } else {
+        // --- ⚡ MƏRHƏLƏLİ YIĞILMA ARDICILLIĞI GÖRÜNÜŞÜ ---
+        
+        // Mərhələləri qruplaşdıran köməkçi funksiya
+        function renderPhases(files, container, showCheckbox, isMaster) {
+            // Yalnız frontend fayllarını süzək
+            const uiFiles = files.filter(f => f.path.startsWith('ui/'));
+            
+            // Mərhələ adına görə qruplayaq
+            const phases = {};
+            uiFiles.forEach(f => {
+                const phaseName = f.phase || "Mərhələ 5: Səhifələr & Görünüşlər";
+                if (!phases[phaseName]) phases[phaseName] = [];
+                phases[phaseName].push(f);
+            });
+            
+            // Mərhələləri sıralı render edək
+            const sortedPhases = Object.keys(phases).sort();
+            sortedPhases.forEach(phaseName => {
+                const phaseFiles = phases[phaseName];
+                
+                // Mərhələ Başlığı
+                const header = document.createElement('div');
+                header.className = 'phase-group-header';
+                const compInPhase = phaseFiles.filter(fl => fl.status === 'completed').length;
+                header.innerHTML = `<span>${phaseName}</span> <span style="opacity: 0.6;">(${compInPhase}/${phaseFiles.length} Bitib)</span>`;
+                container.appendChild(header);
+                
+                // Mərhələ faylları
+                phaseFiles.forEach(f => {
+                    const node = { _file: f };
+                    const fileName = f.path.split('/').pop();
+                    container.appendChild(createTreeNode(fileName, node, f.path, showCheckbox, isMaster));
+                });
+            });
+            
+            if (uiFiles.length === 0) {
+                container.innerHTML = '<div style="padding: 15px; text-align: center; opacity: 0.5; font-size: 12px;">Uyğun fayl tapılmadı.</div>';
+            }
+        }
+        
+        renderPhases(masterTodoFiles, masterContainer, true, true);
+        renderPhases(assignedTodoFiles, todoContainer, true, false);
+        renderPhases(completedFiles, completedContainer, false, false);
+    }
 }
 
 function renderAssignments() {
@@ -410,6 +488,162 @@ function renderAssignments() {
 }
 
 document.getElementById('search-input').addEventListener('input', renderTree);
+
+// ===== SPA SOURSE VIEWER METODLARI =====
+let activeViewerData = null;
+
+async function showSourceViewer(fileId) {
+    try {
+        const res = await fetch(`/api/source-data?id=${encodeURIComponent(fileId)}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            activeViewerData = data;
+            
+            // Başlıqlar
+            document.getElementById('viewer-file-id').innerText = data.file_id;
+            
+            // PHP Panel məlumatları
+            const phpRelativePath = data.abs_php_path.replace(/\\/g, '/').split('coolify-source/')[1] || data.php_filename;
+            document.getElementById('php-title').innerText = `PHP: ${phpRelativePath}`;
+            document.getElementById('php-path-text').innerText = data.abs_php_path;
+            document.getElementById('php-code-raw').innerText = data.php_content;
+            
+            // Rust Panel məlumatları
+            const rustRelativePath = data.abs_rust_path.replace(/\\/g, '/').split('rust-coolify/')[1] || data.rust_filename;
+            document.getElementById('rust-title').innerText = `Rust / Frontend: ${rustRelativePath}`;
+            document.getElementById('rust-path-text').innerText = data.abs_rust_path;
+            document.getElementById('rust-code-raw').innerText = data.rust_content;
+            
+            // Görünüşü dəyiş
+            document.querySelector('.grid-panel').style.display = 'none';
+            const viewerSection = document.getElementById('source-viewer-section');
+            viewerSection.className = 'source-viewer-visible';
+            
+            // Header axtarışını və digər elementləri gizlət/dondur
+            document.querySelector('.header-search').style.visibility = 'hidden';
+            document.querySelector('.stats-modal-btn').style.visibility = 'hidden';
+        } else {
+            alert('Fayl məlumatları çəkilə bilmədi.');
+        }
+    } catch (e) {
+        console.error("Mənbə kodu çəkilərkən xəta:", e);
+    }
+}
+
+function closeSourceViewer() {
+    activeViewerData = null;
+    
+    // Görünüşü qaytar (flex olaraq)
+    document.querySelector('.grid-panel').style.display = 'flex';
+    const viewerSection = document.getElementById('source-viewer-section');
+    viewerSection.className = 'source-viewer-hidden';
+    
+    // Header elementlərini bərpa et
+    document.querySelector('.header-search').style.visibility = 'visible';
+    document.querySelector('.stats-modal-btn').style.visibility = 'visible';
+}
+
+function copyPath(type) {
+    if (!activeViewerData) return;
+    const path = type === 'php' ? activeViewerData.abs_php_path : activeViewerData.abs_rust_path;
+    navigator.clipboard.writeText(path);
+    
+    const btn = document.getElementById(`btn-${type}-path`);
+    btn.innerText = '✅ Yol Kopyalandı!';
+    setTimeout(() => btn.innerText = 'Fayl Yolunu Kopyala', 1500);
+}
+
+function copyCode(type) {
+    if (!activeViewerData) return;
+    const code = type === 'php' ? activeViewerData.php_content : activeViewerData.rust_content;
+    navigator.clipboard.writeText(code);
+    
+    const btn = document.getElementById(`btn-${type}-code`);
+    btn.innerText = '✅ Kod Kopyalandı!';
+    setTimeout(() => btn.innerText = 'Kodu Kopyala', 1500);
+}
+
+// ===== RESIZABLE COLUMNS LOGIC =====
+function initResizers() {
+    const grid = document.getElementById('resizable-grid');
+    const resizer1 = document.getElementById('resizer-1');
+    const resizer2 = document.getElementById('resizer-2');
+    
+    const colMaster = document.getElementById('col-master');
+    const colTodo = document.getElementById('col-todo');
+    const colCompleted = document.getElementById('col-completed');
+    
+    if (!resizer1 || !resizer2) return;
+    
+    // Resizer 1 (Master ve Todo arasi)
+    resizer1.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        resizer1.classList.add('resizing');
+        document.addEventListener('mousemove', resizeMasterTodo);
+        document.addEventListener('mouseup', stopResize1);
+    });
+    
+    function resizeMasterTodo(e) {
+        const gridRect = grid.getBoundingClientRect();
+        const leftWidth = e.clientX - gridRect.left;
+        
+        // Limitlər (min 200px, max grid-in 70%-i)
+        if (leftWidth > 200 && leftWidth < gridRect.width - 400) {
+            const masterPercent = (leftWidth / gridRect.width) * 100;
+            const remaining = 100 - masterPercent;
+            
+            // Cari Todo ve Completed-in nisbetini qoruyaq
+            const todoWidth = colTodo.getBoundingClientRect().width;
+            const completedWidth = colCompleted.getBoundingClientRect().width;
+            const ratio = todoWidth / (todoWidth + completedWidth || 1);
+            
+            colMaster.style.width = `${masterPercent}%`;
+            colTodo.style.width = `${remaining * ratio}%`;
+            colCompleted.style.width = `${remaining * (1 - ratio)}%`;
+        }
+    }
+    
+    function stopResize1() {
+        resizer1.classList.remove('resizing');
+        document.removeEventListener('mousemove', resizeMasterTodo);
+        document.removeEventListener('mouseup', stopResize1);
+    }
+    
+    // Resizer 2 (Todo ve Completed arasi)
+    resizer2.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        resizer2.classList.add('resizing');
+        document.addEventListener('mousemove', resizeTodoCompleted);
+        document.addEventListener('mouseup', stopResize2);
+    });
+    
+    function resizeTodoCompleted(e) {
+        const gridRect = grid.getBoundingClientRect();
+        const masterWidth = colMaster.getBoundingClientRect().width;
+        const totalRemainingWidth = gridRect.width - masterWidth;
+        
+        const todoWidth = e.clientX - colTodo.getBoundingClientRect().left;
+        
+        if (todoWidth > 200 && (totalRemainingWidth - todoWidth) > 200) {
+            const todoPercent = (todoWidth / gridRect.width) * 100;
+            const masterPercent = (masterWidth / gridRect.width) * 100;
+            const completedPercent = 100 - masterPercent - todoPercent;
+            
+            colTodo.style.width = `${todoPercent}%`;
+            colCompleted.style.width = `${completedPercent}%`;
+        }
+    }
+    
+    function stopResize2() {
+        resizer2.classList.remove('resizing');
+        document.removeEventListener('mousemove', resizeTodoCompleted);
+        document.removeEventListener('mouseup', stopResize2);
+    }
+}
+
+// Resizer-i işə salaq
+setTimeout(initResizers, 100);
 
 fetchData();
 setInterval(fetchData, 4000);
