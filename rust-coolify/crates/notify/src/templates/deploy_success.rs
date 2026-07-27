@@ -1,0 +1,1 @@
+// Deploy ugurlu bildiris sablonu

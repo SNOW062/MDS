@@ -1,0 +1,17 @@
+[package]
+name = "rc-scheduler"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { workspace = true }
+tokio-cron-scheduler = { workspace = true }
+serde = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+rc-db = { path = "../db" }
+rc-deployer = { path = "../deployer" }
+rc-storage = { path = "../storage" }
+rc-notify = { path = "../notify" }
+rc-core = { path = "../core" }

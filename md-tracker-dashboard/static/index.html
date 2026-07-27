@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MasterDeploy Tracker Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <span class="pulse"></span>
+                <h1>MasterDeploy</h1>
+                <span class="badge">Autonom Multi-Agent Tracker</span>
+            </div>
+            <div class="total-progress-bar">
+                <div class="progress-info">
+                    <span>Ümumi Tərəqqi</span>
+                    <strong id="progress-percent">0%</strong>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 4 SÜTUNLU LAYOUT (İnput və düymələr tam silindi!) -->
+        <main class="grid-panel">
+
+            <!-- SOL PANEL: STATİSTİKA -->
+            <section class="panel-column sidebar-column">
+                <div class="column-header">
+                    <h2>⚙️ Panel</h2>
+                </div>
+                
+                <div class="sidebar-cards-wrapper">
+                    <!-- Statistika -->
+                    <div class="card glass">
+                        <h3>📊 Statistika</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <span class="label">Ümumi Fayl</span>
+                                <span class="value" id="total-count">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">Tamamlanan</span>
+                                <span class="value text-success" id="completed-count">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">Davam Edən</span>
+                                <span class="value text-warning" id="wip-count">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">Gözləyən</span>
+                                <span class="value text-todo" id="todo-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Axtarış -->
+                    <div class="card glass search-box">
+                        <h3>🔍 Sürətli Axtarış</h3>
+                        <input type="text" id="search-input" placeholder="Fayl adı və ya ID yazın...">
+                    </div>
+
+                    <!-- Aktiv Agentlər -->
+                    <div class="card glass active-assignments flex-grow">
+                        <h3>📋 Ümumi Proqres</h3>
+                        <div id="assignments-container" class="assignments-list">
+                            <!-- Dinamik proqres siyahısı -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SÜTUN 1: BÜTÜN LAYİHƏ FAILLARI (MASTER LIST - BURADAN SEÇİRİK) -->
+            <section class="panel-column master-column">
+                <div class="column-header">
+                    <h2>📂 Bütün Fayllar (Kliklə və Seç)</h2>
+                    <span class="count-badge bg-primary" id="master-list-count">0</span>
+                </div>
+                <div class="task-list tree-container" id="master-tree-container">
+                    <!-- Checkbox-lu böyük ağac -->
+                </div>
+            </section>
+
+            <!-- SÜTUN 2: GÖRÜLƏCƏK İŞLƏR (SEÇİLMİŞDƏR) -->
+            <section class="panel-column todo-column">
+                <div class="column-header">
+                    <h2>🔄 Görüləcək İşlər (Seçilmiş)</h2>
+                    <span class="count-badge bg-warning" id="todo-list-count">0</span>
+                </div>
+                <div class="task-list tree-container" id="todo-tasks">
+                    <!-- Dinamik ağac -->
+                </div>
+            </section>
+
+            <!-- SÜTUN 3: GÖRÜLƏN İŞLƏR (COMPLETED) -->
+            <section class="panel-column completed-column">
+                <div class="column-header">
+                    <h2>🟢 Görülən İşlər</h2>
+                    <span class="count-badge bg-success" id="completed-list-count">0</span>
+                </div>
+                <div class="task-list tree-container" id="completed-tasks">
+                    <!-- Dinamik ağac -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

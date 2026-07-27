@@ -1,0 +1,27 @@
+// Coolify: app/Models/ — 56 model
+pub mod user;
+pub mod team;
+pub mod server;
+pub mod server_setting;
+pub mod private_key;
+pub mod project;
+pub mod environment;
+pub mod application;
+pub mod application_setting;
+pub mod deployment;
+pub mod env_variable;
+pub mod shared_env_variable;
+pub mod database;
+pub mod service;
+pub mod service_app;
+pub mod service_db;
+pub mod storage;
+pub mod scheduled_backup;
+pub mod scheduled_task;
+pub mod tag;
+pub mod ssl_cert;
+pub mod notification_settings;
+pub mod instance_settings;
+pub mod api_token;
+pub mod volume_backup;
+pub mod cloud_provider;

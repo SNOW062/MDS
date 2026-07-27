@@ -1,0 +1,1 @@
+// RAM istifad?si

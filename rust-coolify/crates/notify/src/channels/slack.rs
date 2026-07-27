@@ -1,0 +1,1 @@
+// Slack webhook — SlackNotificationSettings.php

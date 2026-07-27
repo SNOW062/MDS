@@ -1,0 +1,74 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/api",
+    "crates/auth",
+    "crates/core",
+    "crates/db",
+    "crates/deployer",
+    "crates/proxy",
+    "crates/scheduler",
+    "crates/notify",
+    "crates/storage",
+    "crates/services",
+    "crates/sentinel",
+]
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1.40", features = ["full"] }
+
+# HTTP framework
+axum = { version = "0.7", features = ["ws", "macros", "multipart"] }
+tower-http = { version = "0.5", features = ["fs", "cors", "trace"] }
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "json", "migrate"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+
+# SSH
+russh = "0.49"
+russh-keys = "0.49"
+
+# Docker
+bollard = "0.18"
+
+# Git
+git2 = "0.19"
+
+# Auth
+jsonwebtoken = "9"
+argon2 = "0.5"
+
+# Email
+lettre = { version = "0.11", features = ["tokio1-rustls-tls", "smtp-transport"] }
+
+# HTTP client (Slack, Discord, Telegram, Webhook)
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+
+# S3 compatible storage
+aws-sdk-s3 = "1"
+aws-config = "1"
+
+# Template engine (one-click services)
+tera = "1"
+
+# Cron scheduler
+tokio-cron-scheduler = "0.13"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+dotenvy = "0.15"

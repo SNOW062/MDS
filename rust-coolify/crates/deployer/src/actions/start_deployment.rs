@@ -1,0 +1,1 @@
+// Deploy baslatmaq (Actions/Application/)

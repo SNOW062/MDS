@@ -1,0 +1,1 @@
+// Rollback (?vv?lki image-? qay?t)
