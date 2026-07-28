@@ -7045,7 +7045,8 @@
       "id": "be_1032",
       "path": "crates/api/src/routes/servers.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "wip",
+      "note": "Hetzner, Vultr, DO API inteqrasiyaları, Sentinel və Log drain sazlamaları bu backend routes daxilində tam işlənməlidir."
     },
     {
       "id": "be_1033",
