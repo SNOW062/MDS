@@ -6529,6 +6529,46 @@
       "sequence": 5
     },
     {
+      "id": "ui_page_054",
+      "path": "ui/src/pages/server/ServerSecurityPage.tsx",
+      "source": "app/Http/Controllers/Api/SecurityController.php",
+      "status": "completed",
+      "phase": "M\u0259rh\u0259l\u0259 5: S\u0259hif\u0259l\u0259r & G\u00f6r\u00fcn\u00fc\u015fl\u0259r",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_055",
+      "path": "ui/src/pages/server/ServerResourcesPage.tsx",
+      "source": "resources/views/livewire/server/resources.blade.php",
+      "status": "completed",
+      "phase": "M\u0259rh\u0259l\u0259 5: S\u0259hif\u0259l\u0259r & G\u00f6r\u00fcn\u00fc\u015fl\u0259r",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_056",
+      "path": "ui/src/pages/server/ServerLogDrainsPage.tsx",
+      "source": "resources/views/livewire/server/log-drains.blade.php",
+      "status": "completed",
+      "phase": "M\u0259rh\u0259l\u0259 5: S\u0259hif\u0259l\u0259r & G\u00f6r\u00fcn\u00fc\u015fl\u0259r",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_057",
+      "path": "ui/src/pages/server/ServerPrivateKeyPage.tsx",
+      "source": "resources/views/livewire/server/private-key/show.blade.php",
+      "status": "completed",
+      "phase": "M\u0259rh\u0259l\u0259 5: S\u0259hif\u0259l\u0259r & G\u00f6r\u00fcn\u00fc\u015fl\u0259r",
+      "sequence": 5
+    },
+    {
+      "id": "ui_page_058",
+      "path": "ui/src/pages/server/ServerCaCertificatePage.tsx",
+      "source": "app/Livewire/Server/CaCertificate/Show.php",
+      "status": "completed",
+      "phase": "M\u0259rh\u0259l\u0259 5: S\u0259hif\u0259l\u0259r & G\u00f6r\u00fcn\u00fc\u015fl\u0259r",
+      "sequence": 5
+    },
+    {
       "id": "ui_comp_054",
       "path": "ui/src/components/ui/Button.tsx",
       "source": "resources/views/components/forms/button.blade.php",
