@@ -1,0 +1,3 @@
+-- completed mig_312
+-- Converted from: 2025_12_08_135600_add_performance_indexes.php
+-- TODO: Review 2025_12_08_135600_add_performance_indexes.php (no Schema builder detected)

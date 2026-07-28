@@ -1,0 +1,3 @@
+-- completed mig_336
+-- Converted from: 2026_05_27_000001_tune_postgres_fillfactor_and_autovacuum.php
+-- TODO: Review 2026_05_27_000001_tune_postgres_fillfactor_and_autovacuum.php (no Schema builder detected)

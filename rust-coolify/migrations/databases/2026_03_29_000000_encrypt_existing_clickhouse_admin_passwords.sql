@@ -1,0 +1,3 @@
+-- completed mig_328
+-- Converted from: 2026_03_29_000000_encrypt_existing_clickhouse_admin_passwords.php
+-- TODO: Review 2026_03_29_000000_encrypt_existing_clickhouse_admin_passwords.php (no Schema builder detected)

@@ -1,3 +1,4 @@
+# completed meta_db_readme_md
 # 🗺️ XƏRİTƏ — `crates/db`
 
 > **Agent üçün GPS.** Bu faylı oxu, sonra işə başla.

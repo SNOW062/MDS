@@ -9,18 +9,22 @@ from socketserver import TCPServer
 import urllib.parse
 import threading
 
-COOLIFY_DIR = "d:/MDS/rust-coolify"
-COOLIFY_SOURCE_DIR = "d:/MDS/coolify-source"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MDS_DIR = os.path.dirname(BASE_DIR)
+MD_DIR = os.path.dirname(MDS_DIR)
+
+COOLIFY_DIR = os.path.join(MDS_DIR, "rust-coolify")
+COOLIFY_SOURCE_DIR = os.path.join(MD_DIR, "coolify-source")
 TRACKER_JSON = os.path.join(COOLIFY_DIR, "MAP_TRACKER.json")
 ASSIGNMENTS_JSON = os.path.join(COOLIFY_DIR, "ASSIGNMENTS.json")
 PORT = 2000
 
-STATIC_DIR = "d:/MDS/md-tracker-dashboard/static"
+STATIC_DIR = os.path.join(BASE_DIR, "static")
 WATCHED_FILES = [
-    "d:/MDS/md-tracker-dashboard/server.py",
-    "d:/MDS/md-tracker-dashboard/static/app.js",
-    "d:/MDS/md-tracker-dashboard/static/style.css",
-    "d:/MDS/md-tracker-dashboard/static/index.html"
+    os.path.join(BASE_DIR, "server.py"),
+    os.path.join(STATIC_DIR, "app.js"),
+    os.path.join(STATIC_DIR, "style.css"),
+    os.path.join(STATIC_DIR, "index.html")
 ]
 
 def check_file_status(relative_path, file_id):

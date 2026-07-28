@@ -1,21 +1,22 @@
-# ??? X?RIT? — crates/auth
-> **Agent ucun GPS.** Bu fayl? oxu, sonra is? basla.
+# rc-auth
 
-## ?? S?n Harda Durursun?
-e:\MD\rust-coolify\crates\auth\
+# completed meta_auth_readme_md
 
-## ?? S?nin V?zif?n
-Istifad?ci autentifikasiyas? (Bearer token, Argon2 sifr? hashing), OAuth2 (GitHub, GitLab, Google) v? komanda d?v?t/rol idar?sini yazmaq.
-**Yaln?z crates/auth/ qovluguna yaz.**
+Authentication crate for MasterDeploy (Coolify-compatible).
 
-## ?? ?VV?LC? BUNLAR BITM?LIDIR
-- c-db crate-i tamamil? bitmis v? test edilmis olmal?d?r.
+## Features
 
-## ?? H?R FAYL UCUN X?RIT?
-- src/token.rs -> M?nb?: coolify-source/app/Models/PersonalAccessToken.php
-- src/password.rs -> M?nb?: coolify-source/app/Models/User.php (sifr? hashing bolm?si)
-- src/oauth/github.rs -> M?nb?: coolify-source/app/Models/OauthSetting.php + OauthController.php
-- src/team/invitation.rs -> M?nb?: coolify-source/app/Models/TeamInvitation.php
+- **Password hashing** using Argon2 (matching Coolify's bcrypt semantics)
+- **API Token** create/verify/revoke (Sanctum-compatible, "rc_" prefixed)
+- **OAuth2** support: GitHub, GitLab, Google
+- **Team roles**: Admin, Member, Viewer
+- **Team invitations**: invite/accept/decline via email links
+- **Authorization Policies**: Server, Team, Application
 
-## ? BITDI SAYILIR ?G?R
-cargo build -p rc-auth x?tas?z tamamlan?rsa.
+## Usage
+
+```rust
+use rc_auth::password::{hash_password, verify_password};
+use rc_auth::token::{create_token, verify_token};
+use rc_auth::team::roles::{TeamRole, can_deploy};
+```

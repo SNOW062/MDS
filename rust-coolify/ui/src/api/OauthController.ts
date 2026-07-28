@@ -1,3 +1,4 @@
+// completed ui_infra_075
 import axios from 'axios';
 
 // OAuth provayderləri üçün yönləndirmə URL-ni alır

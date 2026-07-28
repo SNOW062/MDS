@@ -1,3 +1,27 @@
+// completed ui_infra_089
+
+export interface ApplicationEnvVar {
+  id?: number;
+  uuid: string;
+  key: string;
+  value: string;
+  is_build_time: boolean;
+  application_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ApplicationStorage {
+  id?: number;
+  uuid: string;
+  name: string;
+  mount_path: string;
+  host_path: string | null;
+  application_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Application {
   id: number;
   uuid: string;
@@ -92,6 +116,11 @@ export interface Application {
   private_key_id: number | null;
   created_at: string;
   updated_at: string;
+  
+  // Relations
+  environment_variables?: ApplicationEnvVar[];
+  storages?: ApplicationStorage[];
+  tags?: any[];
   
   // Appended attribute
   server_status?: string;

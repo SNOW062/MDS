@@ -1,4 +1,6 @@
+// completed ui_infra_074
 import axios from 'axios';
+import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 const OpenApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -12,7 +14,7 @@ const OpenApi = axios.create({
 
 // Request Interceptor: CSRF Token
 OpenApi.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = document.cookie
       .split('; ')
       .find(row => row.startsWith('XSRF-TOKEN='))
@@ -23,13 +25,13 @@ OpenApi.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error: any) => Promise.reject(error)
 );
 
 // Response Interceptor
 OpenApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  (response: AxiosResponse) => response,
+  (error: any) => {
     if (error.response && error.response.status === 401) {
       if (!window.location.pathname.startsWith('/auth')) {
         window.location.href = '/auth/login';

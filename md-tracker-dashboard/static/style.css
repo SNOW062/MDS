@@ -365,7 +365,7 @@ body {
 /* DÜZGÜN VƏ HİZALANMIŞ SƏTİR DİZAYNI (Grid Layout ilə dalğalanma qarşısı alınır) */
 .tree-header-row {
     display: grid;
-    grid-template-columns: 12px auto 1fr 85px 36px 82px; /* Grid sütunları nizamlandı */
+    grid-template-columns: 12px auto 1fr 85px 30px 24px; /* Grid sütunları nizamlandı */
     align-items: center;
     padding: 6px 8px;
     border-radius: 6px;
@@ -426,7 +426,7 @@ body {
     font-size: 9.5px;
     color: #60a5fa;
     text-decoration: none;
-    padding: 2px 6px;
+    padding: 2px 2px;
     border: 1px solid rgba(96, 165, 250, 0.15);
     border-radius: 5px;
     transition: all 0.2s;
@@ -788,6 +788,25 @@ body {
     justify-content: space-between;
 }
 
-
-
-
+/* Modal daxilindəki fayl sıraları */
+.seq-file-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+.seq-file-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+/* Kliklənən və aktiv olan faylın işıqlandırılması */
+.highlight-file {
+    background: rgba(99, 102, 241, 0.15) !important;
+    border: 1px solid rgba(99, 102, 241, 0.5) !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    font-weight: bold;
+}

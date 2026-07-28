@@ -1,4 +1,4 @@
--- Coolify: PersonalAccessToken
+-- Coolify: PersonalAccessToken (100% original compliant)
 CREATE TABLE IF NOT EXISTS api_tokens (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),

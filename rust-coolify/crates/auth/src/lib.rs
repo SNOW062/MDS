@@ -1,8 +1,10 @@
-// rc-auth — Authentication & Authorization
-// Coolify: app/Models/User.php, PersonalAccessToken.php, OauthSetting.php
-pub mod token;
-pub mod password;
-pub mod session;
+// completed be_1043
+//! rc-auth: Authentication, tokens, OAuth, team roles & invitations.
+//! Mirrors Coolify's auth logic: PersonalAccessToken, OauthSetting, TeamInvitation, Policies.
+
 pub mod oauth;
-pub mod team;
+pub mod password;
 pub mod policies;
+pub mod session;
+pub mod team;
+pub mod token;

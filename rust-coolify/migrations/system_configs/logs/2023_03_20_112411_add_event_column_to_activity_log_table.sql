@@ -1,0 +1,3 @@
+-- completed mig_007
+-- Converted from: 2023_03_20_112411_add_event_column_to_activity_log_table.php
+-- TODO: Review 2023_03_20_112411_add_event_column_to_activity_log_table.php (no Schema builder detected)

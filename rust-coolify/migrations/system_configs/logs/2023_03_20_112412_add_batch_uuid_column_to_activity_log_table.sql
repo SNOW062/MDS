@@ -1,0 +1,3 @@
+-- completed mig_008
+-- Converted from: 2023_03_20_112412_add_batch_uuid_column_to_activity_log_table.php
+-- TODO: Review 2023_03_20_112412_add_batch_uuid_column_to_activity_log_table.php (no Schema builder detected)

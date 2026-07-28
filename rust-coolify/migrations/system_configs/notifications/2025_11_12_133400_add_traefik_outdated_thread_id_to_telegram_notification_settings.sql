@@ -1,0 +1,12 @@
+-- completed mig_300
+-- Converted from: 2025_11_12_133400_add_traefik_outdated_thread_id_to_telegram_notification_settings.php
+
+-- ALTER TABLE telegram_notification_settings
+-- Review 2025_11_12_133400_add_traefik_outdated_thread_id_to_telegram_notification_settings.php for specific alterations
+ALTER TABLE telegram_notification_settings ADD COLUMN IF NOT EXISTS telegram_notifications_traefik_outdated_thread_id TEXT;
+ALTER TABLE telegram_notification_settings ADD COLUMN IF NOT EXISTS telegram_notifications_traefik_outdated_thread_id TEXT;
+
+-- ALTER TABLE telegram_notification_settings
+-- Review 2025_11_12_133400_add_traefik_outdated_thread_id_to_telegram_notification_settings.php for specific alterations
+ALTER TABLE telegram_notification_settings ADD COLUMN IF NOT EXISTS telegram_notifications_traefik_outdated_thread_id TEXT;
+ALTER TABLE telegram_notification_settings ADD COLUMN IF NOT EXISTS telegram_notifications_traefik_outdated_thread_id TEXT;

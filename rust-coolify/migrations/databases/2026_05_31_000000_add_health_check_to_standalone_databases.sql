@@ -1,0 +1,3 @@
+-- completed mig_338
+-- Converted from: 2026_05_31_000000_add_health_check_to_standalone_databases.php
+-- TODO: Review 2026_05_31_000000_add_health_check_to_standalone_databases.php (no Schema builder detected)

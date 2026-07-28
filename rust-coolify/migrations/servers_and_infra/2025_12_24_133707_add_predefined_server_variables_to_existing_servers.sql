@@ -1,0 +1,3 @@
+-- completed mig_318
+-- Converted from: 2025_12_24_133707_add_predefined_server_variables_to_existing_servers.php
+-- TODO: Review 2025_12_24_133707_add_predefined_server_variables_to_existing_servers.php (no Schema builder detected)

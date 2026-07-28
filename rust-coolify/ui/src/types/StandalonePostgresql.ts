@@ -1,3 +1,27 @@
+// completed ui_infra_090
+
+export interface DatabaseEnvVar {
+  id?: number;
+  uuid: string;
+  key: string;
+  value: string;
+  is_build_time: boolean;
+  database_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DatabaseStorage {
+  id?: number;
+  uuid: string;
+  name: string;
+  mount_path: string;
+  host_path: string | null;
+  database_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface StandalonePostgresql {
   id: number;
   uuid: string;
@@ -43,6 +67,10 @@ export interface StandalonePostgresql {
   health_check_start_period: number;
   created_at: string;
   updated_at: string;
+  
+  // Relations
+  environment_variables?: DatabaseEnvVar[];
+  storages?: DatabaseStorage[];
   
   // Appended attributes
   internal_db_url?: string;

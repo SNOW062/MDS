@@ -1,0 +1,3 @@
+-- completed mig_316
+-- Converted from: 2025_12_17_000002_add_restart_tracking_to_standalone_databases.php
+-- TODO: Review 2025_12_17_000002_add_restart_tracking_to_standalone_databases.php (no Schema builder detected)

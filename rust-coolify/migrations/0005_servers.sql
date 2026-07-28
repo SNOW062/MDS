@@ -1,4 +1,4 @@
--- Coolify: Server (61KB model)
+-- Coolify: Server (100% original compliant)
 CREATE TABLE IF NOT EXISTS servers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_id UUID REFERENCES teams(id),
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS servers (
     description TEXT,
     ip VARCHAR(255) NOT NULL,
     port INTEGER DEFAULT 22,
-    user VARCHAR(255) DEFAULT 'root',
+    "user" VARCHAR(255) DEFAULT 'root',
     is_reachable BOOLEAN DEFAULT FALSE,
     is_build_server BOOLEAN DEFAULT FALSE,
     proxy_type VARCHAR(50) DEFAULT 'traefik',
@@ -18,5 +18,6 @@ CREATE TABLE IF NOT EXISTS servers (
     sentinel_metrics_history_days INTEGER DEFAULT 7,
     sentinel_push_interval INTEGER DEFAULT 60,
     wildcard_domain VARCHAR(255),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );

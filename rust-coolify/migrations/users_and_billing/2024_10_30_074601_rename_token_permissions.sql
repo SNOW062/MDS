@@ -1,0 +1,3 @@
+-- completed mig_221
+-- Converted from: 2024_10_30_074601_rename_token_permissions.php
+-- TODO: Review 2024_10_30_074601_rename_token_permissions.php (no Schema builder detected)

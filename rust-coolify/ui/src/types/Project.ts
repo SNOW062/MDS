@@ -1,4 +1,4 @@
-import { Environment } from './Project';
+// completed ui_infra_091
 
 export interface Project {
   id: number;
@@ -13,8 +13,18 @@ export interface Project {
 
 export interface Environment {
   id: number;
+  uuid: string;
   project_id: number;
   name: string;
   created_at: string;
   updated_at: string;
+  
+  // Relations/Nested resources returned by details API
+  applications?: any[];
+  postgresqls?: any[];
+  redis?: any[];
+  mongodbs?: any[];
+  mysqls?: any[];
+  mariadbs?: any[];
+  services?: any[];
 }

@@ -283,7 +283,12 @@ function createTreeNode(name, node, path = "", showCheckbox = true, isMasterColu
             sizeBadge = `<span style="color: ${badgeColor}; font-weight: 800; font-size: 11px; margin-left: 8px;">[${sizeKb} KB]</span>`;
         }
         
-        labelEl.innerHTML = `<strong>${phpName}</strong>${sizeBadge} <span style="font-size: 11px; opacity: 0.5; font-weight: normal; margin-left: 6px;">(${name})</span>`;
+        const isUi = node._file.path.startsWith('ui/');
+        if (isUi) {
+            labelEl.innerHTML = `<strong>${name}</strong>${sizeBadge} <span style="font-size: 11px; opacity: 0.5; font-weight: normal; margin-left: 6px;">(Ref: ${phpName})</span>`;
+        } else {
+            labelEl.innerHTML = `<strong>${phpName}</strong>${sizeBadge} <span style="font-size: 11px; opacity: 0.5; font-weight: normal; margin-left: 6px;">(${name})</span>`;
+        }
     } else {
         labelEl.innerText = name;
     }
@@ -301,7 +306,7 @@ function createTreeNode(name, node, path = "", showCheckbox = true, isMasterColu
         let badgeText = 'TODO';
         if (f.status === 'completed') {
             badgeClass = 'badge-completed';
-            badgeText = 'BİTİB';
+            badgeText = '✓';
         } else if (f.status === 'wip') {
             badgeClass = 'badge-wip';
             badgeText = 'WIP';
@@ -310,11 +315,23 @@ function createTreeNode(name, node, path = "", showCheckbox = true, isMasterColu
         const badgeEl = document.createElement('span');
         badgeEl.className = `task-badge ${badgeClass}`;
         badgeEl.innerText = badgeText;
+        badgeEl.style.cursor = 'pointer';
+        if (f.status === 'completed') {
+            badgeEl.title = 'Bitib (Mərhələli siyahını görmək üçün klikləyin)';
+        } else {
+            badgeEl.title = `${badgeText} (Mərhələli siyahını görmək üçün klikləyin)`;
+        }
+        badgeEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openSequenceModal(f.id);
+        });
 
         const linkEl = document.createElement('a');
         linkEl.className = 'source-link';
         linkEl.href = '#';
-        linkEl.innerText = '🔗 PHP Source';
+        linkEl.innerText = '🔗';
+        linkEl.title = 'PHP Source';
         linkEl.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -644,6 +661,137 @@ function initResizers() {
 
 // Resizer-i işə salaq
 setTimeout(initResizers, 100);
+
+function openSequenceModal(fileId) {
+    const modal = document.getElementById('sequence-modal');
+    const modalBody = document.getElementById('seq-modal-body');
+    if (!modal || !modalBody) return;
+
+    modalBody.innerHTML = '';
+    
+    // Find the clicked file to detect its category
+    const clickedFile = allFiles.find(f => f.id === fileId);
+    if (!clickedFile) return;
+
+    const pathLower = clickedFile.path.toLowerCase();
+    const categories = ['server', 'project', 'database', 'security', 'setting', 'team', 'storage', 'auth', 'service', 'oauth', 'toast', 'websocket', 'deploy'];
+    let matchedKeyword = '';
+    for (const cat of categories) {
+        if (pathLower.includes(cat)) {
+            matchedKeyword = cat;
+            break;
+        }
+    }
+
+    // Set modal title dynamically
+    const titleEl = modal.querySelector('.modal-header h2');
+    if (titleEl) {
+        if (matchedKeyword) {
+            const displayCat = matchedKeyword.charAt(0).toUpperCase() + matchedKeyword.slice(1);
+            titleEl.innerHTML = `⚡ Yığılma Ardıcıllığı: <span style="color: #e59c0d;">${displayCat}</span>`;
+        } else {
+            titleEl.innerHTML = `⚡ Yığılma Ardıcıllığı & Yol Xəritəsi`;
+        }
+    }
+
+    // Filter files: show only files starting with 'ui/' that belong to the matched category (if any)
+    let filteredFiles = allFiles.filter(f => f.path.startsWith('ui/'));
+    if (matchedKeyword) {
+        filteredFiles = filteredFiles.filter(f => f.path.toLowerCase().includes(matchedKeyword));
+    }
+
+    // Sort the filtered files by sequence number
+    const sortedFiles = filteredFiles.sort((a, b) => {
+        const seqA = a.sequence !== undefined ? a.sequence : 999;
+        const seqB = b.sequence !== undefined ? b.sequence : 999;
+        return seqA - seqB;
+    });
+
+    // Group files by phase name
+    const phases = {};
+    sortedFiles.forEach(f => {
+        const phaseName = f.phase || "Mərhələ 5: Səhifələr & Görünüşlər";
+        if (!phases[phaseName]) {
+            phases[phaseName] = [];
+        }
+        phases[phaseName].push(f);
+    });
+
+    // Render phases and their files
+    Object.keys(phases).forEach(phaseName => {
+        const phaseFiles = phases[phaseName];
+        if (phaseFiles.length === 0) return;
+        
+        // Render phase header
+        const phaseHeader = document.createElement('div');
+        phaseHeader.className = 'phase-group-header';
+        const completedInPhase = phaseFiles.filter(fl => fl.status === 'completed').length;
+        phaseHeader.innerHTML = `<span>${phaseName}</span> <span style="opacity: 0.6;">(${completedInPhase}/${phaseFiles.length} Bitib)</span>`;
+        modalBody.appendChild(phaseHeader);
+
+        // Render files inside the phase
+        phaseFiles.forEach(f => {
+            const row = document.createElement('div');
+            row.className = 'seq-file-row';
+            row.id = `seq-item-${f.id}`;
+            
+            if (f.id === fileId) {
+                row.classList.add('highlight-file');
+            }
+
+            const fileName = f.path.split('/').pop();
+            const isUi = f.path.startsWith('ui/');
+            
+            const phpName = f.source && f.source !== 'app' && f.source !== 'Cargo.toml' && f.source !== 'README.md'
+                ? f.source.split('/').pop()
+                : '';
+                
+            let displayName = fileName;
+            let refName = '';
+            
+            if (isUi) {
+                displayName = fileName;
+                refName = phpName ? `(Ref: ${phpName})` : '';
+            } else {
+                displayName = phpName || fileName;
+                refName = phpName ? `(${fileName})` : '';
+            }
+                
+            const badgeClass = f.status === 'completed' ? 'badge-completed' : (f.status === 'wip' ? 'badge-wip' : 'badge-todo');
+            const badgeText = f.status === 'completed' ? '✓' : (f.status === 'wip' ? 'WIP' : 'TODO');
+
+            row.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 10px; opacity: 0.5; font-family: monospace; width: 75px;">${f.id}</span>
+                    <span style="font-weight: 600; color: #a5b4fc;">${displayName}</span>
+                    ${refName ? `<span style="font-size: 9.5px; opacity: 0.4; margin-left: 6px;">${refName}</span>` : ''}
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="task-badge ${badgeClass}" style="position: static; font-size: 8px; padding: 1px 4px; border-radius: 3px; display: flex; align-items: center; justify-content: center;">${badgeText}</span>
+                </div>
+            `;
+            modalBody.appendChild(row);
+        });
+    });
+
+    // Open modal
+    modal.classList.add('active');
+
+    // Scroll the highlighted element into view
+    setTimeout(() => {
+        const targetEl = document.getElementById(`seq-item-${fileId}`);
+        if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, 200);
+}
+
+function closeSequenceModal() {
+    const modal = document.getElementById('sequence-modal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
 
 fetchData();
 setInterval(fetchData, 4000);

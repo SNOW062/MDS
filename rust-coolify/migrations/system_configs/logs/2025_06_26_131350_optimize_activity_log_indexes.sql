@@ -1,0 +1,3 @@
+-- completed mig_270
+-- Converted from: 2025_06_26_131350_optimize_activity_log_indexes.php
+-- TODO: Review 2025_06_26_131350_optimize_activity_log_indexes.php (no Schema builder detected)

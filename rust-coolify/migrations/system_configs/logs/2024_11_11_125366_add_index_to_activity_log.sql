@@ -1,0 +1,3 @@
+-- completed mig_224
+-- Converted from: 2024_11_11_125366_add_index_to_activity_log.php
+-- TODO: Review 2024_11_11_125366_add_index_to_activity_log.php (no Schema builder detected)

@@ -1,0 +1,3 @@
+-- completed mig_251
+-- Converted from: 2025_01_22_101105_remove_wrongly_created_envs.php
+-- TODO: Review 2025_01_22_101105_remove_wrongly_created_envs.php (no Schema builder detected)

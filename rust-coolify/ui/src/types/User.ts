@@ -1,3 +1,4 @@
+// completed ui_infra_092
 export interface User {
   id: number;
   name: string;

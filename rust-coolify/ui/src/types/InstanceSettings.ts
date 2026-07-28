@@ -1,3 +1,4 @@
+// completed ui_infra_093
 export interface InstanceSettings {
   id: number;
   public_ipv4: string | null;

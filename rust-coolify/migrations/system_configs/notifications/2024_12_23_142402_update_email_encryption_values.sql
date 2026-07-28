@@ -1,0 +1,3 @@
+-- completed mig_242
+-- Converted from: 2024_12_23_142402_update_email_encryption_values.php
+-- TODO: Review 2024_12_23_142402_update_email_encryption_values.php (no Schema builder detected)

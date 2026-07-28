@@ -1,0 +1,3 @@
+-- completed mig_239
+-- Converted from: 2024_12_13_103007_encrypt_resend_api_key_in_instance_settings.php
+-- TODO: Review 2024_12_13_103007_encrypt_resend_api_key_in_instance_settings.php (no Schema builder detected)

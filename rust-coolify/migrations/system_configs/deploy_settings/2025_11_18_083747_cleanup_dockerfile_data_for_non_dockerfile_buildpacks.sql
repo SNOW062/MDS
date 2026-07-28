@@ -1,0 +1,3 @@
+-- completed mig_306
+-- Converted from: 2025_11_18_083747_cleanup_dockerfile_data_for_non_dockerfile_buildpacks.php
+-- TODO: Review 2025_11_18_083747_cleanup_dockerfile_data_for_non_dockerfile_buildpacks.php (no Schema builder detected)

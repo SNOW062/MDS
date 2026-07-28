@@ -1,3 +1,27 @@
+// completed ui_infra_088
+
+export interface ServerSetting {
+  id: number;
+  server_id: number;
+  concurrent_builds: number;
+  deployment_queue_limit: number;
+  dynamic_timeout: number;
+  connection_timeout: number;
+  is_build_server: boolean;
+  is_reachable: boolean;
+  is_usable: boolean;
+  is_swarm_manager: boolean;
+  is_swarm_worker: boolean;
+  is_cloudflare_tunnel: boolean;
+  wildcard_domain: string | null;
+  docker_cleanup_frequency: string;
+  docker_cleanup_threshold: number;
+  server_disk_usage_notification_threshold: number;
+  server_disk_usage_check_frequency: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Server {
   id: number;
   uuid: string;
@@ -28,4 +52,11 @@ export interface Server {
   force_disabled: boolean;
   created_at: string;
   updated_at: string;
+  
+  // Relations
+  settings: ServerSetting;
+  
+  // Appended attributes
+  is_reachable?: boolean;
+  is_usable?: boolean;
 }

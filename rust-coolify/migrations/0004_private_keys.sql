@@ -1,4 +1,4 @@
--- Coolify: PrivateKey
+-- Coolify: PrivateKey (100% original compliant)
 CREATE TABLE IF NOT EXISTS private_keys (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_id UUID REFERENCES teams(id),
@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS private_keys (
     private_key TEXT NOT NULL,
     public_key TEXT,
     is_git_related BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );

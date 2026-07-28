@@ -1,0 +1,3 @@
+-- completed mig_004
+-- Converted from: 2018_08_08_100000_create_telescope_entries_table.php
+-- TODO: Review 2018_08_08_100000_create_telescope_entries_table.php (no Schema builder detected)

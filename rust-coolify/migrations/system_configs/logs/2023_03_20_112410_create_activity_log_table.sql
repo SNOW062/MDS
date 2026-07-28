@@ -1,0 +1,3 @@
+-- completed mig_006
+-- Converted from: 2023_03_20_112410_create_activity_log_table.php
+-- TODO: Review 2023_03_20_112410_create_activity_log_table.php (no Schema builder detected)

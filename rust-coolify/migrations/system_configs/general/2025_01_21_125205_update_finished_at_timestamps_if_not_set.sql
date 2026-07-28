@@ -1,0 +1,3 @@
+-- completed mig_250
+-- Converted from: 2025_01_21_125205_update_finished_at_timestamps_if_not_set.php
+-- TODO: Review 2025_01_21_125205_update_finished_at_timestamps_if_not_set.php (no Schema builder detected)

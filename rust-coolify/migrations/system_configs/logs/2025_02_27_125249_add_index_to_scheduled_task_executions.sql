@@ -1,0 +1,22 @@
+-- completed mig_255
+-- Converted from: 2025_02_27_125249_add_index_to_scheduled_task_executions.php
+
+-- ALTER TABLE scheduled_task_executions
+-- Review 2025_02_27_125249_add_index_to_scheduled_task_executions.php for specific alterations
+ALTER TABLE scheduled_task_executions ADD COLUMN IF NOT EXISTS scheduled_task_executions_task_id_created_at_index TEXT;
+ALTER TABLE scheduled_task_executions ADD COLUMN IF NOT EXISTS scheduled_db_backup_executions_backup_id_created_at_index TEXT;
+
+-- ALTER TABLE scheduled_database_backup_executions
+-- Review 2025_02_27_125249_add_index_to_scheduled_task_executions.php for specific alterations
+ALTER TABLE scheduled_database_backup_executions ADD COLUMN IF NOT EXISTS scheduled_task_executions_task_id_created_at_index TEXT;
+ALTER TABLE scheduled_database_backup_executions ADD COLUMN IF NOT EXISTS scheduled_db_backup_executions_backup_id_created_at_index TEXT;
+
+-- ALTER TABLE scheduled_task_executions
+-- Review 2025_02_27_125249_add_index_to_scheduled_task_executions.php for specific alterations
+ALTER TABLE scheduled_task_executions ADD COLUMN IF NOT EXISTS scheduled_task_executions_task_id_created_at_index TEXT;
+ALTER TABLE scheduled_task_executions ADD COLUMN IF NOT EXISTS scheduled_db_backup_executions_backup_id_created_at_index TEXT;
+
+-- ALTER TABLE scheduled_database_backup_executions
+-- Review 2025_02_27_125249_add_index_to_scheduled_task_executions.php for specific alterations
+ALTER TABLE scheduled_database_backup_executions ADD COLUMN IF NOT EXISTS scheduled_task_executions_task_id_created_at_index TEXT;
+ALTER TABLE scheduled_database_backup_executions ADD COLUMN IF NOT EXISTS scheduled_db_backup_executions_backup_id_created_at_index TEXT;

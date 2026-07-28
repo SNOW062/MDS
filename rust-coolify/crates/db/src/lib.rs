@@ -1,17 +1,19 @@
-// rc-db — Database modell?r, migrations, repo-lar
-// Coolify: app/Models/ (56 model), database/migrations/ (348 migration)
-pub mod models;
-pub mod repos;
+// completed be_1083
 pub mod casts;
 pub mod enums;
+pub mod models;
+pub mod repos;
 
-use sqlx::PgPool;
-pub type DbPool = PgPool;
+pub type DbPool = sqlx::PgPool;
 
 pub async fn init_db() -> anyhow::Result<DbPool> {
-    let url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://postgres:password@localhost/masterdeploy".into());
-    let pool = PgPool::connect(&url).await?;
+    let database_url = std::env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "postgres://postgres:postgres@localhost:5432/masterdeploy".to_string());
+    
+    let pool = sqlx::PgPool::connect(&database_url).await?;
+    
+    // Run migrations
     sqlx::migrate!("../../migrations").run(&pool).await?;
+    
     Ok(pool)
 }

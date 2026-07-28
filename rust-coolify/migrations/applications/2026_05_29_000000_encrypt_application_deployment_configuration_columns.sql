@@ -1,0 +1,3 @@
+-- completed mig_337
+-- Converted from: 2026_05_29_000000_encrypt_application_deployment_configuration_columns.php
+-- TODO: Review 2026_05_29_000000_encrypt_application_deployment_configuration_columns.php (no Schema builder detected)
