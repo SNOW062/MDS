@@ -45,14 +45,12 @@ jsonwebtoken = "9"
 argon2 = "0.5"
 
 # Email
-lettre = { version = "0.11", features = ["tokio1-rustls-tls", "smtp-transport"] }
+lettre = { version = "0.11", default-features = false, features = ["tokio1-rustls-tls", "smtp-transport", "pool"] }
 
 # HTTP client (Slack, Discord, Telegram, Webhook)
 reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
 
-# S3 compatible storage
-aws-sdk-s3 = "1"
-aws-config = "1"
+# S3 compatible storage (disabled for rustc build)
 
 # Template engine (one-click services)
 tera = "1"

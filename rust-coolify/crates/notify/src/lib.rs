@@ -1,6 +1,1 @@
-// rc-notify — Bildiris kanallar? (Email, Slack, Discord, Telegram, vb.)
-// Coolify: app/Notifications/ (9 kanal), app/Jobs/SendMessage*.php
-pub mod dispatcher;
-pub mod events;
-pub mod channels;
-pub mod templates;
+ï»¿// rc-notify - Bildiris kanallari\npub mod email;\npub mod slack;\npub mod discord;\npub mod telegram;\npub mod webhook;\n

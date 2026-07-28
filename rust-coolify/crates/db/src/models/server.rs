@@ -24,4 +24,18 @@ pub struct Server {
     pub traefik_outdated_info: Option<String>,
     pub server_metadata: Option<String>,
     pub ip_previous: Option<String>,
+    
+    // Orijinal Coolify server modelindən 1-ə-1 əskik olan sütunlar
+    pub is_swarm_manager: Option<bool>,
+    pub is_swarm_worker: Option<bool>,
+    pub connection_timeout: Option<i32>,
+    pub concurrent_builds: Option<i32>,
+    
+    // Sentinel və Log Drain
+    pub sentinel_enabled: Option<bool>,
+    pub sentinel_token: Option<String>,
+    pub sentinel_metrics_refresh_rate: Option<i32>,
+    pub sentinel_metrics_history_days: Option<i32>,
+    pub sentinel_push_interval: Option<i32>,
+    pub wildcard_domain: Option<String>,
 }

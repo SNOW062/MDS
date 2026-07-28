@@ -1,6 +1,1 @@
-// rc-scheduler — Background jobs, Cron tasks
-// Coolify: app/Jobs/ScheduledJobManager.php, ScheduledDatabaseBackup, ScheduledVolumeBackup
-pub mod manager;
-pub mod jobs;
-pub mod cron;
-pub mod console;
+ï»¿// rc-scheduler - Background jobs, Cron tasks\npub mod jobs;\npub mod cron;\n
