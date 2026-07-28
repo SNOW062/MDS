@@ -6,7 +6,7 @@ use chrono::{Duration, Utc};
 use uuid::Uuid;
 
 /// Claims stored inside the JWT.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct SessionClaims {
     pub sub: String,    // user UUID
     pub team_id: Option<String>,

@@ -44,7 +44,10 @@ async fn main() -> anyhow::Result<()> {
         .merge(routes::storage::router(state.clone()))
         .merge(routes::scheduled_tasks::router(state.clone()))
         .merge(routes::webhooks::router(state.clone()))
-        .merge(websocket::router(state.clone()));
+        .merge(websocket::router(state.clone()))
+        // Middleware laylarını qlobal olaraq bütün marşrutlara tətbiq edirik
+        .layer(middleware::cors::cors_layer())
+        .layer(middleware::rate_limit::request_size_limit());
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
     tracing::info!("Listening on http://{}", addr);
