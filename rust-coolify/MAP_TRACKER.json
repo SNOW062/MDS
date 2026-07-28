@@ -7033,7 +7033,7 @@
       "id": "be_1030",
       "path": "crates/api/src/routes/projects.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1031",
@@ -7052,61 +7052,61 @@
       "id": "be_1033",
       "path": "crates/api/src/routes/services.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1034",
       "path": "crates/api/src/routes/settings.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1035",
       "path": "crates/api/src/routes/storage.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1036",
       "path": "crates/api/src/routes/teams.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1037",
       "path": "crates/api/src/routes/users.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1038",
       "path": "crates/api/src/routes/webhooks.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1039",
       "path": "crates/api/src/state.rs",
       "source": "app/Providers/AppServiceProvider.php",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1040",
       "path": "crates/api/src/websocket/deploy_log.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "be_1041",
       "path": "crates/api/src/websocket/mod.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1042",
       "path": "crates/api/src/websocket/terminal.rs",
       "source": "app/Http/Controllers/Api",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "meta_auth_cargo_toml",
