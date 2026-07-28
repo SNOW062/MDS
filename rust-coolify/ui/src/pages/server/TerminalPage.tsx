@@ -28,6 +28,9 @@ export default function TerminalPage() {
         <Link to={`/server/${uuid}/charts`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
           Monitorinq
         </Link>
+        <Link to={`/server/${uuid}/security`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
+          Security
+        </Link>
       </div>
 
       <div className="bg-[#0c0c0c] border border-[#27272a] rounded-xl p-4 min-h-[400px] flex items-center justify-center font-mono text-xs text-zinc-500">

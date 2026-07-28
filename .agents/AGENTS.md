@@ -36,3 +36,22 @@ This file defines the **MANDATORY RULES** that the AI agent must strictly follow
   3. **Turkish (TR)** 🇹🇷
   4. **Russian (RU)** 🇷🇺
 - Provide clean i18n translation dictionaries and language selector controls in MasterDeploy UI.
+
+---
+
+## 📋 RULE 6: MANDATORY AUDIT & PROGRESS TRACKING
+- **AUDIT READ REQUIREMENT:** Hər bir agent işə başlamazdan əvvəl mütləq `agentin_tapdigi_eksik_isler/` qovluğundakı sonuncu tarixli audit sənədini oxumalı və hansı əskiklərin qaldığını müəyyənləşdirməlidir.
+- **COMPLETION REPORT REQUIREMENT:** Hər hansı bir əskik tamamlandıqdan sonra, agent həmin günün tarixi ilə (məsələn, `audit_YYYY-MM-DD.md`) yeni və ya yenilənmiş hesabat hazırlamalıdır. Tamamlanan işlər `[x]` ilə işarələnməlidir. Hər bir yeni agent mütləq özündən əvvəlki tarixdəki tapşırıqların cari statusunu və yenilərini sənədləşdirməlidir.
+
+---
+
+## 🚫 RULE 7: ZERO TOLERANCE FOR DUMMY/MOCK FILES
+- **REAL LOGIC ONLY:** Agentlər heç bir halda UI formlarında, düymələrində və ya backend əlaqələrində dummy (statik/müvəqqəti) məlumatlar saxlaya bilməzlər. 
+- **NO HALF-DONE WORK:** Hər hansı bir form sahəsi (məsələn, "Hetzner Server Status") əlavə edilirsə, onun həm React state-ləri, həm backend API çağırışları, həm də çoxdilli tərcümə key-ləri (AZ, EN, TR, RU) tam və bitmiş şəkildə yazılmalıdır. Yarımçıq və ya sonradan yazılacaq kimi qeyd edilən kod strukturları QADAĞANDIR!
+
+---
+
+## 🎯 RULE 8: 100% EXACT COOLIFY MATCH (FRONTEND & BACKEND)
+- **NO SKIPPED METHODS OR TYPES:** Həm frontend (React/TypeScript), həm də backend (Rust/API) faylları yazılarkən Coolify PHP Livewire mənbə kodu ilə 100% eyni olmalıdır. Heç bir metod, tip, API endpointi, parametr və ya məntiq kənarda qala bilməz.
+- **PARITY ASSURANCE:** Bütün verilənlər bazası strukturları, sorğu parametrləri, validasiya qaydaları və xəta mesajları orijinal Coolify iş axınına tam uyğun şəkildə reallaşdırılmalıdır.
+

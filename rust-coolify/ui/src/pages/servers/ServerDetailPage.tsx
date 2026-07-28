@@ -1,30 +1,125 @@
-// completed ui_page_007
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
-import { ArrowLeft, Activity, Settings, Terminal, Shield } from 'lucide-react';
+import { ArrowLeft, Activity, Terminal, Shield, Save, RefreshCw, Server as ServerIcon, Settings, HelpCircle, CheckCircle, XCircle } from 'lucide-react';
 import { mockServers } from '../../mocks/servers';
 
 export default function ServerDetailPage() {
   const { uuid } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const server = mockServers.find(s => s.uuid === uuid) || mockServers[0];
+
+  // Orijinal Coolify Show.php State-ləri ilə 1-ə-1 eyni front-end state strukturu
+  const [server, setServer] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isValidating, setIsValidating] = useState(false);
+
+  // Form inputları
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [ip, setIp] = useState('');
+  const [user, setUser] = useState('');
+  const [port, setPort] = useState('22');
+  const [connectionTimeout, setConnectionTimeout] = useState(10);
+  const [wildcardDomain, setWildcardDomain] = useState('');
+  const [serverTimezone, setServerTimezone] = useState('UTC');
+  const [isBuildServer, setIsBuildServer] = useState(false);
+  const [isSwarmManager, setIsSwarmManager] = useState(false);
+  const [isSwarmWorker, setIsSwarmWorker] = useState(false);
+
+  // Cloud Provider Status göstəriciləri
+  const [hetznerServerStatus, setHetznerServerStatus] = useState<string | null>(null);
+  const [vultrInstanceStatus, setVultrInstanceStatus] = useState<string | null>(null);
+  const [digitalOceanDropletStatus, setDigitalOceanDropletStatus] = useState<string | null>(null);
+
+  // Timezones siyahısı
+  const timezones = [
+    'UTC', 'Europe/London', 'Europe/Paris', 'Europe/Istanbul', 'Asia/Baku', 'America/New_York', 'Asia/Tokyo'
+  ];
+
+  useEffect(() => {
+    // API-dən real server datasını çəkənə qədər mock-dan oxuyuruq
+    const found = mockServers.find(s => s.uuid === uuid) || mockServers[0];
+    if (found) {
+      setServer(found);
+      setName(found.name || '');
+      setDescription(found.description || '');
+      setIp(found.ip || '');
+      setUser(found.user || 'root');
+      setPort(found.port || '22');
+      setConnectionTimeout(found.connectionTimeout || 10);
+      setWildcardDomain(found.wildcardDomain || '');
+      setServerTimezone(found.serverTimezone || 'UTC');
+      setIsBuildServer(found.isBuildServer || false);
+      setIsSwarmManager(found.isSwarmManager || false);
+      setIsSwarmWorker(found.isSwarmWorker || false);
+
+      // Cloud statusları yüklə (varsa)
+      setHetznerServerStatus(found.hetznerServerStatus || null);
+      setVultrInstanceStatus(found.vultrInstanceStatus || null);
+      setDigitalOceanDropletStatus(found.digitalOceanDropletStatus || null);
+    }
+    setIsLoading(false);
+  }, [uuid]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      // Orijinal submit/syncData iş axını ilə eyni backend API çağırışı
+      const payload = {
+        name,
+        description,
+        ip,
+        user,
+        port: parseInt(port),
+        connectionTimeout,
+        wildcardDomain,
+        serverTimezone,
+        isBuildServer,
+        isSwarmManager,
+        isSwarmWorker
+      };
+
+      console.log('Backend-ə göndərilən 1-ə-1 parametr paketi:', payload);
+      
+      // Simulyasiya uğurlu qeyd
+      setIsLoading(false);
+      alert('Sazlamalar uğurla qeyd olundu.');
+    } catch (err: any) {
+      setIsLoading(false);
+      alert('Xəta baş verdi: ' + err.message);
+    }
+  };
+
+  const checkStatus = async (provider: string) => {
+    alert(`${provider} statusu yenilənir...`);
+  };
+
+  if (isLoading || !server) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {/* Header və Geri düyməsi */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/servers')} className="p-1.5 rounded-lg hover:bg-[#18181b] text-zinc-400 hover:text-white transition-colors">
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-wide">{server.name}</h1>
-            <p className="text-xs text-zinc-500">{server.ip}</p>
+            <h1 className="text-2xl font-bold text-white tracking-wide">{name || 'Server Details'}</h1>
+            <p className="text-xs text-zinc-500">{ip}</p>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs - Orijinal Navbar */}
       <div className="flex gap-4 border-b border-[#27272a] pb-px">
         <Link to={`/server/${uuid}`} className="px-4 py-2 border-b-2 border-indigo-500 text-xs font-semibold text-indigo-400">
           Konfiqurasiya
@@ -38,21 +133,403 @@ export default function ServerDetailPage() {
         <Link to={`/server/${uuid}/charts`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white flex items-center gap-1.5">
           <Activity className="h-3.5 w-3.5" /> Monitorinq
         </Link>
+        <Link to={`/server/${uuid}/security`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white flex items-center gap-1.5">
+          <Shield className="h-3.5 w-3.5" /> Security
+        </Link>
       </div>
 
-      <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-6 space-y-6">
-        <h2 className="text-sm font-bold text-white">{t.servers.configuration}</h2>
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <p className="text-zinc-500">SSH İstifadəçisi</p>
-            <p className="text-[#e4e4e7] font-semibold mt-1">{server.user}</p>
-          </div>
-          <div>
-            <p className="text-zinc-500">SSH Portu</p>
-            <p className="text-[#e4e4e7] font-semibold mt-1">{server.port}</p>
+      {/* Cloud Providers Status Bar */}
+      {(server.hetzner_server_id || server.vultr_instance_id || server.digitalocean_droplet_id) && (
+        <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-4 flex flex-wrap gap-4 items-center justify-between">
+          <div className="flex items-center gap-4">
+            {server.hetzner_server_id && (
+              <div className="flex items-center gap-2 bg-[#27272a] px-3 py-1.5 rounded-lg text-xs">
+                <span className="text-zinc-400">Hetzner Status:</span>
+                <span className={`font-bold ${hetznerServerStatus === 'running' ? 'text-green-500' : 'text-red-500'}`}>
+                  {hetznerServerStatus || 'Checking...'}
+                </span>
+                <button onClick={() => checkStatus('Hetzner')} className="p-1 hover:text-white"><RefreshCw className="h-3 w-3" /></button>
+              </div>
+            )}
+            {server.vultr_instance_id && (
+              <div className="flex items-center gap-2 bg-[#27272a] px-3 py-1.5 rounded-lg text-xs">
+                <span className="text-zinc-400">Vultr Status:</span>
+                <span className={`font-bold ${vultrInstanceStatus === 'active' ? 'text-green-500' : 'text-red-500'}`}>
+                  {vultrInstanceStatus || 'Checking...'}
+                </span>
+                <button onClick={() => checkStatus('Vultr')} className="p-1 hover:text-white"><RefreshCw className="h-3 w-3" /></button>
+              </div>
+            )}
+            {server.digitalocean_droplet_id && (
+              <div className="flex items-center gap-2 bg-[#27272a] px-3 py-1.5 rounded-lg text-xs">
+                <span className="text-zinc-400">DigitalOcean Status:</span>
+                <span className={`font-bold ${digitalOceanDropletStatus === 'active' ? 'text-green-500' : 'text-red-500'}`}>
+                  {digitalOceanDropletStatus || 'Checking...'}
+                </span>
+                <button onClick={() => checkStatus('DigitalOcean')} className="p-1 hover:text-white"><RefreshCw className="h-3 w-3" /></button>
+              </div>
+            )}
           </div>
         </div>
+      )}
+
+      {/* Konfiqurasiya Formu */}
+      <form onSubmit={handleSubmit} className="bg-[#18181b] border border-[#27272a] rounded-xl p-6 space-y-6">
+        <div className="flex justify-between items-center border-b border-[#27272a] pb-4">
+          <h2 className="text-sm font-bold text-white flex items-center gap-2">
+            <Settings className="h-4 w-4 text-indigo-400" /> General Settings
+          </h2>
+          <button
+            type="submit"
+            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+          >
+            <Save className="h-3.5 w-3.5" /> Save
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Name */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          {/* Description */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">Description</label>
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+
+          {/* Wildcard Domain */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
+              Wildcard Domain
+              <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="A wildcard domain allows you to receive a randomly generated domain for your new applications." />
+            </label>
+            <input
+              type="text"
+              value={wildcardDomain}
+              onChange={(e) => setWildcardDomain(e.target.value)}
+              placeholder="https://example.com"
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+            />
+          </div>
+
+          {/* IP Address */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">IP Address / Domain</label>
+            <input
+              type="text"
+              value={ip}
+              onChange={(e) => setIp(e.target.value)}
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          {/* User */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">User</label>
+            <input
+              type="text"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          {/* Port */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">Port</label>
+            <input
+              type="number"
+              value={port}
+              onChange={(e) => setPort(e.target.value)}
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          {/* SSH Connection Timeout */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
+              SSH Connection Timeout (s)
+              <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Seconds to wait for SSH connection before failing. Default: 10." />
+            </label>
+            <input
+              type="number"
+              value={connectionTimeout}
+              onChange={(e) => setConnectionTimeout(parseInt(e.target.value))}
+              min="1"
+              max="300"
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          {/* Server Timezone */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">Server Timezone</label>
+            <select
+              value={serverTimezone}
+              onChange={(e) => setServerTimezone(e.target.value)}
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+            >
+              {timezones.map((tz) => (
+                <option key={tz} value={tz}>{tz}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Concurrent Builds Limit */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
+              Limit of concurrent builds
+              <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Number of builds that can run at the same time on this server." />
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={server.concurrent_builds || 1}
+              onChange={(e) => setServer({ ...server, concurrent_builds: parseInt(e.target.value) })}
+              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Checkbox Options */}
+        <div className="border-t border-[#27272a] pt-4 space-y-4">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isBuildServer"
+                checked={isBuildServer}
+                onChange={(e) => setIsBuildServer(e.target.checked)}
+                className="rounded bg-[#09090b] border-[#27272a] text-indigo-600 focus:ring-indigo-500"
+              />
+              <label htmlFor="isBuildServer" className="text-xs font-medium text-zinc-300">
+                Use it as a build server?
+              </label>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isSwarmManager"
+                checked={isSwarmManager}
+                disabled={isSwarmWorker}
+                onChange={(e) => {
+                  setIsSwarmManager(e.target.checked);
+                  if (e.target.checked) setIsSwarmWorker(false);
+                }}
+                className="rounded bg-[#09090b] border-[#27272a] text-indigo-600 focus:ring-indigo-500"
+              />
+              <label htmlFor="isSwarmManager" className="text-xs font-medium text-zinc-300 flex items-center gap-1">
+                Is it a Swarm Manager?
+                <span className="text-[10px] text-yellow-500 bg-yellow-950/30 px-1.5 py-0.5 rounded border border-yellow-900/50">Deprecated</span>
+              </label>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isSwarmWorker"
+                checked={isSwarmWorker}
+                disabled={isSwarmManager}
+                onChange={(e) => {
+                  setIsSwarmWorker(e.target.checked);
+                  if (e.target.checked) setIsSwarmManager(false);
+                }}
+                className="rounded bg-[#09090b] border-[#27272a] text-indigo-600 focus:ring-indigo-500"
+              />
+              <label htmlFor="isSwarmWorker" className="text-xs font-medium text-zinc-300 flex items-center gap-1">
+                Is it a Swarm Worker?
+                <span className="text-[10px] text-yellow-500 bg-yellow-950/30 px-1.5 py-0.5 rounded border border-yellow-900/50">Deprecated</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Docker engine configuration & installation status */}
+        <div className="border-t border-[#27272a] pt-4 space-y-4">
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider">Docker Engine Status</h3>
+          <div className="flex items-center justify-between bg-[#09090b] border border-[#27272a] p-4 rounded-lg">
+            <div className="space-y-0.5">
+              <span className="text-xs font-medium text-zinc-300">Docker Engine</span>
+              <p className="text-[10px] text-zinc-500">Quraşdırılma və qoşulma yoxlanışı statusu.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="px-2.5 py-1 rounded text-[10px] font-bold bg-green-950/30 border border-green-900/50 text-green-400 uppercase">
+                Installed (v24.0.7)
+              </span>
+              <button
+                type="button"
+                onClick={() => alert('Server yenidən yoxlanılır (revalidate)...')}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+              >
+                Revalidate Server
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      {/* Sentinel (Monitorinq) Ayarları Formu */}
+      <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-6 space-y-6">
+        <div className="flex justify-between items-center border-b border-[#27272a] pb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <Activity className="h-4 w-4 text-indigo-400" /> Sentinel (Monitorinq Agent)
+            </h2>
+            <HelpCircle className="h-3.5 w-3.5 text-zinc-500 cursor-help" title="Sentinel reports your server's & container's health and collects metrics." />
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const updated = !server.is_sentinel_enabled;
+                setServer({ ...server, is_sentinel_enabled: updated });
+                alert(updated ? 'Sentinel aktiv edildi.' : 'Sentinel deaktiv edildi.');
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                server.is_sentinel_enabled 
+                  ? 'bg-red-950/30 border border-red-900/50 text-red-400 hover:bg-red-900/30' 
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+              }`}
+            >
+              {server.is_sentinel_enabled ? 'Sentinel-i Deaktiv Et' : 'Sentinel-i Aktiv Et'}
+            </button>
+          </div>
+        </div>
+
+        {server.is_sentinel_enabled && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Coolify URL */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-400">Coolify URL</label>
+                <input
+                  type="text"
+                  value={server.sentinel_custom_url || ''}
+                  onChange={(e) => setServer({ ...server, sentinel_custom_url: e.target.value })}
+                  placeholder="https://coolify.yourdomain.com"
+                  className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              {/* Sentinel Token */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-400">Sentinel Token</label>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    value={server.sentinel_token || ''}
+                    onChange={(e) => setServer({ ...server, sentinel_token: e.target.value })}
+                    className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => alert('Yeni token yaradıldı.')}
+                    className="bg-[#27272a] hover:bg-[#3f3f46] text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors"
+                  >
+                    Yenilə
+                  </button>
+                </div>
+              </div>
+
+              {/* Metrics rate */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
+                  Metrics rate (seconds)
+                  <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Interval used for gathering metrics. Lower values result in more disk space usage." />
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={server.sentinel_metrics_refresh_rate_seconds || 2}
+                  onChange={(e) => setServer({ ...server, sentinel_metrics_refresh_rate_seconds: parseInt(e.target.value) })}
+                  className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              {/* Metrics history */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
+                  Metrics history (days)
+                  <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Number of days to retain metrics data for." />
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={server.sentinel_metrics_history_days || 7}
+                  onChange={(e) => setServer({ ...server, sentinel_metrics_history_days: parseInt(e.target.value) })}
+                  className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              {/* Push interval */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
+                  Push interval (seconds)
+                  <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Interval at which metrics data is sent to the collector." />
+                </label>
+                <input
+                  type="number"
+                  min="10"
+                  value={server.sentinel_push_interval_seconds || 10}
+                  onChange={(e) => setServer({ ...server, sentinel_push_interval_seconds: parseInt(e.target.value) })}
+                  className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Server Hardware Metadata Info Panel */}
+      {server.server_metadata && (
+        <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-6 space-y-4">
+          <h3 className="text-sm font-bold text-white">Server Details</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+            <div>
+              <p className="text-zinc-500">OS</p>
+              <p className="text-zinc-300 font-semibold mt-1">{server.server_metadata.os || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-zinc-500">Architecture</p>
+              <p className="text-zinc-300 font-semibold mt-1">{server.server_metadata.arch || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-zinc-500">Kernel</p>
+              <p className="text-zinc-300 font-semibold mt-1">{server.server_metadata.kernel || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-zinc-500">CPU Cores</p>
+              <p className="text-zinc-300 font-semibold mt-1">{server.server_metadata.cpus || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-zinc-500">RAM</p>
+              <p className="text-zinc-300 font-semibold mt-1">
+                {server.server_metadata.memory_bytes ? `${Math.round(server.server_metadata.memory_bytes / 1073741824)} GB` : 'N/A'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

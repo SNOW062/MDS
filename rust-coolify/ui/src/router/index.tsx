@@ -40,6 +40,11 @@ import CreateServerPage from '../pages/server/CreateServerPage';
 import ServerProxyPage from '../pages/server/ServerProxyPage';
 import ServerChartsPage from '../pages/server/ServerChartsPage';
 import TerminalPage from '../pages/server/TerminalPage';
+import ServerSecurityPage from '../pages/server/ServerSecurityPage';
+import ServerResourcesPage from '../pages/server/ServerResourcesPage';
+import ServerLogDrainsPage from '../pages/server/ServerLogDrainsPage';
+import ServerPrivateKeyPage from '../pages/server/ServerPrivateKeyPage';
+import ServerCaCertificatePage from '../pages/server/ServerCaCertificatePage';
 import NotificationsPage from '../pages/notifications/NotificationsPage';
 import ProfilePage from '../pages/profile/ProfilePage';
 import AdminPage from '../pages/admin/AdminPage';
@@ -108,6 +113,11 @@ export const router = createBrowserRouter([
       { path: '/server/:uuid/proxy', element: <ServerProxyPage /> },
       { path: '/server/:uuid/terminal', element: <TerminalPage /> },
       { path: '/server/:uuid/charts', element: <ServerChartsPage /> },
+      { path: '/server/:uuid/security', element: <ServerSecurityPage /> },
+      { path: '/server/:uuid/resources', element: <ServerResourcesPage /> },
+      { path: '/server/:uuid/private-key', element: <ServerPrivateKeyPage /> },
+      { path: '/server/:uuid/ca-certificate', element: <ServerCaCertificatePage /> },
+      { path: '/server/:uuid/log-drains', element: <ServerLogDrainsPage /> },
 
       // Databases general
       { path: '/databases', element: <DatabasesPage /> },

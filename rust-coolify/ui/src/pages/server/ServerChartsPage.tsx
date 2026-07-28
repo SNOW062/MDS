@@ -28,6 +28,9 @@ export default function ServerChartsPage() {
         <Link to={`/server/${uuid}/charts`} className="px-4 py-2 border-b-2 border-indigo-500 text-xs font-semibold text-indigo-400">
           Monitorinq
         </Link>
+        <Link to={`/server/${uuid}/security`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
+          Security
+        </Link>
       </div>
 
       <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-6 min-h-[300px] flex items-center justify-center">
