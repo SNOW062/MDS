@@ -6967,31 +6967,31 @@
       "id": "be_1019",
       "path": "crates/api/src/main.rs",
       "source": "bootstrap/app.php",
-      "status": "wip"
+      "status": "completed"
     },
     {
       "id": "be_1020",
       "path": "crates/api/src/middleware/auth.rs",
       "source": "app/Http/Middleware",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "be_1021",
       "path": "crates/api/src/middleware/cors.rs",
       "source": "app/Http/Middleware",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "be_1022",
       "path": "crates/api/src/middleware/mod.rs",
       "source": "app/Http/Middleware",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "be_1023",
       "path": "crates/api/src/middleware/rate_limit.rs",
       "source": "app/Http/Middleware",
-      "status": "todo"
+      "status": "completed"
     },
     {
       "id": "be_1024",
