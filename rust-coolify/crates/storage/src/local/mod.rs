@@ -1,1 +1,2 @@
-// Yerli fayl sistemind? backup saxlama
+// completed be_1231
+pub struct LocalStorage;

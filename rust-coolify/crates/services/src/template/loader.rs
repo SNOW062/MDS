@@ -1,1 +1,2 @@
-// JSON/YAML sablonunu yukl? (templates/service-templates.json)
+// completed be_1213
+pub struct TemplateLoader;

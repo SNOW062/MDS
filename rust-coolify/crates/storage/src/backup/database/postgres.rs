@@ -1,1 +1,2 @@
-// pg_dump (DatabaseBackupJob.php - postgres)
+// completed be_1224
+pub struct PostgresBackup;

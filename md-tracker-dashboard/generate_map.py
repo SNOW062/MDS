@@ -5,7 +5,7 @@ from datetime import datetime
 
 COOLIFY_APP_DIR = "e:/MD/coolify-source/app"
 COOLIFY_MIG_DIR = "e:/MD/coolify-source/database/migrations"
-TRACKER_JSON = "e:/MD/rust-coolify/MAP_TRACKER.json"
+TRACKER_JSON = "e:/MD/MDS/rust-coolify/MAP_TRACKER.json"
 
 def camel_to_snake(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)

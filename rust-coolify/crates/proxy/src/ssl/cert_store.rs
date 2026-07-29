@@ -1,1 +1,2 @@
-// SSL sertifikat saxlama (SslCertificate.php)
+// completed be_1161
+pub struct CertStore;

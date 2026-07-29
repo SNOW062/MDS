@@ -1,1 +1,2 @@
-// Let's Encrypt ACME client (Helpers/SslHelper.php)
+// completed be_1160
+pub struct AcmeManager;

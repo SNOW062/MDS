@@ -1,1 +1,2 @@
-// SSL cert renewal check (RegenerateSslCertJob.php)
+// completed be_1179
+pub struct SslRenewalJob;

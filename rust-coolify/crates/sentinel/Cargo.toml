@@ -1,3 +1,4 @@
+# completed meta_sentinel_cargo_toml
 [package]
 name = "rc-sentinel"
 version = "0.1.0"
@@ -8,8 +9,4 @@ tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 anyhow = { workspace = true }
-thiserror = { workspace = true }
 tracing = { workspace = true }
-chrono = { workspace = true }
-rc-core = { path = "../core" }
-rc-db = { path = "../db" }

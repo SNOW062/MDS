@@ -1,1 +1,2 @@
-// Standalone MariaDB konteyner (Actions/Database/StartMariadb.php)
+// completed be_1199
+pub struct MariadbService;

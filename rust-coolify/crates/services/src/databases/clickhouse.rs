@@ -1,1 +1,2 @@
-// Standalone ClickHouse konteyner (Actions/Database/StartClickhouse.php)
+// completed be_1196
+pub struct ClickhouseService;

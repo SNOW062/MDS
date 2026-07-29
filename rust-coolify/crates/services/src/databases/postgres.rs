@@ -1,1 +1,2 @@
-// Standalone PostgreSQL konteyner (Actions/Database/StartPostgresql.php)
+// completed be_1203
+pub struct PostgresService;

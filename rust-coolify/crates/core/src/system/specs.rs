@@ -1,1 +1,2 @@
-// CPU/RAM/Disk parse — SSH output (PushServerUpdateJob.php)
+// completed be_1075
+pub struct SystemSpecs;

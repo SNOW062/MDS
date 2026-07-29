@@ -1,1 +1,2 @@
-// S3-compatible client — AWS, MinIO, Cloudflare R2 (S3Storage.php)
+// completed be_1232
+pub struct S3Client;

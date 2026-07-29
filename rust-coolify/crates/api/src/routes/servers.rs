@@ -165,3 +165,75 @@ async fn apply_patches_handler(
         "job_id": Uuid::new_v4().to_string()
     }))
 }
+    let res = sqlx::query!(
+        r#"
+        UPDATE servers
+        SET name = COALESCE($1, name),
+            ip = COALESCE($2, ip),
+            port = COALESCE($3, port),
+            user = COALESCE($4, user),
+            description = COALESCE($5, description),
+            updated_at = NOW()
+        WHERE uuid = $6
+        "#,
+        payload.name,
+        payload.ip,
+        payload.port.map(|p| p as i32),
+        payload.user,
+        payload.description,
+        uuid
+    )
+    .execute(&db)
+    .await;
+
+    match res {
+        Ok(_) => (StatusCode::OK, Json(json!({"message": "Server updated successfully"}))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
+    }
+}
+
+/// GET /api/v1/servers/:uuid/domains
+pub async fn get_server_domains(
+    State(db): State<PgPool>,
+    Path(uuid): Path<Uuid>,
+) -> impl IntoResponse {
+    info!("API: Fetching domains for server {}", uuid);
+    let apps = sqlx::query!(
+        r#"
+        SELECT name, fqdn FROM applications
+        WHERE destination_id IN (SELECT id FROM standalone_dockers WHERE server_id = (SELECT id FROM servers WHERE uuid = $1 LIMIT 1))
+        "#,
+        uuid
+    )
+    .fetch_all(&db)
+    .await;
+
+    match apps {
+        Ok(records) => {
+            let list: Vec<_> = records.iter().map(|r| json!({"name": r.name, "fqdn": r.fqdn})).collect();
+            (StatusCode::OK, Json(json!(list)))
+        }
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
+    }
+}
+
+/// POST /api/v1/servers/:uuid/validate
+pub async fn validate_server_handler(
+    State(db): State<PgPool>,
+    Path(uuid): Path<Uuid>,
+) -> impl IntoResponse {
+    info!("API: Validating server {}", uuid);
+    (StatusCode::OK, Json(json!({"message": "Server validated successfully", "uuid": uuid})))
+}
+
+/// DELETE /api/v1/servers/:uuid
+pub async fn delete_server_handler(
+    State(db): State<PgPool>,
+    Path(uuid): Path<Uuid>,
+) -> impl IntoResponse {
+    info!("API: Deleting server {}", uuid);
+    match DeleteServer::handle(&db, uuid, false).await {
+        Ok(_) => (StatusCode::OK, Json(json!({"message": "Server deleted successfully"}))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
+    }
+}

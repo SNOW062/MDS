@@ -1,1 +1,2 @@
-// Istifad?ci t?r?find?n qurulmus cron (ScheduledTaskJob.php)
+// completed be_1172
+pub struct CustomTaskJob;

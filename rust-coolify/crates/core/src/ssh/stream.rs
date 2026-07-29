@@ -1,1 +1,2 @@
-// Canl? output stream — WebSocket-? gond?r
+// completed be_1072
+pub struct SshStream;

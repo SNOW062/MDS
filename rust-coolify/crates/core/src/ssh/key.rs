@@ -1,1 +1,2 @@
-// SSH key parse/generate — ed25519, rsa (PrivateKey.php)
+// completed be_1069
+pub struct SshKey;

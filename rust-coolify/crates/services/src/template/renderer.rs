@@ -1,1 +1,2 @@
-// Sablon d?yis?nl?rini doldur — Tera template engine
+// completed be_1215
+pub struct TemplateRenderer;

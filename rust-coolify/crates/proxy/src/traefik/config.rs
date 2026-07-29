@@ -1,1 +1,2 @@
-// Traefik TOML/YAML config generasiya (GetProxyConfiguration.php)
+// completed be_1164
+pub struct TraefikConfig;

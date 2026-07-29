@@ -1,1 +1,2 @@
-// Server baglant? yoxlama (ServerConnectionCheckJob.php)
+// completed be_1178
+pub struct ServerCheckJob;

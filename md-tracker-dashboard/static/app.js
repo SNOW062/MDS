@@ -669,17 +669,18 @@ function openSequenceModal(fileId) {
 
     modalBody.innerHTML = '';
     
-    // Find the clicked file to detect its category
-    const clickedFile = allFiles.find(f => f.id === fileId);
-    if (!clickedFile) return;
-
-    const pathLower = clickedFile.path.toLowerCase();
-    const categories = ['server', 'project', 'database', 'security', 'setting', 'team', 'storage', 'auth', 'service', 'oauth', 'toast', 'websocket', 'deploy'];
     let matchedKeyword = '';
-    for (const cat of categories) {
-        if (pathLower.includes(cat)) {
-            matchedKeyword = cat;
-            break;
+    if (fileId) {
+        const clickedFile = allFiles.find(f => f.id === fileId);
+        if (clickedFile) {
+            const pathLower = clickedFile.path.toLowerCase();
+            const categories = ['server', 'project', 'database', 'security', 'setting', 'team', 'storage', 'auth', 'service', 'oauth', 'toast', 'websocket', 'deploy'];
+            for (const cat of categories) {
+                if (pathLower.includes(cat)) {
+                    matchedKeyword = cat;
+                    break;
+                }
+            }
         }
     }
 
@@ -793,5 +794,184 @@ function closeSequenceModal() {
     }
 }
 
+// ===== TAB VIEW SWITCHING (QOVLUQ VS SEQUENCE VS YARIMÇIQ) =====
+let yarimciqData = [];
+let currentTab = 'tree';
+
+async function loadYarimciqData() {
+    try {
+        const res = await fetch('/api/yarimciq');
+        const data = await res.json();
+        yarimciqData = (data && data.files) ? data.files : [];
+        
+        const badge = document.getElementById('yarimciq-badge-count');
+        if (badge) {
+            badge.innerText = (data && data.total_count) ? data.total_count : 0;
+        }
+        
+        renderYarimciqList();
+    } catch (e) {
+        console.error("Yarımçıq fayllar datası yüklənərkən xəta:", e);
+    }
+}
+
+function renderYarimciqList() {
+    const tbody = document.getElementById('yarimciq-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    const searchVal = (document.getElementById('yarimciq-search')?.value || '').toLowerCase();
+    const statusVal = document.getElementById('yarimciq-status-filter')?.value || 'all';
+    
+    let filtered = yarimciqData.filter(item => {
+        const matchSearch = item.path.toLowerCase().includes(searchVal) || 
+                            item.id.toLowerCase().includes(searchVal) || 
+                            item.reason.toLowerCase().includes(searchVal) ||
+                            (item.source && item.source.toLowerCase().includes(searchVal));
+        const matchStatus = statusVal === 'all' || item.status === statusVal;
+        return matchSearch && matchStatus;
+    });
+    
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 30px;">Hər hansı bir yarımçıq fayl tapılmadı.</td></tr>`;
+        return;
+    }
+    
+    filtered.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        let statusBadgeText = item.status;
+        if (item.status === 'missing') statusBadgeText = 'ƏSKİK';
+        if (item.status === 'skelet') statusBadgeText = 'SKELET';
+        if (item.status === 'yarimciq') statusBadgeText = 'YARIMÇIQ (TODO)';
+        if (item.status === 'wip') statusBadgeText = 'GÖZLƏYİR';
+        
+        tr.innerHTML = `
+            <td><code class="task-id">${item.id}</code></td>
+            <td style="font-family: monospace; font-size: 11.5px; color: #a5b4fc;">${item.path}</td>
+            <td><span style="font-size: 11px; opacity: 0.7;">${item.category || 'General'}</span></td>
+            <td><span class="status-badge ${item.status}">${statusBadgeText}</span></td>
+            <td style="font-size: 11.5px; color: #cbd5e1;">${item.reason}</td>
+            <td>
+                <div style="display: flex; gap: 6px;">
+                    <button class="action-btn" onclick="showFileSpec('${item.id}')">⚙️ Metodlar</button>
+                    <button class="action-btn" onclick="navigator.clipboard.writeText('${item.path}'); showToast('Fayl yolu kopyalandı!')">📋 Yol</button>
+                    <button class="action-btn btn-success" onclick="showSourceViewer('${item.id}')">👁️ Kod</button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+async function showFileSpec(fileId) {
+    try {
+        const res = await fetch(`/api/file-spec?id=${encodeURIComponent(fileId)}`);
+        const data = await res.json();
+        
+        const modal = document.getElementById('spec-modal');
+        const modalBody = document.getElementById('spec-modal-body');
+        const fileIdSpan = document.getElementById('spec-file-id');
+        
+        if (!modal || !modalBody) return;
+        
+        fileIdSpan.innerText = fileId;
+        
+        let html = `
+            <div style="margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-size: 12px; opacity: 0.7;">Rust Faylı: <code style="color: #60a5fa;">${data.rust_path}</code></div>
+                <div style="font-size: 12px; opacity: 0.7; margin-top: 3px;">PHP Orijinalı: <code style="color: #a7f3d0;">${data.php_path}</code></div>
+                <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
+                    <strong style="font-size: 13px;">Tamamlanma Dərəcəsi:</strong>
+                    <div style="flex: 1; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div style="width: ${data.completion_percentage}%; background: ${data.completion_percentage === 100 ? '#10b981' : '#f59e0b'}; height: 100%;"></div>
+                    </div>
+                    <span style="font-weight: 800; font-size: 12px;">${data.completion_percentage}%</span>
+                </div>
+            </div>
+
+            <h3 style="font-size: 14px; color: #f87171; margin-top: 15px;">❌ ƏSKİK METOD VƏ FUNKSİYALAR (${data.missing_functions ? data.missing_functions.length : 0})</h3>
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
+        `;
+
+        if (data.missing_functions && data.missing_functions.length > 0) {
+            data.missing_functions.forEach(fn => {
+                html += `
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-family: monospace; font-size: 12px; color: #fca5a5;">❌ ${fn}()</span>
+                        <span style="font-size: 10px; color: #ef4444; font-weight: bold;">ƏSKİKDİR</span>
+                    </div>
+                `;
+            });
+        } else {
+            html += `<div style="color: #10b981; font-size: 12px; padding: 5px;">✅ Bütün PHP metodları tamamilə yazılıb!</div>`;
+        }
+
+        html += `
+            <h3 style="font-size: 14px; color: #34d399; margin-top: 15px;">✅ YAZILMIŞ VƏ TAMAMLANMIŞ METODLAR (${data.completed_functions ? data.completed_functions.length : 0})</h3>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+        `;
+
+        if (data.completed_functions && data.completed_functions.length > 0) {
+            data.completed_functions.forEach(fn => {
+                html += `
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-family: monospace; font-size: 12px; color: #6ee7b7;">✅ ${fn}()</span>
+                        <span style="font-size: 10px; color: #10b981; font-weight: bold;">YAZILIB</span>
+                    </div>
+                `;
+            });
+        } else {
+            html += `<div style="color: #94a3b8; font-size: 12px; padding: 5px;">Hələ heç bir metod yazılmayıb.</div>`;
+        }
+
+        modalBody.innerHTML = html;
+        modal.classList.add('active');
+    } catch (e) {
+        console.error("File spec çəkilərkən xəta:", e);
+    }
+}
+
+function closeSpecModal() {
+    const modal = document.getElementById('spec-modal');
+    if (modal) modal.classList.remove('active');
+}
+
+function switchView(viewName) {
+    currentTab = viewName;
+    const tabTree = document.getElementById('tab-tree');
+    const tabSeq = document.getElementById('tab-sequence');
+    const tabYarimciq = document.getElementById('tab-yarimciq');
+    
+    const treeGrid = document.getElementById('resizable-grid');
+    const yarimciqPanel = document.getElementById('yarimciq-view-panel');
+    const viewerSection = document.getElementById('source-viewer-section');
+    
+    if (viewerSection) viewerSection.className = 'source-viewer-hidden';
+    
+    tabTree.classList.remove('active');
+    tabSeq.classList.remove('active');
+    if (tabYarimciq) tabYarimciq.classList.remove('active');
+    
+    if (viewName === 'tree') {
+        tabTree.classList.add('active');
+        treeGrid.style.setProperty('display', 'flex', 'important');
+        if (yarimciqPanel) yarimciqPanel.style.setProperty('display', 'none', 'important');
+        closeSequenceModal();
+    } else if (viewName === 'sequence') {
+        tabSeq.classList.add('active');
+        openSequenceModal();
+    } else if (viewName === 'yarimciq') {
+        if (tabYarimciq) tabYarimciq.classList.add('active');
+        treeGrid.style.setProperty('display', 'none', 'important');
+        if (yarimciqPanel) yarimciqPanel.style.setProperty('display', 'flex', 'important');
+        closeSequenceModal();
+        loadYarimciqData();
+    }
+}
+
 fetchData();
+loadYarimciqData();
 setInterval(fetchData, 4000);
+

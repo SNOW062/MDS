@@ -1,6 +1,6 @@
 {
   "project": "MasterDeploy Rust-Coolify",
-  "last_updated": "2026-07-28T17:00:50.392786Z",
+  "last_updated": "2026-07-29T09:15:27.297830Z",
   "files": [
     {
       "id": "mig_001",
@@ -3168,55 +3168,55 @@
       "id": "file_0528",
       "path": "crates/api/src/middleware/api_ability.rs",
       "source": "app/Http/Middleware/ApiAbility.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0529",
       "path": "crates/api/src/middleware/api_allowed.rs",
       "source": "app/Http/Middleware/ApiAllowed.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0530",
       "path": "crates/api/src/middleware/api_sensitive_data.rs",
       "source": "app/Http/Middleware/ApiSensitiveData.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0531",
       "path": "crates/api/src/middleware/authenticate.rs",
       "source": "app/Http/Middleware/Authenticate.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0532",
       "path": "crates/api/src/middleware/can_access_terminal.rs",
       "source": "app/Http/Middleware/CanAccessTerminal.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0533",
       "path": "crates/api/src/middleware/can_create_resources.rs",
       "source": "app/Http/Middleware/CanCreateResources.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0534",
       "path": "crates/api/src/middleware/can_update_resource.rs",
       "source": "app/Http/Middleware/CanUpdateResource.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0535",
       "path": "crates/api/src/middleware/check_force_password_reset.rs",
       "source": "app/Http/Middleware/CheckForcePasswordReset.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0536",
       "path": "crates/api/src/middleware/decide_what_to_do_with_user.rs",
       "source": "app/Http/Middleware/DecideWhatToDoWithUser.php",
-      "status": "missing"
+      "status": "completed"
     },
     {
       "id": "file_0537",
@@ -7046,7 +7046,7 @@
       "path": "crates/api/src/routes/servers.rs",
       "source": "app/Http/Controllers/Api",
       "status": "completed",
-      "note": "Hetzner, Vultr, DO API inteqrasiyaları, Sentinel və Log drain sazlamaları bu backend routes daxilində tam işlənmişdir."
+      "note": "Hetzner, Vultr, DO API inteqrasiyalar\u0131, Sentinel v\u0259 Log drain sazlamalar\u0131 bu backend routes daxilind\u0259 tam i\u015fl\u0259nmi\u015fdir."
     },
     {
       "id": "be_1033",

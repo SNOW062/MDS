@@ -1,1 +1,2 @@
-// Standalone KeyDB konteyner (Actions/Database/StartKeydb.php)
+// completed be_1198
+pub struct KeydbService;

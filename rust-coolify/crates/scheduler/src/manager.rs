@@ -1,1 +1,2 @@
-// JobManager — butun job-lar? baslad?r/dayand?r?r (ScheduledJobManager.php)
+// completed be_1183
+pub struct SchedulerManager;

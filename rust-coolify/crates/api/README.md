@@ -1,19 +1,44 @@
-# ??? X?RIT? — crates/api
-> **Agent ucun GPS.** Bu fayl? oxu, sonra is? basla.
+# completed meta_api_readme_md
+# rc-api MasterDeploy HTTP API Server
 
-## ?? S?n Harda Durursun?
-e:\MD\rust-coolify\crates\api\
+Coolify PHP backend-inin Rust ile yeniden yazilmasi.
+Bu crate, axum framework uzeredeki REST API server-i implement edir.
 
-## ?? S?nin V?zif?n
-Axum HTTP REST serverini, WebSocket kanallar?n? v? marsrutlar? (routes) qurmaq.
-Butun endpoint-l?r openapi.yaml spesifikasiyas?na tam uygun olmal?d?r.
-**Yaln?z crates/api/ qovluguna yaz.**
+## Arxitektura
 
-## ?? ?VV?LC? BUNLAR BITM?LIDIR
-- c-db, c-auth, c-core v? c-deployer crate-l?ri haz?r olmal?d?r.
+- main.rs        - Server giris noktesi
+- state.rs       - AppState (DB + Config)
+- kernel.rs      - Middleware stack konfiqurasiyasi
+- middleware/    - Auth, CORS, MCP, Maintenance, TrustHosts, CSRF vs.
+- routes/        - Application, Database, Server, Project, Deploy route-lari
+- routes/api/    - API v1 controller-lari
+- routes/webhook - GitHub, GitLab, Bitbucket, Gitea, Stripe webhook-lari
+- dto/           - Data Transfer Objects
+- websocket/     - WebSocket endpoint-leri
 
-## ?? ACAR REFERANS
-- coolify-source/openapi.yaml -> Butun endpoint request/response formatlar? buradad?r.
+## Endpointler
 
-## ? BITDI SAYILIR ?G?R
-cargo build -p rc-api x?tas?z tamamlan?rsa v? butun endpoint-l?r mock/real data il? cavab verirs?.
+GET  /api/health                    - Saglamliq yoxlamasi
+GET  /api/applications              - Tetbiqlerin siyahisi
+POST /api/applications              - Yeni tetbiq yarat
+POST /api/applications/:uuid/deploy - Deploy baslat
+POST /api/applications/:uuid/stop   - Tetbiqi dondur
+GET  /api/databases                 - Verilenbazalar (PG, MySQL, Redis, Mongo...)
+GET  /api/servers                   - Serverler
+GET  /api/projects                  - Proyektler
+POST /api/deploy                    - Resursu deploy et
+GET  /api/security/keys             - SSH acarlari
+POST /api/scheduled-tasks           - Cron tapsirig yarat
+
+## Authentication
+
+Bearer token ile qorunan endpointler:
+  Authorization: Bearer <token>
+
+## Coolify Menbe Xeritesi
+
+Coolify PHP                         -> Rust Ekvivalenti
+app/Http/Kernel.php                 -> src/kernel.rs
+app/Http/Middleware/ApiAllowed.php  -> middleware/auth.rs
+app/Http/Controllers/Api/           -> routes/api/
+routes/api.php                      -> routes/mod.rs

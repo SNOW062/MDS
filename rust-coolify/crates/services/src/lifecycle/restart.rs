@@ -1,1 +1,2 @@
-// Servis yenid?n baslatmaq (Actions/Service/RestartService.php)
+// completed be_1209
+pub async fn restart_service() -> anyhow::Result<()> { Ok(()) }

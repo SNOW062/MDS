@@ -174,3 +174,56 @@ async fn get_service_logs_handler(
         "logs": format!("Fetching logs for service {}...", uuid)
     })))
 }
+        payload.name,
+        payload.docker_compose_raw,
+        uuid
+    )
+    .execute(&db)
+    .await;
+
+    match res {
+        Ok(_) => (StatusCode::OK, Json(json!({"message": "Service stack updated successfully"}))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
+    }
+}
+
+/// DELETE /api/v1/services/:uuid
+pub async fn delete_service(
+    State(db): State<PgPool>,
+    Path(uuid): Path<Uuid>,
+) -> impl IntoResponse {
+    info!("API: Deleting service stack {}", uuid);
+
+    let res = sqlx::query!("DELETE FROM services WHERE uuid = $1", uuid)
+        .execute(&db)
+        .await;
+
+    match res {
+        Ok(_) => (StatusCode::OK, Json(json!({"message": "Service stack deleted successfully"}))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
+    }
+}
+
+/// POST /api/v1/services/:uuid/start
+pub async fn start_service_handler(
+    State(db): State<PgPool>,
+    Path(uuid): Path<Uuid>,
+) -> impl IntoResponse {
+    info!("API: Starting service stack {}", uuid);
+    match StartService::handle(&db, uuid, None).await {
+        Ok(_) => (StatusCode::OK, Json(json!({"message": "Service stack started successfully"}))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
+    }
+}
+
+/// POST /api/v1/services/:uuid/stop
+pub async fn stop_service_handler(
+    State(db): State<PgPool>,
+    Path(uuid): Path<Uuid>,
+) -> impl IntoResponse {
+    info!("API: Stopping service stack {}", uuid);
+    match StopService::handle(&db, uuid, None).await {
+        Ok(_) => (StatusCode::OK, Json(json!({"message": "Service stack stopped successfully"}))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
+    }
+}

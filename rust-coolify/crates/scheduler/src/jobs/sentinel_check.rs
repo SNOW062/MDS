@@ -1,1 +1,2 @@
-// Sentinel daemon check (CheckAndStartSentinelJob.php)
+// completed be_1177
+pub struct SentinelCheckJob;

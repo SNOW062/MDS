@@ -17,7 +17,208 @@ COOLIFY_DIR = os.path.join(MDS_DIR, "rust-coolify")
 COOLIFY_SOURCE_DIR = os.path.join(MD_DIR, "coolify-source")
 TRACKER_JSON = os.path.join(COOLIFY_DIR, "MAP_TRACKER.json")
 ASSIGNMENTS_JSON = os.path.join(COOLIFY_DIR, "ASSIGNMENTS.json")
+YARIMCIQ_JSON = os.path.join(COOLIFY_DIR, "yarimciq.json")
 PORT = 2000
+
+def get_yarimciq_data():
+    if not os.path.exists(TRACKER_JSON):
+        return {"total_count": 0, "files": []}
+    
+    with open(TRACKER_JSON, 'r', encoding='utf-8') as f:
+        tracker_data = json.load(f)
+
+    yarimciq_list = []
+    for file_entry in tracker_data.get("files", []):
+        file_id = file_entry.get("id")
+        rel_path = file_entry.get("path")
+        source_path = file_entry.get("source")
+        category = file_entry.get("category", "General")
+        full_path = os.path.join(COOLIFY_DIR, rel_path)
+        
+        # 1. Fayl diskdə yoxdursa -> MISSING (Əskik)
+        if not os.path.exists(full_path):
+            yarimciq_list.append({
+                "id": file_id,
+                "path": rel_path,
+                "source": source_path,
+                "category": category,
+                "status": "missing",
+                "reason": "Fayl diski üzərində ümumiyyətlə yaradılmayıb",
+                "size_bytes": 0
+            })
+            continue
+
+        try:
+            content = ""
+            for encoding in ['utf-8', 'latin-1', 'cp1254']:
+                try:
+                    with open(full_path, 'r', encoding=encoding) as f:
+                        content = f.read()
+                    break
+                except UnicodeDecodeError:
+                    continue
+
+            # 2. Xüsusi completed rəsmi marker tag-ı varmı?
+            pattern = rf"(//|--|#)\s*completed\s+{file_id}"
+            has_completed_tag = bool(re.search(pattern, content, re.IGNORECASE))
+
+            lines = [l for l in content.strip().split('\n') if l.strip()]
+            code_lines = [l for l in lines if not l.strip().startswith("//") and not l.strip().startswith("/*") and not l.strip().startswith("*")]
+
+            # PHP Mənbə faylının ölçüsü müqayisəsi
+            source_size = 0
+            if source_path and source_path not in ["app", "Cargo.toml", "README.md"]:
+                full_source_path = os.path.join(COOLIFY_SOURCE_DIR, source_path)
+                if os.path.exists(full_source_path) and os.path.isfile(full_source_path):
+                    source_size = os.path.getsize(full_source_path)
+
+            current_size = len(content.encode('utf-8'))
+
+            # 3. Analiz şərtləri:
+            if len(code_lines) == 0:
+                yarimciq_list.append({
+                    "id": file_id,
+                    "path": rel_path,
+                    "source": source_path,
+                    "category": category,
+                    "status": "skelet",
+                    "reason": "Yalnız kommentlərdən ibarətdir, kod yazılmayıb",
+                    "size_bytes": current_size
+                })
+            elif len(code_lines) < 5 or (current_size < 350 and not has_completed_tag):
+                yarimciq_list.append({
+                    "id": file_id,
+                    "path": rel_path,
+                    "source": source_path,
+                    "category": category,
+                    "status": "skelet",
+                    "reason": "Fayl kiçik skeletdir (5 sətirdən az və ya 350 baytdan kiçik)",
+                    "size_bytes": current_size
+                })
+            elif "todo!(" in content or "unimplemented!(" in content or "TODO" in content:
+                yarimciq_list.append({
+                    "id": file_id,
+                    "path": rel_path,
+                    "source": source_path,
+                    "category": category,
+                    "status": "yarimciq",
+                    "reason": "Daxilində yarımçıq todo!() / TODO qeydləri tapıldı",
+                    "size_bytes": current_size
+                })
+            elif source_size > 3000 and current_size < (source_size * 0.15) and not has_completed_tag:
+                # PHP koda nisbətən Rust kodu 15%-dən kiçikdir və completed marker yoxdursa
+                yarimciq_list.append({
+                    "id": file_id,
+                    "path": rel_path,
+                    "source": source_path,
+                    "category": category,
+                    "status": "yarimciq",
+                    "reason": f"PHP orijinalı {round(source_size/1024, 1)} KB-dır, lakin Rust faylı cəmi {round(current_size/1024, 1)} KB (çox funksiya əskikdir)",
+                    "size_bytes": current_size
+                })
+            elif not has_completed_tag:
+                yarimciq_list.append({
+                    "id": file_id,
+                    "path": rel_path,
+                    "source": source_path,
+                    "category": category,
+                    "status": "wip",
+                    "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+                    "size_bytes": current_size
+                })
+
+        except Exception as e:
+            yarimciq_list.append({
+                "id": file_id,
+                "path": rel_path,
+                "source": source_path,
+                "category": category,
+                "status": "error",
+                "reason": f"Fayl analizində xəta: {str(e)}",
+                "size_bytes": 0
+            })
+
+    output_data = {
+        "total_count": len(yarimciq_list),
+        "files": yarimciq_list
+    }
+    
+    try:
+        with open(YARIMCIQ_JSON, 'w', encoding='utf-8') as f:
+            json.dump(output_data, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print("yarimciq.json yazılarkən xəta:", e)
+
+    return output_data
+
+def get_file_deep_spec(file_id):
+    if not os.path.exists(TRACKER_JSON):
+        return {}
+    
+    with open(TRACKER_JSON, 'r', encoding='utf-8') as f:
+        tracker = json.load(f)
+
+    entry = next((f for f in tracker.get("files", []) if f["id"] == file_id), None)
+    if not entry:
+        return {}
+
+    rust_rel = entry.get("path")
+    php_rel = entry.get("source")
+
+    abs_php = os.path.join(COOLIFY_SOURCE_DIR, php_rel) if php_rel else None
+    abs_rust = os.path.join(COOLIFY_DIR, rust_rel) if rust_rel else None
+
+    # PHP-dən funksiyaları və dəyişənləri oxu
+    php_funcs = []
+    php_props = []
+    if abs_php and os.path.exists(abs_php) and not os.path.isdir(abs_php):
+        try:
+            with open(abs_php, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            php_funcs = list(set(re.findall(r'(?:public|protected|private|static)\s+function\s+([a-zA-Z0-9_]+)\s*\(', content)))
+            php_props = list(set(re.findall(r'(?:public|protected|private)\s+(?:\?[a-zA-Z0-9_]+\s+)?\$([a-zA-Z0-9_]+)', content)))
+        except:
+            pass
+
+    # Rust/TS-dən funksiyaları və struct-ları oxu
+    rust_funcs = []
+    rust_structs = []
+    if abs_rust and os.path.exists(abs_rust) and not os.path.isdir(abs_rust):
+        try:
+            with open(abs_rust, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            rust_funcs = list(set(re.findall(r'fn\s+([a-zA-Z0-9_]+)\s*[\(<]', content)))
+            rust_structs = list(set(re.findall(r'struct\s+([a-zA-Z0-9_]+)', content)))
+        except:
+            pass
+
+    completed_funcs = []
+    missing_funcs = []
+
+    for pf in php_funcs:
+        snake_name = re.sub(r'(?<!^)(?=[A-Z])', '_', pf).lower()
+        if pf.lower() in [rf.lower() for rf in rust_funcs] or snake_name in [rf.lower() for rf in rust_funcs]:
+            completed_funcs.append(pf)
+        else:
+            missing_funcs.append(pf)
+
+    total_funcs = len(php_funcs)
+    done_funcs = len(completed_funcs)
+    pct = round((done_funcs / total_funcs * 100), 1) if total_funcs > 0 else 100.0
+
+    return {
+        "file_id": file_id,
+        "rust_path": rust_rel,
+        "php_path": php_rel,
+        "php_properties": php_props,
+        "php_functions_total": total_funcs,
+        "completed_functions": completed_funcs,
+        "missing_functions": missing_funcs,
+        "rust_existing_functions": rust_funcs,
+        "rust_structs": rust_structs,
+        "completion_percentage": pct
+    }
+
 
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 WATCHED_FILES = [
@@ -343,6 +544,29 @@ class DashboardHTTPHandler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode("utf-8"))
             return
 
+        elif parsed_url.path == "/api/file-spec":
+            query = urllib.parse.parse_qs(parsed_url.query)
+            file_id = query.get("id", [None])[0]
+            if file_id:
+                spec = get_file_deep_spec(file_id)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(spec, ensure_ascii=False).encode("utf-8"))
+            else:
+                self.send_error(400, "Missing file id")
+            return
+
+        elif parsed_url.path == "/api/yarimciq":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            data = get_yarimciq_data()
+            self.wfile.write(json.dumps(data, ensure_ascii=False).encode("utf-8"))
+            return
+
         elif parsed_url.path == "/api/data":
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
@@ -351,6 +575,17 @@ class DashboardHTTPHandler(SimpleHTTPRequestHandler):
             
             tracker_data = get_tracker_data()
             assignments = load_assignments()
+            
+            # ✅ AUTO-CLEANUP: Tamamlanmış işləri assignment-dən avtomatik sil
+            status_map = {f["id"]: f["status"] for f in tracker_data["files"]}
+            changed = False
+            for agent in assignments["assignments"]:
+                before = len(agent["file_ids"])
+                agent["file_ids"] = [fid for fid in agent["file_ids"] if status_map.get(fid) != "completed"]
+                if len(agent["file_ids"]) < before:
+                    changed = True
+            if changed:
+                save_assignments(assignments)
             
             # Faylların ölçülərini dinamik hesablayaq
             updated_files = []
@@ -379,6 +614,7 @@ class DashboardHTTPHandler(SimpleHTTPRequestHandler):
                 "assignments": assignments["assignments"]
             }
             self.wfile.write(json.dumps(response).encode("utf-8"))
+
             
         elif parsed_url.path == "/api/view-source":
             query = urllib.parse.parse_qs(parsed_url.query)

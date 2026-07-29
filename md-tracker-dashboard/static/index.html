@@ -86,10 +86,27 @@
             </div>
         </div>
 
-        <!-- TAB İDARƏETMƏSİ (QOVLUQ VS YIĞILMA ARDICILLIĞI) -->
+        <!-- 🔍 FAYL İÇİ DƏRİN METOD VƏ FUNKSİYA CHECKLIST MODALI -->
+        <div id="spec-modal" class="modal-overlay">
+            <div class="modal-content glass" style="max-width: 700px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
+                <div class="modal-header">
+                    <h2>⚙️ Fayl Metod və Funksiya Siyahısı (<span id="spec-file-id">ID</span>)</h2>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="action-btn btn-success" onclick="copySpecAsText()">📋 Siyahını Kopyala</button>
+                        <button class="close-modal-btn" onclick="closeSpecModal()">&times;</button>
+                    </div>
+                </div>
+                <div id="spec-modal-body" style="overflow-y: auto; padding: 15px; flex-grow: 1;">
+                    <!-- Dinamik funksiya və struct checklist-i bura gələcək -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB İDARƏETMƏSİ (QOVLUQ VS YIĞILMA ARDICILLIĞI VS YARIMÇIQ İŞLƏR) -->
         <div class="tab-navigation">
             <button class="tab-btn active" id="tab-tree" onclick="switchView('tree')">📂 Qovluq Ağacı</button>
             <button class="tab-btn" id="tab-sequence" onclick="switchView('sequence')">⚡ Yığılma Növbəsi (Mərhələli)</button>
+            <button class="tab-btn" id="tab-yarimciq" onclick="switchView('yarimciq')">⚠️ Yarımçıq İşlər Siyahısı (<span id="yarimciq-badge-count">0</span>)</button>
         </div>
 
         <!-- 3 SÜTUNLU LAYOUT (DARTILA BİLƏN RESIZER-LƏR ƏLAVƏ EDİLDİ) -->
@@ -135,6 +152,45 @@
             </section>
 
         </main>
+
+        <!-- TAB 3: YARIMÇIQ İŞLƏR SİYAHISI BÖLMƏSİ -->
+        <section class="yarimciq-panel" id="yarimciq-view-panel" style="display: none;">
+            <div class="yarimciq-header glass">
+                <div class="yarimciq-header-left">
+                    <h2>⚠️ Yarımçıq və Skelet Fayllar</h2>
+                    <p>Skan nəticəsində əskik, skelet və ya `todo!()` olan fayllar `yarimciq.json` faylına daxil edilib.</p>
+                </div>
+                <div class="yarimciq-filter-group">
+                    <input type="text" id="yarimciq-search" placeholder="🔍 Yarımçıq fayl axtar..." oninput="renderYarimciqList()">
+                    <select id="yarimciq-status-filter" onchange="renderYarimciqList()">
+                        <option value="all">Bütün Statuslar</option>
+                        <option value="missing">Əskik (Yaradılmayıb)</option>
+                        <option value="skelet">Skelet / Yalnız Comment</option>
+                        <option value="yarimciq">Todo!() / Unimplemented!()</option>
+                        <option value="wip">Gözləyən / Tamamlanmayan</option>
+                    </select>
+                    <button class="action-btn btn-primary" onclick="loadYarimciqData()">🔄 Yenilə</button>
+                </div>
+            </div>
+            <div class="yarimciq-table-container glass">
+                <table class="yarimciq-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fayl Yolu (Path)</th>
+                            <th>Kateqoriya</th>
+                            <th>Status</th>
+                            <th>Yarımçıq Olma Səbəbi</th>
+                            <th>Əməliyyat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yarimciq-table-body">
+                        <!-- Dinamik yarımçıq fayllar sırası bura gələcək -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
 
         <!-- DAXİLİ MÜQAYİSƏ BÖLMƏSİ (STANDART OLARAQ GİZLİDİR) -->
         <section id="source-viewer-section" class="source-viewer-hidden">

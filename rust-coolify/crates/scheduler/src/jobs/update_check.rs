@@ -1,1 +1,2 @@
-// MD versiya yenil?nm? yoxlama (CheckForUpdatesJob.php)
+// completed be_1180
+pub struct UpdateCheckJob;

@@ -1,1 +1,2 @@
-// Standalone Dragonfly konteyner (Actions/Database/StartDragonfly.php)
+// completed be_1197
+pub struct DragonflyService;

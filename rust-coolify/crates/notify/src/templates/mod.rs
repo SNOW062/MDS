@@ -1,5 +1,13 @@
-pub mod deploy_success;
-pub mod deploy_failed;
+pub mod deployment_success;
+pub mod deployment_failed;
+pub mod database_backup_success;
+pub mod database_backup_failed;
 pub mod server_unreachable;
-pub mod backup_done;
+pub mod server_reachable;
+pub mod high_disk_usage;
+pub mod container_restarted;
 pub mod ssl_expiring;
+pub mod task_success;
+pub mod task_failed;
+pub mod reset_password;
+pub mod invitation_link;

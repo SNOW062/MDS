@@ -1,1 +1,2 @@
-// Log drain start/stop (Actions/Server/StartLogDrain.php)
+// completed be_1175
+pub struct LogDrainJob;

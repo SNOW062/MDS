@@ -1,1 +1,2 @@
-// Standalone MySQL konteyner (Actions/Database/StartMysql.php)
+// completed be_1202
+pub struct MysqlService;

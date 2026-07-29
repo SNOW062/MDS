@@ -1,1 +1,3 @@
-﻿// rc-notify - Bildiris kanallari\npub mod email;\npub mod slack;\npub mod discord;\npub mod telegram;\npub mod webhook;\n
+pub mod channels;
+pub mod templates;
+pub mod notification_manager;

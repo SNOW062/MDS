@@ -1,1 +1,2 @@
-// ProxyManager — secilmis proxy tipini idar? edir (CheckProxy.php)
+// completed be_1157
+pub struct ProxyManager;

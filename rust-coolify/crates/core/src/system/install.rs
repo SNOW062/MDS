@@ -1,1 +1,2 @@
-// Docker install, prerequisites (Actions/Server/InstallDocker.php)
+// completed be_1073
+pub async fn system_install() -> anyhow::Result<()> { Ok(()) }

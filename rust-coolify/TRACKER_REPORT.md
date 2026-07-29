@@ -1,8 +1,8 @@
 # 📊 Proyektin İzlənmə Hesabatı (TRACKER_REPORT.md)
 
-**Son Yenilənmə:** 2026-07-28 17:00:50
+**Son Yenilənmə:** 2026-07-29 09:15:27
 
-**Ümumi Tərəqqi:** 550/1357 fayl (40.5%)
+**Ümumi Tərəqqi:** 582/1362 fayl (42.7%)
 
 | ID | Fayl Yolu | Status | Göstərici |
 |----|-----------|--------|-----------|
@@ -533,15 +533,15 @@
 | `file_0525` | `crates/api/src/routes/webhook/stripe.rs` | MISSING | ❌ File Missing |
 | `file_0526` | `crates/api/src/routes/webhook/concerns/detects_skip_deploy_commits.rs` | MISSING | ❌ File Missing |
 | `file_0527` | `crates/api/src/routes/webhook/concerns/matches_manual_webhook_applications.rs` | MISSING | ❌ File Missing |
-| `file_0528` | `crates/api/src/middleware/api_ability.rs` | MISSING | ❌ File Missing |
-| `file_0529` | `crates/api/src/middleware/api_allowed.rs` | MISSING | ❌ File Missing |
-| `file_0530` | `crates/api/src/middleware/api_sensitive_data.rs` | MISSING | ❌ File Missing |
-| `file_0531` | `crates/api/src/middleware/authenticate.rs` | MISSING | ❌ File Missing |
-| `file_0532` | `crates/api/src/middleware/can_access_terminal.rs` | MISSING | ❌ File Missing |
-| `file_0533` | `crates/api/src/middleware/can_create_resources.rs` | MISSING | ❌ File Missing |
-| `file_0534` | `crates/api/src/middleware/can_update_resource.rs` | MISSING | ❌ File Missing |
-| `file_0535` | `crates/api/src/middleware/check_force_password_reset.rs` | MISSING | ❌ File Missing |
-| `file_0536` | `crates/api/src/middleware/decide_what_to_do_with_user.rs` | MISSING | ❌ File Missing |
+| `file_0528` | `crates/api/src/middleware/api_ability.rs` | COMPLETED | 🟢 Completed |
+| `file_0529` | `crates/api/src/middleware/api_allowed.rs` | COMPLETED | 🟢 Completed |
+| `file_0530` | `crates/api/src/middleware/api_sensitive_data.rs` | COMPLETED | 🟢 Completed |
+| `file_0531` | `crates/api/src/middleware/authenticate.rs` | COMPLETED | 🟢 Completed |
+| `file_0532` | `crates/api/src/middleware/can_access_terminal.rs` | COMPLETED | 🟢 Completed |
+| `file_0533` | `crates/api/src/middleware/can_create_resources.rs` | COMPLETED | 🟢 Completed |
+| `file_0534` | `crates/api/src/middleware/can_update_resource.rs` | COMPLETED | 🟢 Completed |
+| `file_0535` | `crates/api/src/middleware/check_force_password_reset.rs` | COMPLETED | 🟢 Completed |
+| `file_0536` | `crates/api/src/middleware/decide_what_to_do_with_user.rs` | COMPLETED | 🟢 Completed |
 | `file_0537` | `crates/api/src/middleware/encrypt_cookies.rs` | MISSING | ❌ File Missing |
 | `file_0538` | `crates/api/src/middleware/ensure_mcp_enabled.rs` | MISSING | ❌ File Missing |
 | `file_0539` | `crates/api/src/middleware/ensure_team_mcp_enabled.rs` | MISSING | ❌ File Missing |
@@ -1076,6 +1076,11 @@
 | `ui_page_051` | `ui/src/pages/profile/ProfilePage.tsx` | COMPLETED | 🟢 Completed |
 | `ui_page_052` | `ui/src/pages/admin/AdminPage.tsx` | COMPLETED | 🟢 Completed |
 | `ui_page_053` | `ui/src/pages/sources/SourcesPage.tsx` | COMPLETED | 🟢 Completed |
+| `ui_page_054` | `ui/src/pages/server/ServerSecurityPage.tsx` | COMPLETED | 🟢 Completed |
+| `ui_page_055` | `ui/src/pages/server/ServerResourcesPage.tsx` | COMPLETED | 🟢 Completed |
+| `ui_page_056` | `ui/src/pages/server/ServerLogDrainsPage.tsx` | COMPLETED | 🟢 Completed |
+| `ui_page_057` | `ui/src/pages/server/ServerPrivateKeyPage.tsx` | COMPLETED | 🟢 Completed |
+| `ui_page_058` | `ui/src/pages/server/ServerCaCertificatePage.tsx` | COMPLETED | 🟢 Completed |
 | `ui_comp_054` | `ui/src/components/ui/Button.tsx` | COMPLETED | 🟢 Completed |
 | `ui_comp_055` | `ui/src/components/ui/Input.tsx` | COMPLETED | 🟢 Completed |
 | `ui_comp_056` | `ui/src/components/ui/Textarea.tsx` | COMPLETED | 🟢 Completed |
@@ -1125,31 +1130,31 @@
 | `ui_infra_100` | `ui/src/mocks/projects.ts` | COMPLETED | 🟢 Completed |
 | `meta_api_cargo_toml` | `crates/api/Cargo.toml` | WIP | 🟡 In Progress |
 | `meta_api_readme_md` | `crates/api/README.md` | WIP | 🟡 In Progress |
-| `be_1018` | `crates/api/src/dto/mod.rs` | TODO | 🔴 Todo |
-| `be_1019` | `crates/api/src/main.rs` | WIP | 🟡 In Progress |
-| `be_1020` | `crates/api/src/middleware/auth.rs` | TODO | 🔴 Todo |
-| `be_1021` | `crates/api/src/middleware/cors.rs` | TODO | 🔴 Todo |
-| `be_1022` | `crates/api/src/middleware/mod.rs` | TODO | 🔴 Todo |
-| `be_1023` | `crates/api/src/middleware/rate_limit.rs` | TODO | 🔴 Todo |
+| `be_1018` | `crates/api/src/dto/mod.rs` | COMPLETED | 🟢 Completed |
+| `be_1019` | `crates/api/src/main.rs` | COMPLETED | 🟢 Completed |
+| `be_1020` | `crates/api/src/middleware/auth.rs` | COMPLETED | 🟢 Completed |
+| `be_1021` | `crates/api/src/middleware/cors.rs` | COMPLETED | 🟢 Completed |
+| `be_1022` | `crates/api/src/middleware/mod.rs` | COMPLETED | 🟢 Completed |
+| `be_1023` | `crates/api/src/middleware/rate_limit.rs` | COMPLETED | 🟢 Completed |
 | `be_1024` | `crates/api/src/routes/applications.rs` | WIP | 🟡 In Progress |
 | `be_1025` | `crates/api/src/routes/databases.rs` | WIP | 🟡 In Progress |
 | `be_1026` | `crates/api/src/routes/deployments.rs` | WIP | 🟡 In Progress |
 | `be_1027` | `crates/api/src/routes/health.rs` | WIP | 🟡 In Progress |
 | `be_1028` | `crates/api/src/routes/mod.rs` | WIP | 🟡 In Progress |
 | `be_1029` | `crates/api/src/routes/private_keys.rs` | WIP | 🟡 In Progress |
-| `be_1030` | `crates/api/src/routes/projects.rs` | WIP | 🟡 In Progress |
+| `be_1030` | `crates/api/src/routes/projects.rs` | COMPLETED | 🟢 Completed |
 | `be_1031` | `crates/api/src/routes/scheduled_tasks.rs` | WIP | 🟡 In Progress |
-| `be_1032` | `crates/api/src/routes/servers.rs` | WIP | 🟡 In Progress |
-| `be_1033` | `crates/api/src/routes/services.rs` | WIP | 🟡 In Progress |
-| `be_1034` | `crates/api/src/routes/settings.rs` | WIP | 🟡 In Progress |
-| `be_1035` | `crates/api/src/routes/storage.rs` | WIP | 🟡 In Progress |
-| `be_1036` | `crates/api/src/routes/teams.rs` | WIP | 🟡 In Progress |
-| `be_1037` | `crates/api/src/routes/users.rs` | WIP | 🟡 In Progress |
-| `be_1038` | `crates/api/src/routes/webhooks.rs` | WIP | 🟡 In Progress |
-| `be_1039` | `crates/api/src/state.rs` | WIP | 🟡 In Progress |
-| `be_1040` | `crates/api/src/websocket/deploy_log.rs` | TODO | 🔴 Todo |
-| `be_1041` | `crates/api/src/websocket/mod.rs` | WIP | 🟡 In Progress |
-| `be_1042` | `crates/api/src/websocket/terminal.rs` | TODO | 🔴 Todo |
+| `be_1032` | `crates/api/src/routes/servers.rs` | COMPLETED | 🟢 Completed |
+| `be_1033` | `crates/api/src/routes/services.rs` | COMPLETED | 🟢 Completed |
+| `be_1034` | `crates/api/src/routes/settings.rs` | COMPLETED | 🟢 Completed |
+| `be_1035` | `crates/api/src/routes/storage.rs` | COMPLETED | 🟢 Completed |
+| `be_1036` | `crates/api/src/routes/teams.rs` | COMPLETED | 🟢 Completed |
+| `be_1037` | `crates/api/src/routes/users.rs` | COMPLETED | 🟢 Completed |
+| `be_1038` | `crates/api/src/routes/webhooks.rs` | COMPLETED | 🟢 Completed |
+| `be_1039` | `crates/api/src/state.rs` | COMPLETED | 🟢 Completed |
+| `be_1040` | `crates/api/src/websocket/deploy_log.rs` | COMPLETED | 🟢 Completed |
+| `be_1041` | `crates/api/src/websocket/mod.rs` | COMPLETED | 🟢 Completed |
+| `be_1042` | `crates/api/src/websocket/terminal.rs` | COMPLETED | 🟢 Completed |
 | `meta_auth_cargo_toml` | `crates/auth/Cargo.toml` | COMPLETED | 🟢 Completed |
 | `meta_auth_readme_md` | `crates/auth/README.md` | COMPLETED | 🟢 Completed |
 | `be_1043` | `crates/auth/src/lib.rs` | COMPLETED | 🟢 Completed |
