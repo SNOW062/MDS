@@ -1,4 +1,4 @@
-// completed file_0832
+// completed be_1137
 // Coolify mənbəsi: app/Notifications/Channels/EmailChannel.php
 use anyhow::{Result, anyhow};
 use tracing::info;

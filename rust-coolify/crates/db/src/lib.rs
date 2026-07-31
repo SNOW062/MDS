@@ -10,10 +10,24 @@ pub async fn init_db() -> anyhow::Result<DbPool> {
     let database_url = std::env::var("DATABASE_URL")
         .unwrap_or_else(|_| "postgres://postgres:postgres@localhost:5432/masterdeploy".to_string());
     
-    let pool = sqlx::PgPool::connect(&database_url).await?;
+    tracing::info!("Initializing Database Connection Pool for {}", database_url);
+    let pool = sqlx::postgres::PgPoolOptions::new()
+        .max_connections(5)
+        .connect_lazy(&database_url)?;
     
-    // Run migrations
-    sqlx::migrate!("../../migrations").run(&pool).await?;
+    // SQLx Miqrasiyalarını avtomatik olaraq tətbiq edirik
+    // connect_lazy olduğu üçün biz run_migrations funksiyasını DB-yə ilk qoşulanda çağıra bilərik
+    // və ya birbaşa bu pool ilə işə sala bilərik.
+    let migration_pool = pool.clone();
+    tokio::spawn(async move {
+        tracing::info!("Running database migrations asynchronously...");
+        // miqrasiya qovluğu workspace kökündədir
+        let migrator = sqlx::migrate!("../../migrations");
+        match migrator.run(&migration_pool).await {
+            Ok(_) => tracing::info!("Database migrations applied successfully!"),
+            Err(e) => tracing::error!("Failed to run database migrations: {:?}", e),
+        }
+    });
     
     Ok(pool)
 }

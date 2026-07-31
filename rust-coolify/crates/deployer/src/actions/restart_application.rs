@@ -1,4 +1,4 @@
-// completed be_1109
+// completed be_1108
 // Coolify mənbəsi: app/Actions/Application/RestartApplication.php
 use anyhow::Result;
 use sqlx::PgPool;
@@ -29,14 +29,14 @@ impl RestartApplication {
             }
         }
 
-        sqlx::query!(
+        sqlx::query(
             r#"
             UPDATE applications
             SET updated_at = NOW()
             WHERE uuid = $1
             "#,
-            application_uuid
         )
+        .bind(application_uuid)
         .execute(db)
         .await?;
 

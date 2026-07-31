@@ -815,6 +815,40 @@ async function loadYarimciqData() {
     }
 }
 
+let selectedYarimciqIds = new Set();
+
+function toggleSelectYarimciq(id, isChecked) {
+    if (isChecked) {
+        selectedYarimciqIds.add(id);
+    } else {
+        selectedYarimciqIds.delete(id);
+    }
+    updateSelectedSpecsBtn();
+}
+
+function toggleSelectAllYarimciq(masterCb) {
+    const checkboxes = document.querySelectorAll('.yarimciq-cb');
+    checkboxes.forEach(cb => {
+        cb.checked = masterCb.checked;
+        if (masterCb.checked) {
+            selectedYarimciqIds.add(cb.value);
+        } else {
+            selectedYarimciqIds.delete(cb.value);
+        }
+    });
+    updateSelectedSpecsBtn();
+}
+
+function updateSelectedSpecsBtn() {
+    const btn = document.getElementById('btn-copy-selected-specs');
+    const countSpan = document.getElementById('selected-specs-count');
+    if (!btn || !countSpan) return;
+
+    const count = selectedYarimciqIds.size;
+    countSpan.innerText = count;
+    btn.style.display = count > 0 ? 'inline-block' : 'none';
+}
+
 function renderYarimciqList() {
     const tbody = document.getElementById('yarimciq-table-body');
     if (!tbody) return;
@@ -834,12 +868,13 @@ function renderYarimciqList() {
     });
     
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 30px;">Hər hansı bir yarımçıq fayl tapılmadı.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 30px;">Hər hansı bir yarımçıq fayl tapılmadı.</td></tr>`;
         return;
     }
     
     filtered.forEach(item => {
         const tr = document.createElement('tr');
+        const isChecked = selectedYarimciqIds.has(item.id);
         
         let statusBadgeText = item.status;
         if (item.status === 'missing') statusBadgeText = 'ƏSKİK';
@@ -848,6 +883,7 @@ function renderYarimciqList() {
         if (item.status === 'wip') statusBadgeText = 'GÖZLƏYİR';
         
         tr.innerHTML = `
+            <td style="text-align: center;"><input type="checkbox" class="yarimciq-cb" value="${item.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelectYarimciq('${item.id}', this.checked)" style="cursor: pointer; width: 14px; height: 14px;"></td>
             <td><code class="task-id">${item.id}</code></td>
             <td style="font-family: monospace; font-size: 11.5px; color: #a5b4fc;">${item.path}</td>
             <td><span style="font-size: 11px; opacity: 0.7;">${item.category || 'General'}</span></td>
@@ -863,12 +899,61 @@ function renderYarimciqList() {
         `;
         tbody.appendChild(tr);
     });
+
+    updateSelectedSpecsBtn();
 }
+
+async function copySelectedSpecsAsText() {
+    if (selectedYarimciqIds.size === 0) return;
+    
+    const ids = Array.from(selectedYarimciqIds);
+    let fullText = `=== SEÇİLMİŞ YARIMÇIQ FAYLLAR VƏ METOD SİYAHISI (Cəmi: ${ids.length} Fayl) ===\n\n`;
+    
+    for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
+        try {
+            const res = await fetch(`/api/file-spec?id=${encodeURIComponent(id)}`);
+            const data = await res.json();
+            
+            fullText += `📌 [Fayl ${i+1}/${ids.length}] ID: ${data.file_id}\n`;
+            fullText += `Rust Faylı: ${data.rust_path}\n`;
+            fullText += `PHP Orijinalı: ${data.php_path}\n`;
+            fullText += `Tamamlanma Dərəcəsi: ${data.completion_percentage}%\n`;
+            
+            fullText += `❌ ƏSKİK METOD VƏ FUNKSİYALAR (${data.missing_functions ? data.missing_functions.length : 0}):\n`;
+            if (data.missing_functions && data.missing_functions.length > 0) {
+                data.missing_functions.forEach(fn => {
+                    fullText += `  - ❌ ${fn}() [ƏSKİKDİR]\n`;
+                });
+            } else {
+                fullText += `  (Bütün PHP metodları tamamilə yazılıb)\n`;
+            }
+            
+            fullText += `\n✅ YAZILMIŞ VƏ TAMAMLANMIŞ METODLAR (${data.completed_functions ? data.completed_functions.length : 0}):\n`;
+            if (data.completed_functions && data.completed_functions.length > 0) {
+                data.completed_functions.forEach(fn => {
+                    fullText += `  - ✅ ${fn}() [YAZILIB]\n`;
+                });
+            } else {
+                fullText += `  (Hələ heç bir metod yazılmayıb)\n`;
+            }
+            fullText += `--------------------------------------------------\n\n`;
+        } catch (e) {
+            console.error(`Spec fetch error for ${id}:`, e);
+        }
+    }
+    
+    navigator.clipboard.writeText(fullText);
+    showToast(`📋 Seçilmiş ${ids.length} faylın bütün metodları mətn olaraq kopyalandı!`);
+}
+
+let activeSpecData = null;
 
 async function showFileSpec(fileId) {
     try {
         const res = await fetch(`/api/file-spec?id=${encodeURIComponent(fileId)}`);
         const data = await res.json();
+        activeSpecData = data;
         
         const modal = document.getElementById('spec-modal');
         const modalBody = document.getElementById('spec-modal-body');
@@ -933,7 +1018,38 @@ async function showFileSpec(fileId) {
     }
 }
 
+function copySpecAsText() {
+    if (!activeSpecData) return;
+    
+    let text = `⚙️ Fayl Metod və Funksiya Siyahısı (${activeSpecData.file_id})\n`;
+    text += `Rust Faylı: ${activeSpecData.rust_path}\n`;
+    text += `PHP Orijinalı: ${activeSpecData.php_path}\n`;
+    text += `Tamamlanma Dərəcəsi: ${activeSpecData.completion_percentage}%\n\n`;
+    
+    text += `❌ ƏSKİK METOD VƏ FUNKSİYALAR (${activeSpecData.missing_functions ? activeSpecData.missing_functions.length : 0}):\n`;
+    if (activeSpecData.missing_functions && activeSpecData.missing_functions.length > 0) {
+        activeSpecData.missing_functions.forEach(fn => {
+            text += `  - ❌ ${fn}() [ƏSKİKDİR]\n`;
+        });
+    } else {
+        text += `  (Bütün PHP metodları tamamilə yazılıb)\n`;
+    }
+    
+    text += `\n✅ YAZILMIŞ VƏ TAMAMLANMIŞ METODLAR (${activeSpecData.completed_functions ? activeSpecData.completed_functions.length : 0}):\n`;
+    if (activeSpecData.completed_functions && activeSpecData.completed_functions.length > 0) {
+        activeSpecData.completed_functions.forEach(fn => {
+            text += `  - ✅ ${fn}() [YAZILIB]\n`;
+        });
+    } else {
+        text += `  (Hələ heç bir metod yazılmayıb)\n`;
+    }
+
+    navigator.clipboard.writeText(text);
+    showToast('📋 Bütün metod siyahısı mətn olaraq kopyalandı!');
+}
+
 function closeSpecModal() {
+    activeSpecData = null;
     const modal = document.getElementById('spec-modal');
     if (modal) modal.classList.remove('active');
 }

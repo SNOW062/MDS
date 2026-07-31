@@ -7,6 +7,7 @@ use axum::{
     http::StatusCode,
 };
 use serde::{Serialize, Deserialize};
+use sqlx::Row;
 use uuid::Uuid;
 use crate::state::AppState;
 
@@ -162,5 +163,11 @@ async fn get_task_executions(
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    Ok(Json(serde_json::json!([])))
+    let mut list = vec![];
+    for r in rows {
+        let u: Option<Uuid> = r.try_get("uuid").ok();
+        let status: Option<String> = r.try_get("status").ok();
+        list.push(serde_json::json!({ "uuid": u, "status": status }));
+    }
+    Ok(Json(serde_json::json!(list)))
 }

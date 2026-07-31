@@ -1,4 +1,4 @@
-// completed file_0846
+// completed be_1152
 // Coolify mənbəsi: app/Notifications/SSL/SSLExpiring.php
 
 pub struct SSLExpiringNotification;

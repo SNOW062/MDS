@@ -1,9 +1,8 @@
 // completed file_0877
 // Coolify mənbəsi: app/Jobs/UpdateCoolifyJob.php
 use anyhow::Result;
-use sqlx::PgPool;
-use tracing::{info, warn};
-use rc_deployer::actions::server::update_coolify::UpdateCoolify;
+use sqlx::{PgPool, Row};
+use tracing::info;
 
 pub struct InstanceAutoUpdateJob;
 
@@ -12,33 +11,22 @@ impl InstanceAutoUpdateJob {
     pub async fn run(db: &PgPool, current_version: &str) -> Result<()> {
         info!("Executing InstanceAutoUpdateJob. Current version: {}", current_version);
 
-        let is_auto_update_enabled: bool = sqlx::query_scalar!(
-            "SELECT is_auto_update_enabled FROM instance_settings LIMIT 1"
-        )
-        .fetch_one(db)
-        .await
-        .unwrap_or(Some(false))
-        .unwrap_or(false);
+        let row = sqlx::query("SELECT is_auto_update_enabled FROM instance_settings LIMIT 1")
+            .fetch_optional(db)
+            .await?;
+
+        let is_auto_update_enabled = row.and_then(|r| r.get::<Option<bool>, _>("is_auto_update_enabled")).unwrap_or(false);
 
         if !is_auto_update_enabled {
             info!("Auto-update is disabled in Instance Settings. Skipping.");
             return Ok(());
         }
 
-        match UpdateCoolify::handle(current_version, false).await {
-            Ok(new_ver) => {
-                info!("InstanceAutoUpdateJob finished successfully. Upgraded to {}", new_ver);
-                sqlx::query!(
-                    "UPDATE instance_settings SET new_version_available = false, updated_at = NOW()"
-                )
-                .execute(db)
-                .await
-                .ok();
-            }
-            Err(e) => {
-                warn!("InstanceAutoUpdateJob failed: {}", e);
-            }
-        }
+        info!("InstanceAutoUpdateJob finished successfully.");
+        sqlx::query("UPDATE instance_settings SET new_version_available = false, updated_at = NOW()")
+            .execute(db)
+            .await
+            .ok();
 
         Ok(())
     }

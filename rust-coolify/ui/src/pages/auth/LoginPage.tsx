@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
+import { Eye, EyeOff } from 'lucide-react';
 import mdLogo from '../../assets/MDLOGO.png';
 
 export default function LoginPage() {
@@ -14,47 +15,44 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error('Email və şifrə boş ola bilməz.');
+      toast.error('Email/İstifadəçi adı və şifrə boş ola bilməz.');
       return;
     }
 
     setLoading(true);
     try {
-      // Simulate successful login with a mock user
-      const mockUser = {
-        id: 1,
-        name: 'Master User',
-        email: email,
-        email_verified_at: new Date().toISOString(),
-        two_factor_confirmed_at: null,
-        force_password_reset: false,
-        marketing_emails: false,
-        pending_email: null,
-        email_change_code: null,
-        email_change_code_expires_at: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      const mockTeam = {
-        id: 1,
-        name: 'Personal Team',
-        uuid: 'team-uuid',
-        description: 'Default personal team',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+      // Rust Backend /api/login endpoint-inə POST sorğusu göndəririk!
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-      login(mockUser, 'mock-jwt-token', mockTeam);
+      if (!res.ok) {
+        let errorMsg = 'Giriş xətası baş verdi.';
+        try {
+          const errData = await res.json();
+          if (errData && errData.error) {
+            errorMsg = errData.error;
+          }
+        } catch (_) {}
+        toast.error(errorMsg);
+        return;
+      }
+
+      const data = await res.json();
+      login(data.user, data.token, data.team);
       toast.success('Giriş uğurludur!');
       navigate('/');
-    } catch (err) {
-      toast.error('Giriş xətası.');
+    } catch (err: any) {
+      toast.error('Serverlə əlaqə xətası: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -71,14 +69,14 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider mb-2">
-              {t.login.email}
+              EMAIL VƏ YADA İSTİFADƏÇİ ADI
             </label>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
-              placeholder="user@example.com"
+              placeholder="admin və ya user@example.com"
               required
             />
           </div>
@@ -92,14 +90,23 @@ export default function LoginPage() {
                 {t.login.forgot_password}
               </Link>
             </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
-              placeholder="••••••••"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 pr-10 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
+                placeholder="••••••••"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center">

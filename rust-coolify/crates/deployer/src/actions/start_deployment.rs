@@ -1,4 +1,4 @@
-// completed be_1111
+// completed be_1110
 // Coolify mənbəsi: app/Actions/Application/StartDeployment.php
 use anyhow::Result;
 use sqlx::PgPool;
@@ -18,16 +18,16 @@ impl StartDeployment {
         let deployment_uuid = Uuid::new_v4();
         info!("Dispatching new deployment (uuid: {}) for application {}", deployment_uuid, application_uuid);
 
-        sqlx::query!(
+        sqlx::query(
             r#"
             INSERT INTO application_deployment_queues (uuid, application_uuid, status, commit, is_force_rebuild, created_at, updated_at)
             VALUES ($1, $2, 'queued', $3, $4, NOW(), NOW())
             "#,
-            deployment_uuid,
-            application_uuid,
-            commit_sha,
-            is_force_rebuild
         )
+        .bind(deployment_uuid)
+        .bind(application_uuid)
+        .bind(commit_sha)
+        .bind(is_force_rebuild)
         .execute(db)
         .await?;
 

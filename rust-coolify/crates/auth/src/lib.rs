@@ -2,6 +2,7 @@
 //! rc-auth: Authentication, tokens, OAuth, team roles & invitations.
 //! Mirrors Coolify's auth logic: PersonalAccessToken, OauthSetting, TeamInvitation, Policies.
 
+pub mod jwt;
 pub mod oauth;
 pub mod password;
 pub mod policies;

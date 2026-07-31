@@ -5,7 +5,7 @@ use crate::models::user::User;
 
 pub async fn create_user(pool: &DbPool, name: &str, email: &str, password_hash: &str) -> anyhow::Result<User> {
     let user = sqlx::query_as::<_, User>(
-        "INSERT INTO users (id, name, email, password_hash, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *"
+        "INSERT INTO users (id, name, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *"
     )
     .bind(Uuid::new_v4())
     .bind(name)

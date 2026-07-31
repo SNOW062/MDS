@@ -47,8 +47,8 @@ export default function ServerDetailPage() {
       setDescription(found.description || '');
       setIp(found.ip || '');
       setUser(found.user || 'root');
-      setPort(found.port || '22');
-      setConnectionTimeout(found.connectionTimeout || 10);
+      setPort(String(found.port || 22));
+      setConnectionTimeout(Number(found.connectionTimeout || 10));
       setWildcardDomain(found.wildcardDomain || '');
       setServerTimezone(found.serverTimezone || 'UTC');
       setIsBuildServer(found.isBuildServer || false);
@@ -216,7 +216,7 @@ export default function ServerDetailPage() {
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
               Wildcard Domain
-              <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="A wildcard domain allows you to receive a randomly generated domain for your new applications." />
+              <span title="A wildcard domain allows you to receive a randomly generated domain for your new applications."><HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" /></span>
             </label>
             <input
               type="text"
@@ -267,7 +267,7 @@ export default function ServerDetailPage() {
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
               SSH Connection Timeout (s)
-              <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Seconds to wait for SSH connection before failing. Default: 10." />
+              <span title="Seconds to wait for SSH connection before failing. Default: 10."><HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" /></span>
             </label>
             <input
               type="number"
@@ -298,7 +298,7 @@ export default function ServerDetailPage() {
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
               Limit of concurrent builds
-              <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Number of builds that can run at the same time on this server." />
+              <span title="Number of builds that can run at the same time on this server."><HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" /></span>
             </label>
             <input
               type="number"
@@ -396,7 +396,7 @@ export default function ServerDetailPage() {
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <Activity className="h-4 w-4 text-indigo-400" /> Sentinel (Monitorinq Agent)
             </h2>
-            <HelpCircle className="h-3.5 w-3.5 text-zinc-500 cursor-help" title="Sentinel reports your server's & container's health and collects metrics." />
+            <span title="Sentinel reports your server's & container's health and collects metrics."><HelpCircle className="h-3.5 w-3.5 text-zinc-500 cursor-help" /></span>
           </div>
           <div className="flex gap-2">
             <button
@@ -456,7 +456,7 @@ export default function ServerDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
                   Metrics rate (seconds)
-                  <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Interval used for gathering metrics. Lower values result in more disk space usage." />
+                  <span title="Interval used for gathering metrics. Lower values result in more disk space usage."><HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" /></span>
                 </label>
                 <input
                   type="number"
@@ -471,7 +471,7 @@ export default function ServerDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
                   Metrics history (days)
-                  <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Number of days to retain metrics data for." />
+                  <span title="Number of days to retain metrics data for."><HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" /></span>
                 </label>
                 <input
                   type="number"
@@ -486,7 +486,7 @@ export default function ServerDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-400 flex items-center gap-1">
                   Push interval (seconds)
-                  <HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" title="Interval at which metrics data is sent to the collector." />
+                  <span title="Interval at which metrics data is sent to the collector."><HelpCircle className="h-3 w-3 text-zinc-500 cursor-help" /></span>
                 </label>
                 <input
                   type="number"

@@ -1,183 +1,176 @@
-// completed be_1037
-// Coolify mənbəsi: app/Http/Controllers/Api/SecurityController.php
-// Endpoints: /api/security/keys CRUD (list, get, create, update, delete)
-
 use axum::{
-    routing::{get, post, patch, delete},
+    routing::get,
     Router, Json,
     extract::{Path, State},
     http::StatusCode,
+    Extension,
+    middleware::from_fn_with_state,
 };
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 use crate::state::AppState;
+use rc_auth::session::SessionClaims;
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
-pub struct PrivateKey {
-    pub uuid: Option<String>,
-    pub team_id: Option<i64>,
-    pub name: Option<String>,
-    pub description: Option<String>,
-    // private_key sahəsi həssas məlumat kimi gizlədilib
-}
-
-#[derive(Debug, Deserialize)]
-pub struct CreatePrivateKeyRequest {
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub private_key: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct UpdatePrivateKeyRequest {
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub private_key: String,
+pub struct UserDto {
+    pub uuid: String,
+    pub name: String,
+    pub email: String,
 }
 
 pub fn router(state: AppState) -> Router {
     Router::new()
-        // Coolify: GET /security/keys → SecurityController::keys
-        .route("/api/security/keys", get(list_keys_handler))
-        // Coolify: POST /security/keys → SecurityController::create_key
-        .route("/api/security/keys", post(create_key_handler))
-        // Coolify: GET /security/keys/:uuid → SecurityController::key_by_uuid
-        .route("/api/security/keys/:uuid", get(get_key_handler))
-        // Coolify: PATCH /security/keys/:uuid → SecurityController::update_key
-        .route("/api/security/keys/:uuid", patch(update_key_handler))
-        // Coolify: DELETE /security/keys/:uuid → SecurityController::delete_key
-        .route("/api/security/keys/:uuid", delete(delete_key_handler))
+        .route("/api/users", get(list_users_handler))
+        .route("/api/users/:uuid", get(get_user_handler))
+        .route("/api/profile", axum::routing::put(update_profile_handler))
+        .route("/api/profile/password", axum::routing::put(update_password_handler))
+        .route_layer(from_fn_with_state(state.clone(), crate::middleware::auth::auth_middleware))
         .with_state(state)
 }
 
-/// GET /api/security/keys — Komandaya aid bütün private key-ləri siyahıla
-/// Coolify: PrivateKey::where('team_id', $teamId)->get()
-async fn list_keys_handler(
+async fn list_users_handler(
     State(state): State<AppState>,
-) -> Result<Json<Vec<PrivateKey>>, StatusCode> {
-    let keys = sqlx::query_as::<_, PrivateKey>(
-        "SELECT uuid, team_id, name, description FROM private_keys ORDER BY id"
+) -> Result<Json<Vec<UserDto>>, StatusCode> {
+    let users = sqlx::query_as::<_, UserDto>(
+        "SELECT id::text as uuid, name, email FROM users ORDER BY created_at"
     )
     .fetch_all(&state.db)
     .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    .map_err(|e| {
+        tracing::error!("DB error listing users: {:?}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
 
-    Ok(Json(keys))
+    Ok(Json(users))
 }
 
-/// GET /api/security/keys/:uuid — UUID ilə private key məlumatlarını gətir
-/// Coolify: PrivateKey::where('uuid', $uuid)->first() → 404 if null
-async fn get_key_handler(
+async fn get_user_handler(
     State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
-) -> Result<Json<PrivateKey>, StatusCode> {
-    let key = sqlx::query_as::<_, PrivateKey>(
-        "SELECT uuid, team_id, name, description FROM private_keys WHERE uuid = $1"
+) -> Result<Json<UserDto>, StatusCode> {
+    let row = sqlx::query_as::<_, UserDto>(
+        "SELECT id::text as uuid, name, email FROM users WHERE id = $1 LIMIT 1"
     )
-    .bind(uuid.to_string())
+    .bind(uuid)
     .fetch_optional(&state.db)
     .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+    .map_err(|e| {
+        tracing::error!("DB error getting user: {:?}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?
     .ok_or(StatusCode::NOT_FOUND)?;
 
-    Ok(Json(key))
+    Ok(Json(row))
 }
 
-/// POST /api/security/keys — Yeni private key yarat
-/// Coolify: PrivateKey::create([...]) → 201 with uuid
-async fn create_key_handler(
-    State(state): State<AppState>,
-    Json(payload): Json<CreatePrivateKeyRequest>,
-) -> Result<(StatusCode, Json<serde_json::Value>), StatusCode> {
-    if payload.private_key.trim().is_empty() {
-        return Err(StatusCode::UNPROCESSABLE_ENTITY);
-    }
-
-    let key_uuid = Uuid::new_v4().to_string();
-    let name = payload.name.unwrap_or_else(|| format!("key-{}", &key_uuid[..8]));
-    let description = payload.description.unwrap_or_else(|| "Created via MasterDeploy API".to_string());
-
-    sqlx::query(
-        "INSERT INTO private_keys (uuid, name, description, private_key, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, NOW(), NOW())"
-    )
-    .bind(&key_uuid)
-    .bind(&name)
-    .bind(&description)
-    .bind(&payload.private_key)
-    .execute(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    Ok((StatusCode::CREATED, Json(serde_json::json!({ "uuid": key_uuid }))))
+#[derive(Debug, Deserialize)]
+pub struct UpdateProfileRequest {
+    pub name: String,
+    pub email: String,
 }
 
-/// PATCH /api/security/keys/:uuid — Private key-i yenilə
-/// Coolify: $foundKey->update($request->only($allowedFields)) → 201 with uuid
-async fn update_key_handler(
-    State(state): State<AppState>,
-    Path(uuid): Path<Uuid>,
-    Json(payload): Json<UpdatePrivateKeyRequest>,
-) -> Result<(StatusCode, Json<serde_json::Value>), StatusCode> {
-    let exists: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM private_keys WHERE uuid = $1")
-        .bind(uuid.to_string())
-        .fetch_one(&state.db)
-        .await
-        .unwrap_or(0);
-
-    if exists == 0 {
-        return Err(StatusCode::NOT_FOUND);
-    }
-
-    sqlx::query(
-        "UPDATE private_keys SET name = COALESCE($1, name), description = COALESCE($2, description),
-         private_key = $3, updated_at = NOW() WHERE uuid = $4"
-    )
-    .bind(payload.name)
-    .bind(payload.description)
-    .bind(&payload.private_key)
-    .bind(uuid.to_string())
-    .execute(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    Ok((StatusCode::CREATED, Json(serde_json::json!({ "uuid": uuid.to_string() }))))
+#[derive(Debug, Deserialize)]
+pub struct UpdatePasswordRequest {
+    pub current_password: String,
+    pub new_password: String,
 }
 
-/// DELETE /api/security/keys/:uuid — Private key-i sil
-/// Coolify: $key->forceDelete() — istifadədədirsə 422 qaytar
-async fn delete_key_handler(
+/// PUT /api/profile
+async fn update_profile_handler(
     State(state): State<AppState>,
-    Path(uuid): Path<Uuid>,
-) -> Result<Json<serde_json::Value>, StatusCode> {
-    let exists: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM private_keys WHERE uuid = $1")
-        .bind(uuid.to_string())
-        .fetch_one(&state.db)
-        .await
-        .unwrap_or(0);
+    Extension(claims): Extension<SessionClaims>,
+    Json(body): Json<UpdateProfileRequest>,
+) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
+    let name_input = body.name.trim();
+    let email_input = body.email.trim().to_lowercase();
 
-    if exists == 0 {
-        return Err(StatusCode::NOT_FOUND);
+    if name_input.is_empty() || email_input.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": "Ad və E-poçt boş ola bilməz." }))));
     }
 
-    // Əgər serverlər tərəfindən istifadə edilərsə, silmək olmaz (Coolify: $key->isInUse())
-    let in_use: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM servers WHERE private_key_id = (SELECT id FROM private_keys WHERE uuid = $1)"
+    let user_uuid = Uuid::parse_str(&claims.sub).map_err(|_| {
+        (StatusCode::UNAUTHORIZED, Json(serde_json::json!({ "error": "Yetkisiz giriş." })))
+    })?;
+
+    // Email-in başqa istifadəçi tərəfindən istifadə edilmədiyini yoxla
+    let email_exists: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM users WHERE email = $1 AND id != $2"
     )
-    .bind(uuid.to_string())
+    .bind(&email_input)
+    .bind(user_uuid)
     .fetch_one(&state.db)
     .await
     .unwrap_or(0);
 
-    if in_use > 0 {
-        return Err(StatusCode::UNPROCESSABLE_ENTITY);
+    if email_exists > 0 {
+        return Err((StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": "Bu e-poçt ünvanı artıq başqa istifadəçi tərəfindən istifadə edilir." }))));
     }
 
-    sqlx::query("DELETE FROM private_keys WHERE uuid = $1")
-        .bind(uuid.to_string())
-        .execute(&state.db)
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    sqlx::query(
+        "UPDATE users SET name = $1, email = $2, updated_at = NOW() WHERE id = $3"
+    )
+    .bind(name_input)
+    .bind(&email_input)
+    .bind(user_uuid)
+    .execute(&state.db)
+    .await
+    .map_err(|e| {
+        tracing::error!("DB error updating profile: {:?}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Verilənlər bazası xətası." })))
+    })?;
 
-    Ok(Json(serde_json::json!({ "message": "Private Key deleted." })))
+    Ok(StatusCode::OK)
+}
+
+/// PUT /api/profile/password
+async fn update_password_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<SessionClaims>,
+    Json(body): Json<UpdatePasswordRequest>,
+) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
+    let current_pwd = body.current_password.trim();
+    let new_pwd = body.new_password.trim();
+
+    if current_pwd.is_empty() || new_pwd.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": "Şifrə sahələri boş ola bilməz." }))));
+    }
+
+    let user_uuid = Uuid::parse_str(&claims.sub).map_err(|_| {
+        (StatusCode::UNAUTHORIZED, Json(serde_json::json!({ "error": "Yetkisiz giriş." })))
+    })?;
+
+    let db_pwd: Option<String> = sqlx::query_scalar(
+        "SELECT password FROM users WHERE id = $1"
+    )
+    .bind(user_uuid)
+    .fetch_one(&state.db)
+    .await
+    .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "İstifadəçi tapılmadı." }))))?;
+
+    if let Some(pwd) = db_pwd {
+        let is_match = rc_auth::password::verify_password(current_pwd, &pwd).unwrap_or(false);
+        if !is_match {
+            return Err((StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": "Cari şifrəniz yanlışdır." }))));
+        }
+    } else {
+        return Err((StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": "Cari şifrəniz təyin edilməyib." }))));
+    }
+
+    let hashed_new_pwd = rc_auth::password::hash_password(new_pwd).map_err(|_| {
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Şifrə təhlükəsizliyi təmin edilə bilmədi." })))
+    })?;
+
+    sqlx::query(
+        "UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2"
+    )
+    .bind(hashed_new_pwd)
+    .bind(user_uuid)
+    .execute(&state.db)
+    .await
+    .map_err(|e| {
+        tracing::error!("DB error updating password: {:?}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": "Verilənlər bazası xətası." })))
+    })?;
+
+    Ok(StatusCode::OK)
 }

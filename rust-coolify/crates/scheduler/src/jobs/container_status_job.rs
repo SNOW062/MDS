@@ -24,14 +24,13 @@ impl ContainerStatusJob {
 
                 if name.starts_with("app-") {
                     let app_uuid_prefix = name.trim_start_matches("app-");
-                    sqlx::query!(
-                        "UPDATE applications SET status = $1, updated_at = NOW() WHERE uuid::text LIKE $2",
-                        state,
-                        format!("{}%", app_uuid_prefix)
-                    )
-                    .execute(db)
-                    .await
-                    .ok();
+                    let like_pattern = format!("{}%", app_uuid_prefix);
+                    sqlx::query("UPDATE applications SET status = $1, updated_at = NOW() WHERE uuid::text LIKE $2")
+                        .bind(state)
+                        .bind(like_pattern)
+                        .execute(db)
+                        .await
+                        .ok();
                 }
             }
         }

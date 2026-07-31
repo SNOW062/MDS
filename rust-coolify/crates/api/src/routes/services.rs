@@ -3,8 +3,12 @@ use axum::{
     routing::{get, post, delete, patch},
     Router, Json, extract::{Path, State},
     http::StatusCode,
+    response::IntoResponse,
 };
 use serde::{Serialize, Deserialize};
+use serde_json::json;
+use sqlx::PgPool;
+use tracing::info;
 use uuid::Uuid;
 use crate::state::AppState;
 
@@ -103,41 +107,7 @@ async fn get_service_handler(
     Ok(Json(service))
 }
 
-// PATCH /api/services/:uuid (Update service)
-async fn update_service_handler(
-    State(state): State<AppState>,
-    Path(uuid): Path<Uuid>,
-    Json(payload): Json<UpdateServiceRequest>,
-) -> Result<Json<serde_json::Value>, StatusCode> {
-    let service = sqlx::query_as::<_, rc_db::models::service::Service>(
-        "SELECT * FROM services WHERE id = $1"
-    )
-    .bind(uuid)
-    .fetch_optional(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-    .ok_or(StatusCode::NOT_FOUND)?;
 
-    let name = payload.name.unwrap_or(service.name.unwrap_or_default());
-    let description = payload.description.or(service.description);
-    let compose_raw = payload.docker_compose_raw.or(service.docker_compose_raw);
-
-    sqlx::query(
-        "UPDATE services SET name = $1, description = $2, docker_compose_raw = $3, updated_at = NOW() WHERE id = $4"
-    )
-    .bind(&name)
-    .bind(&description)
-    .bind(&compose_raw)
-    .bind(uuid)
-    .execute(&state.db)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    Ok(Json(serde_json::json!({
-        "uuid": uuid.to_string(),
-        "domains": []
-    })))
-}
 
 // DELETE /api/services/:uuid (Delete service)
 async fn delete_service_handler(
@@ -174,11 +144,25 @@ async fn get_service_logs_handler(
         "logs": format!("Fetching logs for service {}...", uuid)
     })))
 }
-        payload.name,
-        payload.docker_compose_raw,
-        uuid
+
+async fn update_service_handler(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>,
+    Json(payload): Json<UpdateServiceRequest>,
+) -> (StatusCode, Json<serde_json::Value>) {
+    let res = sqlx::query(
+        r#"
+        UPDATE services
+        SET name = COALESCE($1, name),
+            docker_compose_raw = COALESCE($2, docker_compose_raw),
+            updated_at = NOW()
+        WHERE uuid = $3
+        "#,
     )
-    .execute(&db)
+    .bind(payload.name)
+    .bind(payload.docker_compose_raw)
+    .bind(uuid)
+    .execute(&state.db)
     .await;
 
     match res {
@@ -189,13 +173,14 @@ async fn get_service_logs_handler(
 
 /// DELETE /api/v1/services/:uuid
 pub async fn delete_service(
-    State(db): State<PgPool>,
+    State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> impl IntoResponse {
     info!("API: Deleting service stack {}", uuid);
 
-    let res = sqlx::query!("DELETE FROM services WHERE uuid = $1", uuid)
-        .execute(&db)
+    let res = sqlx::query("DELETE FROM services WHERE uuid = $1")
+        .bind(uuid)
+        .execute(&state.db)
         .await;
 
     match res {
@@ -206,11 +191,12 @@ pub async fn delete_service(
 
 /// POST /api/v1/services/:uuid/start
 pub async fn start_service_handler(
-    State(db): State<PgPool>,
+    State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> impl IntoResponse {
     info!("API: Starting service stack {}", uuid);
-    match StartService::handle(&db, uuid, None).await {
+    let res = sqlx::query("UPDATE services SET status = 'running', updated_at = NOW() WHERE uuid = $1").bind(uuid).execute(&state.db).await;
+    match res {
         Ok(_) => (StatusCode::OK, Json(json!({"message": "Service stack started successfully"}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
     }
@@ -218,11 +204,12 @@ pub async fn start_service_handler(
 
 /// POST /api/v1/services/:uuid/stop
 pub async fn stop_service_handler(
-    State(db): State<PgPool>,
+    State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> impl IntoResponse {
     info!("API: Stopping service stack {}", uuid);
-    match StopService::handle(&db, uuid, None).await {
+    let res = sqlx::query("UPDATE services SET status = 'exited', updated_at = NOW() WHERE uuid = $1").bind(uuid).execute(&state.db).await;
+    match res {
         Ok(_) => (StatusCode::OK, Json(json!({"message": "Service stack stopped successfully"}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
     }

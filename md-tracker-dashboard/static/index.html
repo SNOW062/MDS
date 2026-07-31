@@ -161,6 +161,7 @@
                     <p>Skan nəticəsində əskik, skelet və ya `todo!()` olan fayllar `yarimciq.json` faylına daxil edilib.</p>
                 </div>
                 <div class="yarimciq-filter-group">
+                    <button class="action-btn btn-success" id="btn-copy-selected-specs" onclick="copySelectedSpecsAsText()" style="display: none;">📋 Seçilənlərin Metodlarını Kopyala (<span id="selected-specs-count">0</span>)</button>
                     <input type="text" id="yarimciq-search" placeholder="🔍 Yarımçıq fayl axtar..." oninput="renderYarimciqList()">
                     <select id="yarimciq-status-filter" onchange="renderYarimciqList()">
                         <option value="all">Bütün Statuslar</option>
@@ -176,6 +177,7 @@
                 <table class="yarimciq-table">
                     <thead>
                         <tr>
+                            <th style="width: 35px; text-align: center;"><input type="checkbox" id="select-all-yarimciq" onchange="toggleSelectAllYarimciq(this)" style="cursor: pointer; width: 15px; height: 15px;"></th>
                             <th>ID</th>
                             <th>Fayl Yolu (Path)</th>
                             <th>Kateqoriya</th>

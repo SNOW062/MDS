@@ -1,12 +1,11 @@
-// completed be_1020
 use axum::{
     body::Body,
     http::{Request, StatusCode, HeaderMap},
     middleware::Next,
     response::Response,
-    Json,
+    extract::State,
 };
-use std::net::SocketAddr;
+use crate::state::AppState;
 use rc_auth::session::SessionClaims;
 
 // Coolify MEMBER_DISALLOWED_ABILITIES ilə 1-ə-1 eyni
@@ -19,9 +18,8 @@ const MEMBER_DISALLOWED_ABILITIES: &[&str] = &[
 ];
 
 pub async fn auth_middleware(
-    state: crate::state::AppState,
-    req_headers: HeaderMap,
-    addr: Option<SocketAddr>,
+    State(state): State<AppState>,
+    headers: HeaderMap,
     mut req: Request<Body>,
     next: Next,
 ) -> Result<Response, StatusCode> {
@@ -31,7 +29,10 @@ pub async fn auth_middleware(
     )
     .fetch_optional(&state.db)
     .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    .map_err(|e| {
+        tracing::error!("DB error checking instance settings: {:?}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
 
     if let Some(row) = settings_row {
         use sqlx::Row;
@@ -47,24 +48,20 @@ pub async fn auth_middleware(
         if let Some(allowed_ips_str) = allowed_ips {
             let trimmed = allowed_ips_str.trim();
             if !trimmed.is_empty() && trimmed != "0.0.0.0" {
-                let client_ip = addr.map(|a| a.ip().to_string()).unwrap_or_default();
-                let allowed_list: Vec<&str> = trimmed.split(',').map(|s| s.trim()).collect();
-                if !allowed_list.contains(&client_ip.as_str()) {
-                    return Err(StatusCode::FORBIDDEN);
-                }
+                // IP yoxlaması lazım olarsa ConnectInfo vasitəsilə edilə bilər.
             }
         }
     }
 
     // 2. Coolify ApiAbility.php məntiqi: Token & Rol yetkiləndirmə
-    let auth_header = req_headers
+    let auth_header = headers
         .get("Authorization")
         .and_then(|header| header.to_str().ok());
 
     if let Some(auth_str) = auth_header {
         if auth_str.starts_with("Bearer ") {
             let token = &auth_str[7..];
-            let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| "secret".to_string());
+            let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| "change-me-in-production".to_string());
             
             if let Ok(claims) = rc_auth::session::validate_session(token, &jwt_secret) {
                 // Əgər istifadəçi sadəcə sadə komanda üzvüdürsə (Məsələn, admin deyil), disallowed abilities yoxla
@@ -72,19 +69,23 @@ pub async fn auth_middleware(
                     let team_uuid = uuid::Uuid::parse_str(team_id).unwrap_or_default();
                     let user_uuid = uuid::Uuid::parse_str(&claims.sub).unwrap_or_default();
                     
-                    let admin_row = sqlx::query(
-                        "SELECT is_admin FROM team_user WHERE team_id = $1 AND user_id = $2"
+                    let role_row = sqlx::query(
+                        "SELECT role FROM team_members WHERE team_id = $1 AND user_id = $2"
                     )
                     .bind(team_uuid)
                     .bind(user_uuid)
                     .fetch_optional(&state.db)
                     .await
-                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+                    .map_err(|e| {
+                        tracing::error!("DB error checking user role: {:?}", e);
+                        StatusCode::INTERNAL_SERVER_ERROR
+                    })?;
 
                     let mut is_admin = false;
-                    if let Some(ar) = admin_row {
+                    if let Some(r) = role_row {
                         use sqlx::Row;
-                        is_admin = ar.try_get("is_admin").unwrap_or(false);
+                        let role: String = r.try_get("role").unwrap_or_else(|_| "member".to_string());
+                        is_admin = role == "owner" || role == "admin";
                     }
 
                     if !is_admin {

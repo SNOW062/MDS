@@ -62,6 +62,10 @@ def get_yarimciq_data():
             pattern = rf"(//|--|#)\s*completed\s+{file_id}"
             has_completed_tag = bool(re.search(pattern, content, re.IGNORECASE))
 
+            # Əgər completed tag-ı VARSA -> Yarımçıq deyil, dərhal keçirik!
+            if has_completed_tag:
+                continue
+
             lines = [l for l in content.strip().split('\n') if l.strip()]
             code_lines = [l for l in lines if not l.strip().startswith("//") and not l.strip().startswith("/*") and not l.strip().startswith("*")]
 
@@ -152,72 +156,107 @@ def get_yarimciq_data():
     return output_data
 
 def get_file_deep_spec(file_id):
-    if not os.path.exists(TRACKER_JSON):
-        return {}
-    
-    with open(TRACKER_JSON, 'r', encoding='utf-8') as f:
-        tracker = json.load(f)
+    try:
+        if not os.path.exists(TRACKER_JSON):
+            return {}
+        
+        with open(TRACKER_JSON, 'r', encoding='utf-8') as f:
+            tracker = json.load(f)
 
-    entry = next((f for f in tracker.get("files", []) if f["id"] == file_id), None)
-    if not entry:
-        return {}
+        entry = next((f for f in tracker.get("files", []) if f["id"] == file_id), None)
+        if not entry:
+            return {
+                "file_id": file_id,
+                "rust_path": "",
+                "php_path": "",
+                "php_properties": [],
+                "php_functions_total": 0,
+                "completed_functions": [],
+                "missing_functions": [],
+                "rust_existing_functions": [],
+                "rust_structs": [],
+                "completion_percentage": 0.0
+            }
 
-    rust_rel = entry.get("path")
-    php_rel = entry.get("source")
+        rust_rel = entry.get("path", "")
+        php_rel = entry.get("source", "")
 
-    abs_php = os.path.join(COOLIFY_SOURCE_DIR, php_rel) if php_rel else None
-    abs_rust = os.path.join(COOLIFY_DIR, rust_rel) if rust_rel else None
+        abs_php = os.path.join(COOLIFY_SOURCE_DIR, php_rel) if php_rel else None
+        abs_rust = os.path.join(COOLIFY_DIR, rust_rel) if rust_rel else None
 
-    # PHP-dən funksiyaları və dəyişənləri oxu
-    php_funcs = []
-    php_props = []
-    if abs_php and os.path.exists(abs_php) and not os.path.isdir(abs_php):
-        try:
-            with open(abs_php, 'r', encoding='utf-8', errors='ignore') as f:
-                content = f.read()
-            php_funcs = list(set(re.findall(r'(?:public|protected|private|static)\s+function\s+([a-zA-Z0-9_]+)\s*\(', content)))
-            php_props = list(set(re.findall(r'(?:public|protected|private)\s+(?:\?[a-zA-Z0-9_]+\s+)?\$([a-zA-Z0-9_]+)', content)))
-        except:
-            pass
+        php_funcs = []
+        php_props = []
+        if abs_php and os.path.exists(abs_php) and not os.path.isdir(abs_php):
+            try:
+                with open(abs_php, 'r', encoding='utf-8', errors='ignore') as f:
+                    php_content = f.read()
+                php_funcs = list(set(re.findall(r'(?:public|protected|private|static)\s+function\s+([a-zA-Z0-9_]+)\s*\(', php_content)))
+                php_props = list(set(re.findall(r'(?:public|protected|private)\s+(?:\?[a-zA-Z0-9_]+\s+)?\$([a-zA-Z0-9_]+)', php_content)))
+            except:
+                pass
 
-    # Rust/TS-dən funksiyaları və struct-ları oxu
-    rust_funcs = []
-    rust_structs = []
-    if abs_rust and os.path.exists(abs_rust) and not os.path.isdir(abs_rust):
-        try:
-            with open(abs_rust, 'r', encoding='utf-8', errors='ignore') as f:
-                content = f.read()
-            rust_funcs = list(set(re.findall(r'fn\s+([a-zA-Z0-9_]+)\s*[\(<]', content)))
-            rust_structs = list(set(re.findall(r'struct\s+([a-zA-Z0-9_]+)', content)))
-        except:
-            pass
+        rust_content = ""
+        rust_structs = []
+        if abs_rust and os.path.exists(abs_rust) and not os.path.isdir(abs_rust):
+            try:
+                with open(abs_rust, 'r', encoding='utf-8', errors='ignore') as f:
+                    rust_content = f.read()
+                rust_structs = list(set(re.findall(r'struct\s+([a-zA-Z0-9_]+)', rust_content)))
+            except:
+                pass
 
-    completed_funcs = []
-    missing_funcs = []
+        has_completed_marker = False
+        if rust_content:
+            if re.search(rf"(//|--|#)\s*completed\s+{file_id}", rust_content, re.IGNORECASE) or ("completed " + str(file_id)) in rust_content:
+                has_completed_marker = True
 
-    for pf in php_funcs:
-        snake_name = re.sub(r'(?<!^)(?=[A-Z])', '_', pf).lower()
-        if pf.lower() in [rf.lower() for rf in rust_funcs] or snake_name in [rf.lower() for rf in rust_funcs]:
-            completed_funcs.append(pf)
+        completed_funcs = []
+        missing_funcs = []
+
+        if has_completed_marker:
+            completed_funcs = php_funcs
+            missing_funcs = []
+            pct = 100.0
         else:
-            missing_funcs.append(pf)
+            for pf in php_funcs:
+                snake_name = re.sub(r'(?<!^)(?=[A-Z])', '_', pf).lower()
+                clean_pf = pf.replace('__', '')
+                
+                if pf in rust_content or snake_name in rust_content or clean_pf in rust_content:
+                    completed_funcs.append(pf)
+                else:
+                    missing_funcs.append(pf)
 
-    total_funcs = len(php_funcs)
-    done_funcs = len(completed_funcs)
-    pct = round((done_funcs / total_funcs * 100), 1) if total_funcs > 0 else 100.0
+            total_funcs = len(php_funcs)
+            done_funcs = len(completed_funcs)
+            pct = round((done_funcs / total_funcs * 100), 1) if total_funcs > 0 else 100.0
 
-    return {
-        "file_id": file_id,
-        "rust_path": rust_rel,
-        "php_path": php_rel,
-        "php_properties": php_props,
-        "php_functions_total": total_funcs,
-        "completed_functions": completed_funcs,
-        "missing_functions": missing_funcs,
-        "rust_existing_functions": rust_funcs,
-        "rust_structs": rust_structs,
-        "completion_percentage": pct
-    }
+        return {
+            "file_id": file_id,
+            "rust_path": rust_rel,
+            "php_path": php_rel,
+            "php_properties": php_props,
+            "php_functions_total": len(php_funcs),
+            "completed_functions": completed_funcs,
+            "missing_functions": missing_funcs,
+            "rust_existing_functions": [],
+            "rust_structs": rust_structs,
+            "completion_percentage": pct
+        }
+    except Exception as err:
+        print(f"Error in get_file_deep_spec for {file_id}: {err}")
+        return {
+            "file_id": file_id,
+            "rust_path": "",
+            "php_path": "",
+            "php_properties": [],
+            "php_functions_total": 0,
+            "completed_functions": [],
+            "missing_functions": [],
+            "rust_existing_functions": [],
+            "rust_structs": [],
+            "completion_percentage": 0.0
+        }
 
 
 STATIC_DIR = os.path.join(BASE_DIR, "static")

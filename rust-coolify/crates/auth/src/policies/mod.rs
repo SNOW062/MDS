@@ -6,7 +6,6 @@
 //! Admin/Owner roles can create, update, delete.
 //! Members can view and deploy.
 
-use uuid::Uuid;
 
 /// User's effective role in a team (fetched from team_members pivot).
 #[derive(Debug, Clone, PartialEq, Eq)]

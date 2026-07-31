@@ -15,7 +15,7 @@ impl PullHelperImageJob {
         let pull_cmd = "docker pull ghcr.io/coollabsio/coolify-helper:latest 2>/dev/null || true";
         ssh_client.execute_cmd(pull_cmd).await?;
 
-        sqlx::query!(
+        sqlx::query(
             "UPDATE instance_settings SET helper_version = 'latest', updated_at = NOW()"
         )
         .execute(db)

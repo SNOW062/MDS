@@ -7,3 +7,5 @@ edition = "2021"
 tokio = { workspace = true }
 serde = { workspace = true }
 anyhow = { workspace = true }
+uuid = { workspace = true }
+tracing = { workspace = true }

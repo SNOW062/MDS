@@ -2,9 +2,14 @@
 // Coolify: ServersController.php
 use axum::{
     routing::{get, post, delete, put},
-    Router, Json, extract::{Path, State}
+    Router, Json, extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
 };
 use serde::{Serialize, Deserialize};
+use serde_json::json;
+use sqlx::{PgPool, Row};
+use tracing::info;
 use uuid::Uuid;
 use crate::state::AppState;
 
@@ -23,6 +28,7 @@ pub struct UpdateServerRequest {
     pub ip: Option<String>,
     pub port: Option<String>,
     pub user: Option<String>,
+    pub description: Option<String>,
     pub is_build_server: Option<bool>,
     pub is_swarm_manager: Option<bool>,
     pub is_swarm_worker: Option<bool>,
@@ -96,34 +102,7 @@ async fn get_server_handler(
     Json(server)
 }
 
-async fn update_server_handler(
-    State(state): State<AppState>,
-    Path(id): Path<Uuid>,
-    Json(payload): Json<UpdateServerRequest>
-) -> Json<bool> {
-    // Sürətli cavab (Real database yenilənmə məntiqi gələcək agent tərəfindən genişləndirilə bilər)
-    println!("Server update request received for ID: {}, Payload: {:?}", id, payload);
-    Json(true)
-}
 
-async fn delete_server_handler(
-    State(state): State<AppState>,
-    Path(id): Path<Uuid>
-) -> Json<bool> {
-    rc_db::repos::server_repo::delete_server(&state.db, id).await.unwrap();
-    Json(true)
-}
-
-async fn validate_server_handler(
-    State(_state): State<AppState>,
-    Path(id): Path<Uuid>
-) -> Json<serde_json::Value> {
-    println!("Validating connection for server ID: {}", id);
-    Json(serde_json::json!({
-        "status": "success",
-        "message": "Connection verified via SSH multiplexing successfully."
-    }))
-}
 
 async fn update_sentinel_handler(
     State(_state): State<AppState>,
@@ -165,7 +144,13 @@ async fn apply_patches_handler(
         "job_id": Uuid::new_v4().to_string()
     }))
 }
-    let res = sqlx::query!(
+
+async fn update_server_handler(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>,
+    Json(payload): Json<UpdateServerRequest>,
+) -> (StatusCode, Json<serde_json::Value>) {
+    let res = sqlx::query(
         r#"
         UPDATE servers
         SET name = COALESCE($1, name),
@@ -176,14 +161,14 @@ async fn apply_patches_handler(
             updated_at = NOW()
         WHERE uuid = $6
         "#,
-        payload.name,
-        payload.ip,
-        payload.port.map(|p| p as i32),
-        payload.user,
-        payload.description,
-        uuid
     )
-    .execute(&db)
+    .bind(payload.name)
+    .bind(payload.ip)
+    .bind(payload.port.as_ref().and_then(|p| p.parse::<i32>().ok()))
+    .bind(payload.user)
+    .bind(payload.description)
+    .bind(uuid)
+    .execute(&state.db)
     .await;
 
     match res {
@@ -194,23 +179,28 @@ async fn apply_patches_handler(
 
 /// GET /api/v1/servers/:uuid/domains
 pub async fn get_server_domains(
-    State(db): State<PgPool>,
+    State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> impl IntoResponse {
     info!("API: Fetching domains for server {}", uuid);
-    let apps = sqlx::query!(
+    let apps = sqlx::query(
         r#"
         SELECT name, fqdn FROM applications
         WHERE destination_id IN (SELECT id FROM standalone_dockers WHERE server_id = (SELECT id FROM servers WHERE uuid = $1 LIMIT 1))
         "#,
-        uuid
     )
-    .fetch_all(&db)
+    .bind(uuid)
+    .fetch_all(&state.db)
     .await;
 
     match apps {
         Ok(records) => {
-            let list: Vec<_> = records.iter().map(|r| json!({"name": r.name, "fqdn": r.fqdn})).collect();
+            let mut list = vec![];
+            for r in records {
+                let name: Option<String> = r.try_get("name").ok();
+                let fqdn: Option<String> = r.try_get("fqdn").ok();
+                list.push(json!({"name": name, "fqdn": fqdn}));
+            }
             (StatusCode::OK, Json(json!(list)))
         }
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
@@ -219,7 +209,7 @@ pub async fn get_server_domains(
 
 /// POST /api/v1/servers/:uuid/validate
 pub async fn validate_server_handler(
-    State(db): State<PgPool>,
+    State(_state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> impl IntoResponse {
     info!("API: Validating server {}", uuid);
@@ -228,11 +218,12 @@ pub async fn validate_server_handler(
 
 /// DELETE /api/v1/servers/:uuid
 pub async fn delete_server_handler(
-    State(db): State<PgPool>,
+    State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> impl IntoResponse {
     info!("API: Deleting server {}", uuid);
-    match DeleteServer::handle(&db, uuid, false).await {
+    let res = sqlx::query("DELETE FROM servers WHERE uuid = $1").bind(uuid).execute(&state.db).await;
+    match res {
         Ok(_) => (StatusCode::OK, Json(json!({"message": "Server deleted successfully"}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
     }

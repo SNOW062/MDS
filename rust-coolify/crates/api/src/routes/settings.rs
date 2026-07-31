@@ -13,7 +13,6 @@ use crate::state::AppState;
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/api/version", get(version_handler))
-        .route("/api/health", get(health_handler))
         .route("/api/enable", post(enable_api_handler))
         .route("/api/disable", post(disable_api_handler))
         .route("/api/mcp/enable", post(enable_mcp_handler))
@@ -24,11 +23,6 @@ pub fn router(state: AppState) -> Router {
 /// GET /api/version - Coolify versiyasını qaytarır (OtherController::version)
 async fn version_handler() -> &'static str {
     env!("CARGO_PKG_VERSION")
-}
-
-/// GET /api/health - Sağlamlıq yoxlaması (OtherController::healthcheck)
-async fn health_handler() -> &'static str {
-    "OK"
 }
 
 /// POST /api/enable - API-ni aktivləşdirir (yalnız root team_id = 0)

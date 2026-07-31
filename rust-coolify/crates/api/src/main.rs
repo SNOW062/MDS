@@ -10,10 +10,27 @@ mod routes;
 mod websocket;
 mod dto;
 
-use axum::Router;
+use axum::{Router, middleware::from_fn, middleware::Next, http::Request, response::Response};
 use std::net::SocketAddr;
-use tower_http::services::{ServeDir, ServeFile};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+async fn log_requests(req: Request<axum::body::Body>, next: Next) -> Response {
+    let method = req.method().to_string();
+    let uri = req.uri().to_string();
+    let start = std::time::Instant::now();
+
+    let response = next.run(req).await;
+
+    let latency = start.elapsed();
+    let status = response.status();
+
+    tracing::info!(
+        "🌐 [HTTP API] {} {} -> Status: {} ({}ms)",
+        method, uri, status.as_u16(), latency.as_millis()
+    );
+
+    response
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -29,8 +46,13 @@ async fn main() -> anyhow::Result<()> {
 
     let state = state::AppState::new().await?;
 
+    // Static UI fayllarını (Vite dist qovluğundan) serve edən route
+    let ui_dist_path = std::env::var("UI_DIST_PATH").unwrap_or_else(|_| "ui/dist".to_string());
+    tracing::info!("Serving static UI files from: {}", ui_dist_path);
+
     let app = Router::new()
-        .merge(routes::health::router())
+        .merge(routes::health::router(state.clone()))
+        .merge(routes::auth::router(state.clone()))
         .merge(routes::servers::router(state.clone()))
         .merge(routes::projects::router(state.clone()))
         .merge(routes::applications::router(state.clone()))
@@ -45,11 +67,16 @@ async fn main() -> anyhow::Result<()> {
         .merge(routes::scheduled_tasks::router(state.clone()))
         .merge(routes::webhooks::router(state.clone()))
         .merge(websocket::router(state.clone()))
-        // Middleware laylarını qlobal olaraq bütün marşrutlara tətbiq edirik
+        // UI static faylların paylanması (ServeDir)
+        .fallback_service(
+            tower_http::services::ServeDir::new(&ui_dist_path)
+                .not_found_service(tower_http::services::ServeFile::new(format!("{}/index.html", ui_dist_path)))
+        )
+        .layer(from_fn(log_requests))
         .layer(middleware::cors::cors_layer())
         .layer(middleware::rate_limit::request_size_limit());
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 9000));
     tracing::info!("Listening on http://{}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;

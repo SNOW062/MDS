@@ -1,4 +1,4 @@
-// completed be_1110
+// completed be_1109
 // Coolify mənbəsi: app/Actions/Application/RollbackApplication.php
 use anyhow::{Result, anyhow};
 use sqlx::PgPool;
@@ -39,14 +39,14 @@ impl RollbackApplication {
             }
         }
 
-        sqlx::query!(
+        sqlx::query(
             r#"
             UPDATE applications
             SET updated_at = NOW()
             WHERE uuid = $1
             "#,
-            application_uuid
         )
+        .bind(application_uuid)
         .execute(db)
         .await?;
 

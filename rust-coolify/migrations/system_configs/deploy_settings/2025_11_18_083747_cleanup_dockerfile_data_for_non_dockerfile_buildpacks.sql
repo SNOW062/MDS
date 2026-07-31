@@ -1,3 +1,13 @@
 -- completed mig_306
--- Converted from: 2025_11_18_083747_cleanup_dockerfile_data_for_non_dockerfile_buildpacks.php
--- TODO: Review 2025_11_18_083747_cleanup_dockerfile_data_for_non_dockerfile_buildpacks.php (no Schema builder detected)
+-- Migration: 2025_11_18_083747_cleanup_dockerfile_data_for_non_dockerfile_buildpacks
+
+-- up() method implementation
+UPDATE applications
+SET dockerfile = NULL,
+    dockerfile_location = NULL,
+    dockerfile_target_build = NULL,
+    custom_healthcheck_found = FALSE
+WHERE build_pack != 'dockerfile';
+
+-- down() method implementation reference:
+-- No rollback needed - cleaning up corrupted non-dockerfile buildpack data

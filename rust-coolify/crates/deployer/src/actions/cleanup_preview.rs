@@ -1,4 +1,4 @@
-// completed be_1108
+// completed be_1106
 // Coolify mənbəsi: app/Actions/Application/CleanupPreviewDeployment.php
 use anyhow::Result;
 use sqlx::PgPool;
@@ -27,13 +27,13 @@ impl CleanupPreview {
             std::process::Command::new("sh").arg("-c").arg(&cmd).output()?;
         }
 
-        sqlx::query!(
+        sqlx::query(
             r#"
             DELETE FROM application_previews
             WHERE pull_request_id = $1
             "#,
-            pull_request_id as i32
         )
+        .bind(pull_request_id as i32)
         .execute(db)
         .await
         .ok();

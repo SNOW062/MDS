@@ -56,7 +56,33 @@ export interface Server {
   // Relations
   settings: ServerSetting;
   
-  // Appended attributes
+  // Appended attributes & missing properties
   is_reachable?: boolean;
   is_usable?: boolean;
+  ca_certificate?: string | null;
+  ca_certificate_valid_until?: string | null;
+  is_log_drain_newrelic_enabled?: boolean;
+  log_drain_newrelic_license_key?: string | null;
+  log_drain_newrelic_base_uri?: string | null;
+  is_log_drain_axiom_enabled?: boolean;
+  log_drain_axiom_api_key?: string | null;
+  log_drain_axiom_dataset_name?: string | null;
+  is_log_drain_custom_enabled?: boolean;
+  log_drain_custom_config?: string | null;
+  log_drain_custom_config_parser?: string | null;
+  proxy_type?: string | null;
+  generate_exact_labels?: boolean;
+  redirect_enabled?: boolean;
+  redirect_url?: string | null;
+  proxy_settings?: any;
+  is_terminal_enabled?: boolean;
+  connectionTimeout?: number | string;
+  wildcardDomain?: string | null;
+  serverTimezone?: string;
+  isBuildServer?: boolean;
+  isSwarmManager?: boolean;
+  isSwarmWorker?: boolean;
+  hetznerServerStatus?: string | null;
+  vultrInstanceStatus?: string | null;
+  digitalOceanDropletStatus?: string | null;
 }

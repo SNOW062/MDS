@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: masterdeploy-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: masterdeploy
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: masterdeploy-app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./migrations:/app/migrations
+    environment:
+      DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/masterdeploy
+      APP_ENV: production
+      RUST_LOG: info
+      UI_DIST_PATH: /app/ui/dist
+
+volumes:
+  pgdata:

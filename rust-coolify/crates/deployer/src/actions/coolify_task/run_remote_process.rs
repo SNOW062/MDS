@@ -46,14 +46,14 @@ impl RunRemoteProcess {
             Ok(output) => {
                 if !self.hide_output {
                     // Log outputu DB-də qeydə alırıq
-                    sqlx::query!(
+                    sqlx::query(
                         r#"
                         INSERT INTO deployment_logs (deployment_uuid, content, created_at)
                         VALUES ($1, $2, NOW())
                         "#,
-                        task_uuid,
-                        output
                     )
+                    .bind(task_uuid)
+                    .bind(&output)
                     .execute(db)
                     .await
                     .ok();

@@ -1,4 +1,4 @@
-// completed file_0963
+// completed file_0962
 // Coolify mənbəsi: app/Rules/ValidCloudInitYaml.php
 
 pub struct ValidCloudInitYaml;

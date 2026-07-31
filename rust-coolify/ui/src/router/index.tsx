@@ -50,12 +50,11 @@ import ProfilePage from '../pages/profile/ProfilePage';
 import AdminPage from '../pages/admin/AdminPage';
 import SourcesPage from '../pages/sources/SourcesPage';
 
-// Protected layout wrapper
+// Protected layout wrapper (Coolify: token/istifadəçi yoxdursa ilk dəfə /register-ə yönləndirilir)
 const AppLayout = () => {
-  // Simple auth check from localStorage
   const token = localStorage.getItem('md_token');
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/register" replace />;
   }
   return (
     <Layout>

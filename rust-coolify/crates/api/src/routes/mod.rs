@@ -18,3 +18,4 @@ pub mod oauth_controller;
 pub mod upload_controller;
 pub mod api;
 pub mod webhook;
+pub mod auth;

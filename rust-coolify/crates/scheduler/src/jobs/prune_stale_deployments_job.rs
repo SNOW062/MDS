@@ -11,7 +11,7 @@ impl PruneStaleDeploymentsJob {
     pub async fn run(db: &PgPool) -> Result<u64> {
         info!("Executing PruneStaleDeploymentsJob");
 
-        let rows_affected = sqlx::query!(
+        let result = sqlx::query(
             r#"
             UPDATE application_deployment_queues
             SET status = 'failed', updated_at = NOW()
@@ -20,9 +20,9 @@ impl PruneStaleDeploymentsJob {
             "#
         )
         .execute(db)
-        .await?
-        .rows_affected();
+        .await?;
 
+        let rows_affected = result.rows_affected();
         info!("Pruned {} stale deployment records", rows_affected);
         Ok(rows_affected)
     }

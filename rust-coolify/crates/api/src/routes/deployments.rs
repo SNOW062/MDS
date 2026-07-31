@@ -7,6 +7,7 @@ use axum::{
     http::StatusCode,
 };
 use serde::{Serialize, Deserialize};
+use sqlx::Row;
 use uuid::Uuid;
 use crate::state::AppState;
 
@@ -76,13 +77,25 @@ async fn list_all_deployments(
            ORDER BY created_at DESC
            LIMIT $1 OFFSET $2"#
     )
-    .bind(take)
-    .bind(skip)
+    .bind(take as i64)
+    .bind(skip as i64)
     .fetch_all(&state.db)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    Ok(Json(serde_json::json!([])))
+    let mut list = vec![];
+    for r in rows {
+        let u: Uuid = r.get("uuid");
+        let app_u: Uuid = r.get("application_uuid");
+        let status: String = r.get("status");
+        list.push(serde_json::json!({
+            "uuid": u,
+            "application_uuid": app_u,
+            "status": status
+        }));
+    }
+
+    Ok(Json(serde_json::json!(list)))
 }
 
 // GET /api/deployments/:uuid
@@ -91,7 +104,7 @@ async fn get_deployment_by_uuid(
     Path(uuid): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
     let row = sqlx::query(
-        "SELECT * FROM application_deployment_queues WHERE uuid = $1"
+        "SELECT uuid, status FROM application_deployment_queues WHERE uuid = $1"
     )
     .bind(uuid)
     .fetch_optional(&state.db)
@@ -99,9 +112,10 @@ async fn get_deployment_by_uuid(
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
     .ok_or(StatusCode::NOT_FOUND)?;
 
+    let status: String = row.get("status");
     Ok(Json(serde_json::json!({
         "uuid": uuid,
-        "status": "queued"
+        "status": status
     })))
 }
 

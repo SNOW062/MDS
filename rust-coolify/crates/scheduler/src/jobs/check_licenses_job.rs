@@ -11,7 +11,7 @@ impl CheckLicensesJob {
     pub async fn run(db: &PgPool) -> Result<()> {
         info!("Executing CheckLicensesJob");
 
-        sqlx::query!(
+        sqlx::query(
             r#"
             UPDATE subscriptions
             SET updated_at = NOW()

@@ -6,3 +6,4 @@ pub mod app_repo;
 pub mod db_repo;
 pub mod deploy_repo;
 pub mod service_repo;
+pub mod team_repo;

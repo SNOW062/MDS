@@ -50,6 +50,13 @@ export default function Layout({ children }: LayoutProps) {
   const projects = useProjectStore((state) => state.projects);
 
   useEffect(() => {
+    const token = localStorage.getItem('md_token');
+    if (!token) {
+      navigate('/register', { replace: true });
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     if (projects.length === 0) {
       projectActions.setProjects(mockProjects);
     }
