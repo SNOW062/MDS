@@ -14,7 +14,7 @@ interface TabsProps {
 
 export default function Tabs({ tabs, activeTab, onChange }: TabsProps) {
   return (
-    <div className="flex gap-2 border-b border-[#27272a] pb-px">
+    <div className="flex gap-2 border-b border-[var(--border-color)] pb-px">
       {tabs.map((tab) => (
         <button
           key={tab.id}
@@ -22,7 +22,7 @@ export default function Tabs({ tabs, activeTab, onChange }: TabsProps) {
           className={`px-4 py-2 text-xs font-semibold transition-all relative ${
             activeTab === tab.id
               ? 'text-indigo-400 border-b-2 border-indigo-500'
-              : 'text-[#a1a1aa] hover:text-white'
+              : 'text-[var(--text-secondary)] hover:text-white'
           }`}
         >
           {tab.label}

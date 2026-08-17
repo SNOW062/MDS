@@ -1,0 +1,136 @@
+{
+  "php_analysis": {
+    "file": "resources/views/livewire/server/private-key/show.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server private key idarəetmə interfeysi. Mövcud key-ləri göstərmək, yeni key generate etmək, server-ə key təyin etmək və public key kopyalamaq.",
+    "analysis": {
+      "layout_structure": {
+        "title_slot": "{{ data_get_str($server, 'name')->limit(10) }} > Private Key | Coolify",
+        "navbar": "<livewire:server.navbar :server=\"$server\">",
+        "sidebar": "<x-server.sidebar :server=\"$server\" activeMenu=\"private-key\">",
+        "main_wrapper": "flex flex-col h-full gap-4 md:gap-8 md:flex-row"
+      },
+      "header_section": {
+        "title": "Private Key",
+        "actions": {
+          "add_dropdown": {
+            "condition": "@can('createAnyResource')",
+            "alpine_state": "dropdownOpen",
+            "trigger_button": "+ Add + chevron icon (isHighlighted)",
+            "dropdown_items": [
+              {
+                "label": "Generate ED25519",
+                "action": "wire:click=\"generatePrivateKey('ed25519')\"",
+                "icon": "plus SVG"
+              },
+              {
+                "label": "Generate RSA",
+                "action": "wire:click=\"generatePrivateKey('rsa')\"",
+                "icon": "plus SVG"
+              },
+              {
+                "label": "Add manually",
+                "component": "<x-modal-input title=\"Add Private Key Manually\">",
+                "content": "<livewire:security.private-key.create>"
+              }
+            ]
+          },
+          "check_connection": {
+            "component": "<x-forms.button>",
+            "action": "wire:click.prevent='checkConnection'",
+            "style": "isHighlighted",
+            "canGate": "update",
+            "canResource": "$server",
+            "label": "Check connection"
+          }
+        }
+      },
+      "description": "Change your server's private key.",
+      "keys_grid": {
+        "layout": "grid xl:grid-cols-2 grid-cols-1 gap-2",
+        "empty_state": "<div>No private keys found.</div>",
+        "card_structure": {
+          "wrapper_classes": "box-without-bg justify-between dark:bg-coolgray-100 bg-white items-center flex flex-col gap-2",
+          "content": {
+            "name": "box-title",
+            "description": "box-description"
+          },
+          "actions": {
+            "copy_public_key": {
+              "component": "<x-forms.button class=\"w-full\">",
+              "action": "@click.prevent=\"copyPublicKeyToClipboard({{ Js::from($private_key->public_key) }})\"",
+              "label": "Copy public key"
+            },
+            "use_this_key": {
+              "condition": "data_get($server, 'privateKey.uuid') !== $private_key->uuid",
+              "component": "<x-forms.button class=\"w-full\">",
+              "action": "wire:click='setPrivateKey({{ $private_key->id }})'",
+              "canGate": "update",
+              "canResource": "$server",
+              "label": "Use this key"
+            },
+            "currently_used": {
+              "condition": "data_get($server, 'privateKey.uuid') === $private_key->uuid",
+              "component": "<x-forms.button class=\"w-full\" disabled>",
+              "label": "Currently used"
+            }
+          }
+        }
+      },
+      "javascript": {
+        "directive": "@script",
+        "functions": [
+          {
+            "name": "window.copyPublicKeyToClipboard",
+            "params": [
+              "publicKey"
+            ],
+            "logic": [
+              "Null check",
+              "navigator.clipboard?.writeText support check",
+              "writeText(publicKey).then → dispatch('success')",
+              ".catch → dispatch('error')"
+            ]
+          }
+        ],
+        "event_listeners": [
+          {
+            "event": "$wire.on('copyPublicKeyToClipboard')",
+            "handler": "Extract publicKey from event.detail or event.publicKey, then call window.copyPublicKeyToClipboard()"
+          }
+        ]
+      },
+      "livewire_directives_used": [
+        "wire:click",
+        "wire:click.prevent"
+      ],
+      "blade_components_used": [
+        "x-server.navbar",
+        "x-server.sidebar",
+        "x-forms.button",
+        "x-modal-input"
+      ],
+      "livewire_components_used": [
+        "livewire:server.navbar",
+        "livewire:security.private-key.create"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix",
+        "custom_classes": [
+          "box-without-bg",
+          "box-title",
+          "box-description",
+          "bg-coolgray-100"
+        ]
+      },
+      "conditional_rendering_rules": [
+        "Add dropdown yalnız @can('createAnyResource') olduqda görünür",
+        "'Use this key' yalnız server-in hazırkı key-i bu key deyilsə görünür",
+        "'Currently used' yalnız server-in hazırkı key-i bu keydirsə görünür",
+        "Empty state yalnız $privateKeys boş olduqda görünür"
+      ]
+    }
+  },
+  "target_analysis": null
+}

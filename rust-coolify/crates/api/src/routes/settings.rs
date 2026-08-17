@@ -13,11 +13,26 @@ use crate::state::AppState;
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/api/version", get(version_handler))
+        .route("/api/settings", get(get_settings_handler))
         .route("/api/enable", post(enable_api_handler))
         .route("/api/disable", post(disable_api_handler))
         .route("/api/mcp/enable", post(enable_mcp_handler))
         .route("/api/mcp/disable", post(disable_mcp_handler))
         .with_state(state)
+}
+
+/// GET /api/settings - Cari instance tənzimləmələrini (is_cloud və s.) qaytarır
+async fn get_settings_handler() -> Result<Json<serde_json::Value>, StatusCode> {
+    // Orijinal Coolify-a uyğun olaraq, is_cloud parametrini env-dən və ya default olaraq false götürürük.
+    // Çünki instance_settings cədvəlində belə bir sütun yoxdur (testing-schema.sql-də isə yoxdur).
+    let is_cloud_env = std::env::var("IS_CLOUD")
+        .map(|v| v.parse::<bool>().unwrap_or(false))
+        .unwrap_or(false);
+
+    Ok(Json(serde_json::json!({
+        "is_cloud": is_cloud_env,
+        "max_servers": 999999
+    })))
 }
 
 /// GET /api/version - Coolify versiyasını qaytarır (OtherController::version)

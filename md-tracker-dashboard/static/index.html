@@ -104,9 +104,11 @@
 
         <!-- TAB İDARƏETMƏSİ (QOVLUQ VS YIĞILMA ARDICILLIĞI VS YARIMÇIQ İŞLƏR) -->
         <div class="tab-navigation">
-            <button class="tab-btn active" id="tab-tree" onclick="switchView('tree')">📂 Qovluq Ağacı</button>
-            <button class="tab-btn" id="tab-sequence" onclick="switchView('sequence')">⚡ Yığılma Növbəsi (Mərhələli)</button>
-            <button class="tab-btn" id="tab-yarimciq" onclick="switchView('yarimciq')">⚠️ Yarımçıq İşlər Siyahısı (<span id="yarimciq-badge-count">0</span>)</button>
+            <button class="tab-btn active" id="tab-tree" onclick="window.MDSApp.switchView('tree')">📂 Qovluq Ağacı</button>
+            <button class="tab-btn" id="tab-sequence" onclick="window.MDSApp.switchView('sequence')">⚡ Yığılma Növbəsi (Mərhələli)</button>
+            <button class="tab-btn" id="tab-yarimciq" onclick="window.MDSApp.switchView('yarimciq')">⚠️ Yarımçıq İşlər Siyahısı (<span id="yarimciq-badge-count">0</span>)</button>
+            <button class="tab-btn" id="tab-analyzed" onclick="window.MDSApp.switchView('analyzed')">📋 Sistematik Analiz</button>
+            <button class="tab-btn" id="tab-files-to-analyze" onclick="window.MDSApp.switchView('files-to-analyze')">🔍 Analiz Siyahısı</button>
         </div>
 
         <!-- 3 SÜTUNLU LAYOUT (DARTILA BİLƏN RESIZER-LƏR ƏLAVƏ EDİLDİ) -->
@@ -161,23 +163,23 @@
                     <p>Skan nəticəsində əskik, skelet və ya `todo!()` olan fayllar `yarimciq.json` faylına daxil edilib.</p>
                 </div>
                 <div class="yarimciq-filter-group">
-                    <button class="action-btn btn-success" id="btn-copy-selected-specs" onclick="copySelectedSpecsAsText()" style="display: none;">📋 Seçilənlərin Metodlarını Kopyala (<span id="selected-specs-count">0</span>)</button>
-                    <input type="text" id="yarimciq-search" placeholder="🔍 Yarımçıq fayl axtar..." oninput="renderYarimciqList()">
-                    <select id="yarimciq-status-filter" onchange="renderYarimciqList()">
+                    <button class="action-btn btn-success" id="btn-copy-selected-specs" onclick="window.MDSYarimciq.copySelectedSpecsAsText()" style="display: none;">📋 Seçilənlərin Metodlarını Kopyala (<span id="selected-specs-count">0</span>)</button>
+                    <input type="text" id="yarimciq-search" placeholder="🔍 Yarımçıq fayl axtar..." oninput="window.MDSYarimciq.renderYarimciqList()">
+                    <select id="yarimciq-status-filter" onchange="window.MDSYarimciq.renderYarimciqList()">
                         <option value="all">Bütün Statuslar</option>
                         <option value="missing">Əskik (Yaradılmayıb)</option>
                         <option value="skelet">Skelet / Yalnız Comment</option>
                         <option value="yarimciq">Todo!() / Unimplemented!()</option>
                         <option value="wip">Gözləyən / Tamamlanmayan</option>
                     </select>
-                    <button class="action-btn btn-primary" onclick="loadYarimciqData()">🔄 Yenilə</button>
+                    <button class="action-btn btn-primary" onclick="window.MDSYarimciq.loadYarimciqData()">🔄 Yenilə</button>
                 </div>
             </div>
             <div class="yarimciq-table-container glass">
                 <table class="yarimciq-table">
                     <thead>
                         <tr>
-                            <th style="width: 35px; text-align: center;"><input type="checkbox" id="select-all-yarimciq" onchange="toggleSelectAllYarimciq(this)" style="cursor: pointer; width: 15px; height: 15px;"></th>
+                            <th style="width: 35px; text-align: center;"><input type="checkbox" id="select-all-yarimciq" onchange="window.MDSYarimciq.toggleSelectAllYarimciq(this)" style="cursor: pointer; width: 15px; height: 15px;"></th>
                             <th>ID</th>
                             <th>Fayl Yolu (Path)</th>
                             <th>Kateqoriya</th>
@@ -193,11 +195,162 @@
             </div>
         </section>
 
+        <!-- TAB 2: YIĞILMA ARDICILLIĞI BÖLMƏSİ (İndi inline səhifə kimi açılır!) -->
+        <section class="yarimciq-panel" id="sequence-view-panel" style="display: none; flex-direction: column;">
+            <div class="yarimciq-header glass">
+                <div class="yarimciq-header-left">
+                    <h2>⚡ Yığılma Ardıcıllığı & Yol Xəritəsi</h2>
+                    <p>Mərhələli şəkildə yığılma ardıcıllığı və fayllar arası asılılıq xəritəsi.</p>
+                </div>
+                <div class="yarimciq-filter-group">
+                    <button class="action-btn btn-primary" onclick="window.MDSApp.fetchData()">🔄 Yenilə</button>
+                </div>
+            </div>
+            <div class="yarimciq-table-container glass" style="padding: 20px; overflow-y: auto;">
+                <div id="seq-panel-body" class="sequence-list-container">
+                    <!-- Dinamik mərhələli siyahı bura gələcək -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: SİSTEMATİK ANALİZ BÖLMƏSİ (NEW) -->
+        <section class="yarimciq-panel" id="analyzed-view-panel" style="display: none; flex-direction: column;">
+            <div class="yarimciq-header glass">
+                <div class="yarimciq-header-left">
+                    <h2>📋 Sistematik Analiz və PHP Keçid Hesabatları</h2>
+                    <p>PHP Livewire fayllarının TypeScript və Rust qarşılıqları ilə sistematik müqayisəsi və əskik hissələr.</p>
+                </div>
+                <div class="yarimciq-filter-group">
+                    <input type="text" id="analyzed-search" placeholder="🔍 Analiz edilən faylı axtar..." oninput="window.MDSAnalyzed.filterAnalyzedTree()" style="width: 250px; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; font-size: 12px; outline: none;">
+                    <button class="action-btn btn-primary" onclick="window.MDSAnalyzed.loadAnalyzedDataImpl()">🔄 Yenilə</button>
+                </div>
+            </div>
+            <div class="yarimciq-table-container glass" style="padding: 20px; overflow-y: auto;">
+                <div id="analyzed-tree-container" class="tree-container">
+                    <!-- Dinamik analiz ağacı bura gələcək -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: ANALİZ EDİLƏCƏK FAILLAR SİYAHISI (NEW) -->
+        <section class="yarimciq-panel" id="files-to-analyze-view-panel" style="display: none; flex-direction: column;">
+            <div class="yarimciq-header glass">
+                <div class="yarimciq-header-left">
+                    <h2>🔍 Analiz Ediləcək Fayllar Siyahısı</h2>
+                    <p>Orijinal Coolify PHP/Blade faylları və onlara qarşılıq gələn frontend/backend fayl cütlükləri.</p>
+                </div>
+                <div class="yarimciq-filter-group">
+                    <button class="action-btn btn-primary" onclick="window.MDSFilesToAnalyze.renderFilesToAnalyze()">🔄 Yenilə</button>
+                </div>
+            </div>
+            <div class="yarimciq-table-container glass" style="padding: 20px; overflow-y: auto;">
+                <table class="yarimciq-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Orijinal Coolify (PHP/Blade)</th>
+                            <th>TypeScript / React UI</th>
+                            <th>Rust Backend</th>
+                            <th>Təsvir</th>
+                            <th>Analiz Statusu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="files-to-analyze-table-body">
+                        <!-- Dinamik siyahı JavaScript tərəfindən doldurulacaq -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 🔗 BAĞLANTI QURMA MODALI -->
+        <div id="link-modal" class="modal-overlay">
+            <div class="modal-content glass" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h2>🔗 Fayl Bağlantısını Qur / Dəyiş</h2>
+                    <button class="close-modal-btn" onclick="window.MDSApp.closeLinkModal()">&times;</button>
+                </div>
+                <form id="link-form" onsubmit="window.MDSApp.saveLinkMapping(event)" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                    <input type="hidden" id="link-file-id">
+                    <div>
+                        <label style="display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: bold;">Fayl ID</label>
+                        <input type="text" id="link-file-id-display" disabled style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); color: #fff; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: bold;">PHP Fayl Yolu (Source)</label>
+                        <input type="text" id="link-source-path" required placeholder="Məs. app/Livewire/Server/Create.php" style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: bold;">TypeScript / Rust Hədəf Yolu (Path)</label>
+                        <input type="text" id="link-target-path" required placeholder="Məs. ui/src/pages/server/CreateServerPage.tsx" style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px;">
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                        <button type="button" class="action-btn" onclick="window.MDSApp.closeLinkModal()">Ləğv Et</button>
+                        <button type="submit" class="action-btn btn-success">Yadda Saxla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 📝 ANALİZ DAXİL ETME MODALI -->
+        <div id="analysis-modal" class="modal-overlay">
+            <div class="modal-content glass" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2>📝 JSON Analiz Məlumatı Daxil Et</h2>
+                    <button class="close-modal-btn" onclick="window.MDSAnalyzed.closeAnalysisModal()">&times;</button>
+                </div>
+                <form id="analysis-form" onsubmit="window.MDSAnalyzed.saveAnalysisJson(event)" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                    <input type="hidden" id="analysis-file-id">
+                    <div>
+                        <label style="display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: bold;">Fayl ID</label>
+                        <input type="text" id="analysis-file-id-display" disabled style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); color: #fff; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: bold;">Fayl Yolu (Source Path)</label>
+                        <input type="text" id="analysis-filepath-display" disabled style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); color: #a5b4fc; border-radius: 6px; font-family: monospace; font-size: 11px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: bold;">Analiz Edilən Layihə Tərəfi</label>
+                        <select id="analysis-side-select" onchange="window.MDSAnalyzed.onAnalysisSideChanged()" style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; font-size: 12px; outline: none;">
+                            <option value="php">Coolify PHP Analizi (PHP Source)</option>
+                            <option value="target">MasterDeploy TypeScript / Rust Analizi (TS/RS Target)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: bold;">JSON Analiz Mətni</label>
+                        <textarea id="analysis-json-text" required placeholder='{\n  "analysis": {\n    "missing_parts": {\n      "gaps": [\n        "Eksik olan mesaji bura yazin"\n      ]\n    }\n  }\n}' style="width: 100%; height: 250px; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #a7f3d0; border-radius: 6px; font-family: monospace; font-size: 11px; resize: vertical;"></textarea>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                        <button type="button" class="action-btn" onclick="window.MDSAnalyzed.closeAnalysisModal()">Ləğv Et</button>
+                        <button type="submit" class="action-btn btn-success">Analizi Saxla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 📄 KODU GÖSTERME / KOPYALAMA MODALI -->
+        <div id="code-popup-modal" class="modal-overlay">
+            <div class="modal-content glass" style="max-width: 850px; width: 90%;">
+                <div class="modal-header">
+                    <h2 id="code-popup-title">📄 Kod Önizləmə</h2>
+                    <button class="close-modal-btn" onclick="window.MDSApp.closeCodePopup()">&times;</button>
+                </div>
+                <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="code-popup-filepath" style="font-family: monospace; font-size: 11px; opacity: 0.6; color: #a5b4fc;"></span>
+                        <button class="action-btn btn-primary" onclick="window.MDSApp.copyPopupCode()" style="padding: 4px 12px; font-size: 11px;">📋 Kodu Kopyala</button>
+                    </div>
+                    <pre id="code-popup-pre" style="width: 100%; max-height: 500px; overflow: auto; padding: 15px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); color: #e4e4e7; border-radius: 6px; font-family: monospace; font-size: 11.5px; line-height: 1.5; white-space: pre; text-align: left;"></pre>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+                        <button type="button" class="action-btn" onclick="window.MDSApp.closeCodePopup()">Bağla</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- DAXİLİ MÜQAYİSƏ BÖLMƏSİ (STANDART OLARAQ GİZLİDİR) -->
         <section id="source-viewer-section" class="source-viewer-hidden">
             <div class="viewer-header">
-                <button class="back-btn" onclick="closeSourceViewer()">← Geri Qayıt</button>
+                <button class="back-btn" onclick="window.MDSApp.closeSourceViewer()">← Geri Qayıt</button>
                 <div class="viewer-title-area">
                     <span class="badge-id" id="viewer-file-id">ID</span>
                     <span id="viewer-title-text" style="font-weight: 600;">Mənbə və Hədəf Kodunun Müqayisəsi</span>
@@ -213,8 +366,8 @@
                             <span class="panel-path" id="php-path-text">Yol</span>
                         </div>
                         <div class="btn-group">
-                            <button class="action-btn" id="btn-php-path" onclick="copyPath('php')">Fayl Yolunu Kopyala</button>
-                            <button class="action-btn btn-success" id="btn-php-code" onclick="copyCode('php')">Kodu Kopyala</button>
+                            <button class="action-btn" id="btn-php-path" onclick="window.MDSApp.copyPath('php')">Fayl Yolunu Kopyala</button>
+                            <button class="action-btn btn-success" id="btn-php-code" onclick="window.MDSApp.copyCode('php')">Kodu Kopyala</button>
                         </div>
                     </div>
                     <pre><code id="php-code-raw"></code></pre>
@@ -228,8 +381,8 @@
                             <span class="panel-path" id="rust-path-text" style="color: #93c5fd;">Yol</span>
                         </div>
                         <div class="btn-group">
-                            <button class="action-btn" id="btn-rust-path" onclick="copyPath('rust')">Fayl Yolunu Kopyala</button>
-                            <button class="action-btn btn-success" id="btn-rust-code" onclick="copyCode('rust')">Kodu Kopyala</button>
+                            <button class="action-btn" id="btn-rust-path" onclick="window.MDSApp.copyPath('rust')">Fayl Yolunu Kopyala</button>
+                            <button class="action-btn btn-success" id="btn-rust-code" onclick="window.MDSApp.copyCode('rust')">Kodu Kopyala</button>
                         </div>
                     </div>
                     <pre><code id="rust-code-raw"></code></pre>
@@ -237,7 +390,12 @@
             </div>
         </section>
     </div>
-    <script src="app.js"></script>
+    
+    <script type="module" src="components/utils.js"></script>
+    <script type="module" src="components/yarimciq.js"></script>
+    <script type="module" src="components/analyzed.js"></script>
+    <script type="module" src="components/filesToAnalyze.js"></script>
+    <script type="module" src="app.js"></script>
     <script>
         function openStatsModal() {
             document.getElementById('stats-modal').classList.add('active');
@@ -252,7 +410,12 @@
                 closeStatsModal();
             }
             if (event.target == seqModal) {
-                closeSequenceModal();
+                if (window.MDSApp && window.MDSApp.closeSequenceModal) {
+                    window.MDSApp.closeSequenceModal();
+                } else {
+                    const modal = document.getElementById('sequence-modal');
+                    if (modal) modal.classList.remove('active');
+                }
             }
         }
     </script>

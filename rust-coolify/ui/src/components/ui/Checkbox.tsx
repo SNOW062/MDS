@@ -10,10 +10,10 @@ export default function Checkbox({ label, className = '', ...props }: CheckboxPr
     <div className="flex items-center select-none cursor-pointer">
       <input
         type="checkbox"
-        className={`h-4 w-4 rounded bg-[#27272a] border-[#3f3f46] text-indigo-600 focus:ring-0 cursor-pointer ${className}`}
+        className={`h-4 w-4 rounded bg-[var(--bg-tertiary)] border-[var(--border-color)] text-indigo-600 focus:ring-0 cursor-pointer ${className}`}
         {...props}
       />
-      <label htmlFor={props.id} className="ml-2 text-xs text-[#a1a1aa] cursor-pointer">
+      <label htmlFor={props.id} className="ml-2 text-xs text-[var(--text-secondary)] cursor-pointer">
         {label}
       </label>
     </div>

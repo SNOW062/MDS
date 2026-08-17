@@ -1,0 +1,157 @@
+{
+  "php_analysis": {
+    "file_path": "resources/views/livewire/server/security/patches.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server təhlükəsizlik yamaqları (package updates) interfeysi. Paket yeniləmələrini yoxlamaq, siyahılamaq və tək-tək və ya toplu yeniləmək.",
+    "analysis": {
+      "layout_structure": {
+        "title_slot": "{{ data_get_str($server, 'name')->limit(10) }} > Security | Coolify",
+        "navbar": "<livewire:server.navbar :server=\"$server\">",
+        "slide_over": {
+          "component": "<x-slide-over closeWithX fullScreen>",
+          "event": "@startupdate.window=\"slideOverOpen = true\"",
+          "title": "Updating Packages",
+          "content": "<livewire:activity-monitor header=\"Logs\">"
+        },
+        "main_wrapper": "flex flex-col h-full gap-4 md:gap-8 md:flex-row",
+        "alpine_state": "x-data=\"{ activeTab: window.location.hash ? window.location.hash.substring(1) : 'general' }\"",
+        "sidebar": "<x-server.sidebar-security :server=\"$server\" :parameters=\"$parameters\">",
+        "form": "<form wire:submit='submit' class=\"w-full\">"
+      },
+      "header_section": {
+        "title": "Server Patching",
+        "badge": "<span class=\"text-xs text-neutral-500\">(experimental)</span>",
+        "helper": "Only available for apt, dnf and zypper package managers atm. Status notifications sent every week. Link to notification settings.",
+        "dev_button": {
+          "condition": "isDev()",
+          "component": "<x-forms.button type=\"button\" wire:click=\"sendTestEmail\">",
+          "label": "Send Test Email (dev only)"
+        }
+      },
+      "description": "Update your servers semi-automatically.",
+      "content_sections": {
+        "check_updates_button": {
+          "component": "<x-forms.button type=\"button\">",
+          "action": "wire:click=\"$dispatch('checkForUpdates')\"",
+          "label": "Check for Updates"
+        },
+        "loading_state": {
+          "condition": "wire:loading wire:target=\"checkForUpdates\"",
+          "content": "Checking for updates. It may take a few minutes. <x-loading />"
+        },
+        "error_state": {
+          "condition": "$error",
+          "content": "<div class=\"text-red-500\">{{ $error }}</div>"
+        },
+        "up_to_date_state": {
+          "condition": "$totalUpdates === 0",
+          "content": "<div class=\"text-green-500\">Your server is up to date.</div>"
+        },
+        "updates_table": {
+          "condition": "isset($updates) && count($updates) > 0",
+          "update_all_button": {
+            "component": "<x-modal-confirmation>",
+            "title": "Confirm package update?",
+            "button_title": "Update All Packages",
+            "is_highlighted": true,
+            "submit_action": "updateAllPackages",
+            "dispatch_action": true,
+            "actions": [
+              "All packages will be updated to the latest version.",
+              "This action could restart your currently running containers if docker will be updated."
+            ],
+            "confirmation_text": "Update All Packages",
+            "confirm_with_password": false
+          },
+          "table_columns": [
+            "Package",
+            "Version",
+            "Action"
+          ],
+          "row_structure": {
+            "package_name": {
+              "content": "{{ data_get($update, 'package') }}",
+              "warning_icon": {
+                "condition": "package contains 'docker' or 'kernel'",
+                "component": "<x-helper>",
+                "helper": "This package will restart your currently running containers",
+                "icon": "Warning triangle SVG (red)"
+              }
+            },
+            "version": {
+              "content": "{{ data_get($update, 'new_version') }}",
+              "current_version_helper": {
+                "condition": "$packageManager !== 'dnf' && current_version exists",
+                "component": "<x-helper>",
+                "helper": "Current: {{ data_get($update, 'current_version') }}"
+              }
+            },
+            "action": {
+              "component": "<x-forms.button type=\"button\">",
+              "action": "wire:click=\"$dispatch('updatePackage', { package: '{{ data_get($update, 'package') }}' })\"",
+              "label": "Update"
+            }
+          }
+        }
+      },
+      "javascript": {
+        "directive": "@script",
+        "event_handlers": [
+          {
+            "event": "checkForUpdates",
+            "handler": "$wire.$call('checkForUpdatesDispatch')"
+          },
+          {
+            "event": "updateAllPackages",
+            "handler": "window.dispatchEvent(new CustomEvent('startupdate')); $wire.$call('updateAllPackages')"
+          },
+          {
+            "event": "updatePackage",
+            "handler": "window.dispatchEvent(new CustomEvent('startupdate')); $wire.$call('updatePackage', data.package)"
+          },
+          {
+            "event": "checkForUpdatesDispatch",
+            "handler": "$wire.$call('checkForUpdates')"
+          }
+        ]
+      },
+      "livewire_directives_used": [
+        "wire:submit",
+        "wire:click",
+        "wire:loading",
+        "wire:target",
+        "wire:click=\"$dispatch(...)\""
+      ],
+      "blade_components_used": [
+        "x-slot:title",
+        "livewire:server.navbar",
+        "x-slide-over",
+        "livewire:activity-monitor",
+        "x-server.sidebar-security",
+        "x-helper",
+        "x-forms.button",
+        "x-modal-confirmation",
+        "x-loading"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix",
+        "custom_classes": [
+          "text-red-500",
+          "text-green-500",
+          "text-neutral-500"
+        ]
+      },
+      "conditional_rendering_rules": [
+        "Send Test Email button yalnız isDev() olduqda görünür",
+        "Loading state yalnız checkForUpdates işləyərkən görünür",
+        "Error message yalnız $error varsa görünür",
+        "Up to date message yalnız $totalUpdates === 0 olduqda görünür",
+        "Updates table yalnız $updates boş deyilsə görünür",
+        "Current version helper yalnız packageManager !== 'dnf' olduqda görünür",
+        "Warning icon yalnız paket adında 'docker' və ya 'kernel' varsa görünür"
+      ]
+    }
+  },
+  "target_analysis": null
+}

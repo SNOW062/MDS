@@ -1,0 +1,356 @@
+{
+  "php_analysis": {
+    "file": "resources/views/livewire/server/show.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server Show Livewire komponentinin UI qatı. Server detalları, konfiqurasiya formu, cloud provider status-ları, linkləmə modal-ları və validasiya interfeysini render edir.",
+    "analysis": {
+      "alpine_js": {
+        "x-data": "Boş",
+        "x-init": "Mount-da avtomatik cloud status check: Hetzner, Vultr, DigitalOcean əgər ID-ləri varsa və status yoxdursa",
+        "other_components": [
+          "Link Cloud Provider dropdown (dropdownOpen)",
+          "Timezone searchable dropdown (open, search, timezones)"
+        ]
+      },
+      "layout_structure": {
+        "title_slot": "{{ data_get_str($server, 'name')->limit(10) }} > General | Coolify",
+        "navbar": "<livewire:server.navbar :server=\"$server\">",
+        "sidebar": "<x-server.sidebar :server=\"$server\" activeMenu=\"general\">",
+        "main_wrapper": "flex flex-col h-full gap-4 md:gap-8 md:flex-row",
+        "content_area": "w-full"
+      },
+      "header_section": {
+        "title": "General",
+        "cloud_status_badges": [
+          {
+            "provider": "Hetzner",
+            "condition": "$server->hetzner_server_id",
+            "icon": "Inline SVG (red rect + white H)",
+            "status_display": {
+              "running": "text-green-500",
+              "off": "text-red-500",
+              "starting/initializing": "animate-spin spinner + wire:poll.5s"
+            },
+            "refresh_button": {
+              "idle": "wire:loading.remove wire:target=\"checkHetznerServerStatus\"",
+              "loading": "wire:loading wire:target=\"checkHetznerServerStatus\" animate-spin",
+              "action": "wire:click.prevent='checkHetznerServerStatus(true)'"
+            },
+            "power_on_button": {
+              "condition": "$server->cloudProviderToken && !$server->isFunctional() && $hetznerServerStatus === 'off'",
+              "action": "wire:click.prevent='startHetznerServer'",
+              "style": "isHighlighted"
+            }
+          },
+          {
+            "provider": "Vultr",
+            "condition": "$server->vultr_instance_id",
+            "icon": "Inline SVG (blue rect + white V)",
+            "status_display": {
+              "active": "text-green-500",
+              "stopped/suspended/deleted": "text-red-500",
+              "pending/starting": "animate-spin spinner + wire:poll.5s"
+            },
+            "refresh_button": "wire:click.prevent='checkVultrInstanceStatus(true)'",
+            "power_on_button": {
+              "condition": "$server->cloudProviderToken && $vultrInstanceStatus === 'stopped'",
+              "action": "wire:click.prevent='startVultrInstance'"
+            }
+          },
+          {
+            "provider": "DigitalOcean",
+            "condition": "$server->digitalocean_droplet_id",
+            "icon": "<x-digital-ocean-icon class=\"w-4 h-4\">",
+            "status_display": {
+              "active": "text-green-500",
+              "off/archive/deleted": "text-red-500",
+              "new": "animate-spin spinner + wire:poll.5s"
+            },
+            "refresh_button": "wire:click.prevent='checkDigitalOceanDropletStatus(true)'",
+            "power_on_button": {
+              "condition": "$server->cloudProviderToken && $digitalOceanDropletStatus === 'off'",
+              "action": "wire:click.prevent='startDigitalOceanDroplet'"
+            }
+          }
+        ],
+        "validating_indicator": {
+          "condition": "$isValidating",
+          "content": "Spinner + 'Validating...' text",
+          "style": "bg-warning-100 dark:bg-warning-900/30 text-warning-700 dark:text-warning-400"
+        },
+        "save_actions": {
+          "server_id_0": {
+            "component": "<x-modal-confirmation>",
+            "title": "Confirm Server Settings Change?",
+            "button": "Save",
+            "actions": [
+              "Misconfiguration warning"
+            ]
+          },
+          "server_id_not_0": {
+            "component": "<x-forms.button type=\"submit\">",
+            "disabled": "$isValidating",
+            "canGate": "update"
+          }
+        },
+        "link_cloud_provider_dropdown": {
+          "condition": "$hasLinkableCloudProviders",
+          "alpine_state": "dropdownOpen",
+          "trigger_button": "Link Cloud Provider + chevron icon",
+          "dropdown_content": {
+            "layout": "absolute top-0 z-50 mt-10 min-w-max",
+            "style": "bg-white dark:bg-coolgray-200 border dark:border-coolgray-300",
+            "providers": [
+              {
+                "name": "Hetzner",
+                "condition": "!$server->hetzner_server_id && $availableHetznerTokens->isNotEmpty()",
+                "modal": "<x-modal-input title=\"Link to Hetzner Cloud\">",
+                "modal_content": [
+                  "Token select dropdown (wire:model.live=\"selectedHetznerTokenId\")",
+                  "Manual Server ID input + Search by ID button",
+                  "OR divider",
+                  "Search by IP button",
+                  "Error message (red)",
+                  "No match found (yellow)",
+                  "Match found (green) — Name, ID, Status, Type + Link button"
+                ]
+              },
+              {
+                "name": "DigitalOcean",
+                "condition": "!$server->digitalocean_droplet_id && $availableDigitalOceanTokens->isNotEmpty()",
+                "modal": "<x-modal-input title=\"Link to DigitalOcean\">",
+                "modal_content": [
+                  "Token select",
+                  "Manual Droplet ID + Search",
+                  "OR divider",
+                  "Search by IP",
+                  "Error/No Match/Match Found states"
+                ]
+              },
+              {
+                "name": "Vultr",
+                "condition": "!$server->vultr_instance_id && $availableVultrTokens->isNotEmpty()",
+                "modal": "<x-modal-input title=\"Link to Vultr\">",
+                "modal_content": [
+                  "Token select",
+                  "Manual Instance ID + Search",
+                  "OR divider",
+                  "Search by IP",
+                  "Error/No Match/Match Found states"
+                ]
+              }
+            ]
+          }
+        },
+        "revalidate_button": {
+          "condition": "$server->isFunctional()",
+          "component": "<x-slide-over>",
+          "title": "Validate & configure",
+          "content": "<livewire:server.validate-and-install :server=\"$server\" ask>",
+          "trigger": "Revalidate server"
+        }
+      },
+      "validation_status_messages": {
+        "functional": "Server is reachable and validated.",
+        "not_functional": "You can't use this server until it is validated.",
+        "lima_dev_command": {
+          "condition": "$this->limaStartCommand",
+          "content": "Lima VM start komandası (code block)"
+        },
+        "validation_slide_over": {
+          "condition_1": "$isValidating",
+          "content": "<x-slide-over title=\"Validation in Progress\">"
+        },
+        "validate_button": {
+          "condition": "!$isReachable || !$isUsable && $server->id !== 0 && !$isValidating && cloud status-lar appropriate deyilsə",
+          "style": "bg-coollabs hover:bg-coollabs-100",
+          "action": "validateServer"
+        },
+        "localhost_validate": {
+          "condition": "(!$isReachable || !$isUsable) && $server->id === 0",
+          "action": "checkLocalhostConnection"
+        }
+      },
+      "settings_form": {
+        "wrapper": "<form wire:submit.prevent='submit'>",
+        "fields": [
+          {
+            "name": "name",
+            "component": "<x-forms.input>",
+            "type": "text",
+            "required": true,
+            "disabled": "$isValidating",
+            "canGate": "update"
+          },
+          {
+            "name": "description",
+            "component": "<x-forms.input>",
+            "type": "text",
+            "disabled": "$isValidating",
+            "canGate": "update"
+          },
+          {
+            "name": "wildcardDomain",
+            "component": "<x-forms.input>",
+            "type": "text",
+            "placeholder": "https://example.com",
+            "condition": "!$isSwarmWorker && !$isBuildServer",
+            "helper": "Wildcard domain explanation",
+            "disabled": "$isValidating",
+            "canGate": "update"
+          },
+          {
+            "name": "ip",
+            "component": "<x-forms.input>",
+            "type": "password",
+            "label": "IP Address/Domain",
+            "required": true,
+            "helper": "IP və ya domain, protokol olmadan",
+            "disabled": "$isValidating",
+            "canGate": "update"
+          },
+          {
+            "name": "user",
+            "component": "<x-forms.input>",
+            "type": "text",
+            "required": true,
+            "disabled": "$isValidating",
+            "canGate": "update"
+          },
+          {
+            "name": "port",
+            "component": "<x-forms.input>",
+            "type": "number",
+            "required": true,
+            "disabled": "$isValidating",
+            "canGate": "update"
+          },
+          {
+            "name": "connectionTimeout",
+            "component": "<x-forms.input>",
+            "type": "number",
+            "label": "SSH Connection Timeout (s)",
+            "min": 1,
+            "max": 300,
+            "required": true,
+            "helper": "Default: 10",
+            "disabled": "$isValidating",
+            "canGate": "update"
+          },
+          {
+            "name": "serverTimezone",
+            "type": "custom_alpine_dropdown",
+            "alpine_logic": "searchable dropdown with timezones array",
+            "on_select": "$wire.set('serverTimezone', timezone); $wire.submit()",
+            "disabled_state": "$isValidating olduqda readonly input",
+            "permission": "@can('update', $server) vs @else readonly"
+          },
+          {
+            "name": "isBuildServer",
+            "component": "<x-forms.checkbox>",
+            "label": "Use it as a build server?",
+            "condition": "!$server->isLocalhost()",
+            "disabled": "$isBuildServerLocked || $isValidating",
+            "instantSave": true,
+            "helper_build_server_locked": "You can't use this server as a build server because it has defined resources.",
+            "canGate": "update"
+          }
+        ]
+      },
+      "server_details_section": {
+        "condition": "$server->isFunctional()",
+        "header": "Server Details + refresh button",
+        "metadata_grid": {
+          "columns": "grid-cols-2 lg:grid-cols-3",
+          "fields": [
+            {
+              "label": "OS",
+              "value": "$meta['os']"
+            },
+            {
+              "label": "Arch",
+              "value": "$meta['arch']"
+            },
+            {
+              "label": "Kernel",
+              "value": "$meta['kernel']"
+            },
+            {
+              "label": "CPU Cores",
+              "value": "$meta['cpus']"
+            },
+            {
+              "label": "RAM",
+              "value": "$meta['memory_bytes'] / 1073741824 GB"
+            },
+            {
+              "label": "Up Since",
+              "value": "$meta['uptime_since']"
+            }
+          ],
+          "last_updated": "$meta['collected_at'] diffForHumans()"
+        },
+        "fetch_button": {
+          "condition": "!$server->server_metadata",
+          "action": "refreshServerMetadata"
+        }
+      },
+      "conditional_rendering_rules": [
+        "Cloud status badge-lar yalnız müvafiq provider ID-si varsa göstərilir",
+        "Power On button yalnız status off/stopped və token varsa görünür",
+        "Link Cloud Provider dropdown yalnız server hələ link olunmayıb və token mövcuddursa",
+        "Wildcard Domain yalnız !isSwarmWorker && !isBuildServer olduqda görünür",
+        "isBuildServer checkbox yalnız !isLocalhost() olduqda görünür",
+        "Validation slide-over validating və ya unreachable olduqda açılır",
+        "Server Details yalnız isFunctional() olduqda görünür",
+        "Lima command yalnız isDev() olduqda görünür (backend computed)",
+        "Save button server id 0 olduqda confirmation modal, əks halda normal"
+      ],
+      "livewire_directives_used": [
+        "wire:submit.prevent='submit'",
+        "wire:poll.5s",
+        "wire:loading.remove",
+        "wire:loading",
+        "wire:target",
+        "wire:click.prevent",
+        "wire:model",
+        "wire:model.live",
+        "wire:dirty.class",
+        "wire:dirty.class.remove",
+        "wire:ignore (modal-larda)"
+      ],
+      "blade_components_used": [
+        "x-server.sidebar",
+        "x-server.navbar",
+        "x-forms.input",
+        "x-forms.select",
+        "x-forms.checkbox",
+        "x-forms.button",
+        "x-modal-confirmation",
+        "x-modal-input",
+        "x-slide-over",
+        "x-callout",
+        "x-helper",
+        "x-digital-ocean-icon"
+      ],
+      "livewire_components_used": [
+        "livewire:server.navbar",
+        "livewire:server.validate-and-install"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix",
+        "custom_classes": [
+          "box-without-bg",
+          "bg-coollabs",
+          "bg-coolgray-100",
+          "bg-coolgray-200",
+          "bg-coolgray-300",
+          "text-warning",
+          "text-coollabs"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

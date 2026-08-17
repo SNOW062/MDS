@@ -1,0 +1,195 @@
+{
+  "php_analysis": {
+    "blade_file": "resources/views/livewire/server/create.blade.php",
+    "page_purpose": "BLADE_TEMPLATE — Server yaratma səhifəsinin UI qatı. Əgər provayder seçilməyibsə 4-lü seçim gridi göstərir. Əgər provayder seçilibsə müvafiq child Livewire komponentini render edir.",
+    "analysis": {
+      "received_props": [
+        {
+          "name": "selectedType",
+          "type": "?string",
+          "source": "Create.php Livewire component"
+        },
+        {
+          "name": "private_keys",
+          "type": "array",
+          "source": "Create.php Livewire component"
+        },
+        {
+          "name": "limit_reached",
+          "type": "bool",
+          "source": "Create.php Livewire component"
+        },
+        {
+          "name": "selectedTokenUuid",
+          "type": "?string",
+          "source": "Create.php Livewire component"
+        }
+      ],
+      "conditional_rendering": {
+        "branch_1": {
+          "condition": "!$selectedType",
+          "description": "Provayder seçilməyib — 4-lü seçim gridi göstərilir."
+        },
+        "branch_2": {
+          "condition": "$selectedType !== null",
+          "description": "Provayder seçilib — müvafiq child form komponenti render olunur."
+        }
+      },
+      "ui_structure": {
+        "selection_grid": {
+          "layout": "Responsive grid: 1 col (mobile) → 2 col (sm) → 4 col (xl)",
+          "container_classes": "flex flex-col items-center justify-center gap-3 sm:gap-6 sm:min-h-[calc(100vh-12rem)]",
+          "grid_classes": "mx-auto flex w-full max-w-7xl flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-6 xl:grid-cols-4",
+          "cards": [
+            {
+              "name": "Hetzner",
+              "type": "cloud_provider",
+              "permission_gate": "@can('viewAny', App\\Models\\CloudProviderToken::class)",
+              "route": "route('server.create.type', ['type' => 'hetzner'])",
+              "icon": "Inline SVG (Hetzner logo: red rect + white H)",
+              "badge": "Provider",
+              "badge_classes": "bg-coollabs/10 dark:bg-warning/20 text-coollabs dark:text-warning",
+              "title": "Hetzner",
+              "description": "Deploy servers directly from your Hetzner Cloud account.",
+              "hover": "hover:border-coollabs dark:hover:border-warning",
+              "navigation": "wireNavigate() — SPA-like navigation"
+            },
+            {
+              "name": "Vultr",
+              "type": "cloud_provider",
+              "permission_gate": "@can('viewAny', App\\Models\\CloudProviderToken::class)",
+              "route": "route('server.create.type', ['type' => 'vultr'])",
+              "icon": "Inline SVG (Vultr logo: blue rect + white V)",
+              "badge": "Provider",
+              "badge_classes": "bg-coollabs/10 dark:bg-warning/20 text-coollabs dark:text-warning",
+              "title": "Vultr",
+              "description": "Deploy servers directly from your Vultr account.",
+              "hover": "hover:border-coollabs dark:hover:border-warning",
+              "navigation": "wireNavigate()"
+            },
+            {
+              "name": "DigitalOcean",
+              "type": "cloud_provider",
+              "permission_gate": "@can('viewAny', App\\Models\\CloudProviderToken::class)",
+              "route": "route('server.create.type', ['type' => 'digital-ocean'])",
+              "icon": "<x-digital-ocean-icon /> (Blade component)",
+              "badge": "Provider",
+              "badge_classes": "bg-coollabs/10 dark:bg-warning/20 text-coollabs dark:text-warning",
+              "title": "DigitalOcean",
+              "description": "Deploy droplets directly from your DigitalOcean account.",
+              "hover": "hover:border-coollabs dark:hover:border-warning",
+              "navigation": "wireNavigate()"
+            },
+            {
+              "name": "Manual",
+              "type": "manual",
+              "permission_gate": "None — həmişə göstərilir",
+              "route": "route('server.create.type', ['type' => 'manual'])",
+              "icon": "Inline SVG (wrench/settings icon)",
+              "badge": "Manual",
+              "badge_classes": "bg-neutral-100 dark:bg-coolgray-300 dark:text-neutral-400",
+              "title": "Manual",
+              "description": "Add any reachable server by IP address or domain.",
+              "hover": "hover:border-coollabs dark:hover:border-warning",
+              "navigation": "wireNavigate()"
+            }
+          ],
+          "shared_card_classes": "box-without-bg flex-col gap-3 sm:gap-6 p-3 sm:p-6 h-full cursor-pointer transition-all duration-200 focus-visible:border-coollabs dark:focus-visible:border-warning focus-visible:outline-none",
+          "responsive_behavior": {
+            "mobile": "p-3, size-9 icon, text-sm title, hidden description",
+            "sm_and_up": "p-6, size-14 icon, text-xl title, visible description"
+          }
+        },
+        "child_component_render": {
+          "layout": "flex flex-col gap-4",
+          "components": [
+            {
+              "condition": "$selectedType === 'hetzner'",
+              "component": "livewire:server.new.by-hetzner",
+              "props": [
+                ":private_keys",
+                ":limit_reached",
+                ":selected-token-uuid"
+              ],
+              "wire:key": "new-server-hetzner-{{ $selectedTokenUuid ?? 'select' }}"
+            },
+            {
+              "condition": "$selectedType === 'vultr'",
+              "component": "livewire:server.new.by-vultr",
+              "props": [
+                ":private_keys",
+                ":limit_reached",
+                ":selected-token-uuid"
+              ],
+              "wire:key": "new-server-vultr-{{ $selectedTokenUuid ?? 'select' }}"
+            },
+            {
+              "condition": "$selectedType === 'digital-ocean'",
+              "component": "livewire:server.new.by-digital-ocean",
+              "props": [
+                ":private_keys",
+                ":limit_reached",
+                ":selected-token-uuid"
+              ],
+              "wire:key": "new-server-digital-ocean-{{ $selectedTokenUuid ?? 'select' }}"
+            },
+            {
+              "condition": "else (manual)",
+              "component": "livewire:server.new.by-ip",
+              "props": [
+                ":private_keys",
+                ":limit_reached"
+              ],
+              "key": "new-server-manual",
+              "note": "selected-token-uuid prop-u manual üçün ötürülmür"
+            }
+          ]
+        }
+      },
+      "styling_and_classes": {
+        "framework": "Tailwind CSS",
+        "custom_classes": [
+          "box-without-bg"
+        ],
+        "dark_mode": "dark: prefix istifadə olunur",
+        "accessibility": [
+          "aria-label hər kartda var",
+          "focus-visible:border-coollabs dark:focus-visible:border-warning",
+          "focus-visible:outline-none"
+        ]
+      },
+      "auth_and_authorization": {
+        "permission_gate": "@can('viewAny', App\\Models\\CloudProviderToken::class)",
+        "effect": "Cloud provider kartları (Hetzner, Vultr, DigitalOcean) yalnız istifadəçinin CloudProviderToken modelinə baxma icazəsi varsa göstərilir.",
+        "manual_card": "Permission tələb etmir, həmişə görünür."
+      },
+      "navigation": {
+        "mechanism": "wireNavigate() — Livewire SPA-like navigation",
+        "routes": {
+          "hetzner": "route('server.create.type', ['type' => 'hetzner'])",
+          "vultr": "route('server.create.type', ['type' => 'vultr'])",
+          "digital_ocean": "route('server.create.type', ['type' => 'digital-ocean'])",
+          "manual": "route('server.create.type', ['type' => 'manual'])"
+        }
+      },
+      "dependencies": {
+        "blade_components": [
+          "<x-digital-ocean-icon />"
+        ],
+        "livewire_features": [
+          "wireNavigate()",
+          "wire:key"
+        ]
+      },
+      "missing_parts": {
+        "gaps": [
+          "limit_reached true olduqda kartların disabled olması vizual olaraq blade-də yoxlanılmır (PHP komponentində var, amma blade-də kartlara disabled class əlavə edilməyib).",
+          "has_hetzner_tokens prop-u blade-də istifadə edilmir (Hetzner kartı həmişə göstərilir, token yoxdursa da).",
+          "Vultr və DigitalOcean token mövcudluğu blade-də yoxlanılmır.",
+          "Child komponentlərin (by-hetzner, by-vultr, by-digital-ocean, by-ip) daxili strukturu bu analizə daxil deyil."
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

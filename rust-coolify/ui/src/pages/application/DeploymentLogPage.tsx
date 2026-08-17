@@ -9,10 +9,10 @@ export default function DeploymentLogPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-[#18181b] text-zinc-400 hover:text-white transition-colors">
+        <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-white transition-colors">
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <h1 className="text-2xl font-bold text-white">Deployment log ({deploy_uuid})</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Deployment log ({deploy_uuid})</h1>
       </div>
     </div>
   );

@@ -2,9 +2,40 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>emdrust-coolifyui</title>
+    <title>MasterDeploy</title>
+    <script>
+      (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = theme === 'dark' || (theme === 'system' && prefersDark);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        } else {
+          document.documentElement.classList.add('light');
+          document.documentElement.classList.remove('dark');
+        }
+
+        const zoom = localStorage.getItem('zoom') || '100';
+        if (zoom === '90') {
+          const style = document.createElement('style');
+          style.id = 'coolify-zoom-style';
+          style.textContent = `
+            html {
+              font-size: 93.75% !important;
+            }
+            @media (min-width: 1024px) {
+              html {
+                font-size: 87.5% !important;
+              }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

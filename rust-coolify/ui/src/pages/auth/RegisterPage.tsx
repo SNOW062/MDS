@@ -19,6 +19,22 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFirstUser, setIsFirstUser] = useState(true);
+
+  React.useEffect(() => {
+    // Fortify::registerView logikası: istifadəçi varsa və qeydiyyat bağlıdırsa, login-ə at
+    fetch('/api/auth/status')
+      .then((res) => res.json())
+      .then((data) => {
+        setIsFirstUser(data.is_first_user);
+        if (!data.is_first_user && !invitationToken && !data.is_registration_enabled) {
+          toast.error('Sərbəst qeydiyyat aktiv deyil. Yalnız dəvət linki ilə qeydiyyatdan keçə bilərsiniz.');
+          navigate('/login', { replace: true });
+        }
+      })
+      .catch((err) => console.error('Status fetch error:', err));
+  }, [navigate, invitationToken, toast]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,51 +75,58 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f] px-4">
-      <div className="max-w-md w-full bg-[#18181b] border border-[#27272a] rounded-2xl p-8 shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)] px-4">
+      <div className="max-w-md w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-8 shadow-2xl">
         <div className="flex flex-col items-center mb-8">
           <img src={mdLogo} className="h-12 w-12 object-contain rounded-lg mb-3" alt="MasterDeploy Logo" />
-          <h2 className="text-xl font-bold text-white">
-            {invitationToken ? 'Sistemə Qeydiyyat (Dəvətlə Giriş)' : 'Sistemin İlkin Qeydiyyatı (Root Admin)'}
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            {invitationToken 
+              ? 'Sistemə Qeydiyyat (Dəvətlə Giriş)' 
+              : isFirstUser 
+                ? 'Sistemin İlkin Qeydiyyatı (Root Admin)' 
+                : 'Yeni Hesab Yarat'}
           </h2>
-          <p className="text-xs text-[#a1a1aa] mt-1 text-center">
+          <p className="text-xs text-[var(--text-secondary)] mt-1 text-center">
             {invitationToken 
               ? 'Siz bu sistemə komanda üzvü olaraq dəvət edilmisiniz. Zəhmət olmasa qeydiyyatdan keçin.'
-              : 'MasterDeploy-a xoş gəlmisiniz. İlk kök admin hesabınızı və komandanızı yaradın.'}
+              : isFirstUser 
+                ? 'MasterDeploy-a xoş gəlmisiniz. İlk kök admin hesabınızı və komandanızı yaradın.'
+                : 'MasterDeploy platformasında yeni hesabınızı yaradın.'}
           </p>
         </div>
 
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
               Ad Soyad
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg px-4 py-2.5 text-sm text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 transition-colors"
               placeholder="Root Admin"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
               E-poçt / İstifadəçi Adı
             </label>
             <input
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg px-4 py-2.5 text-sm text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 transition-colors"
               placeholder="admin və ya admin@masterdeploy.com"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
               Şifrə
             </label>
             <div className="relative">
@@ -111,14 +134,14 @@ export default function RegisterPage() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 pr-10 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg px-4 py-2.5 pr-10 text-sm text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 transition-colors"
                 placeholder="••••••••"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-white transition-colors"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -130,15 +153,20 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold transition-colors focus:outline-none"
           >
-            {loading ? t.common.loading : 'Kök Hesabı Yarat & Panelə Daxil Ol'}
+            {loading 
+              ? t.common.loading 
+              : isFirstUser 
+                ? 'Kök Hesabı Yarat & Panelə Daxil Ol' 
+                : 'Qeydiyyatdan Keç'}
           </button>
         </form>
 
-        <div className="mt-8 text-center border-t border-[#27272a] pt-6">
-          <Link to="/login" className="text-xs text-[#a1a1aa] hover:text-white transition-colors">
-            Artıq kök hesabınız var? Giriş edin
+        <div className="mt-8 text-center border-t border-[var(--border-color)] pt-6">
+          <Link to="/login" className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors">
+            {isFirstUser ? 'Artıq kök hesabınız var? Giriş edin' : 'Artıq hesabınız var? Giriş edin'}
           </Link>
         </div>
+
       </div>
     </div>
   );

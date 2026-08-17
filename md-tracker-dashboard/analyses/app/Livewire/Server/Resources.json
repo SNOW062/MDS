@@ -1,0 +1,132 @@
+{
+  "php_analysis": {
+    "file_path": "app/Livewire/Server/Resources.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server-ə aid resursları (managed və unmanaged container-ları) siyahılamaq, idarə etmək və statuslarını yeniləmək.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Models\\Server",
+          "App\\Support\\ValidationPatterns"
+        ]
+      },
+      "public_properties": [
+        {
+          "name": "server",
+          "type": "?Server",
+          "default": "null",
+          "description": "Cari server modeli"
+        },
+        {
+          "name": "parameters",
+          "type": "array",
+          "default": "[]",
+          "description": "Route parametrləri"
+        },
+        {
+          "name": "unmanagedContainers",
+          "type": "array",
+          "default": "[]",
+          "description": "Server-dəki unmanaged Docker container-ları"
+        },
+        {
+          "name": "activeTab",
+          "type": "string",
+          "default": "'managed'",
+          "description": "Aktiv tab: 'managed' və ya 'unmanaged'"
+        }
+      ],
+      "event_listeners": {
+        "method": "getListeners()",
+        "events": [
+          {
+            "event": "echo-private:team.{teamId},ApplicationStatusChanged",
+            "handler": "refreshStatus"
+          }
+        ]
+      },
+      "methods": {
+        "mount": {
+          "steps": [
+            "get_route_parameters()",
+            "Server::ownedByCurrentTeam()->whereUuid(request()->server_uuid)->first()",
+            "Null olduqda redirect()->route('server.index')"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "loadManagedContainers": {
+          "logic": "$this->activeTab = 'managed'; $this->server->refresh()",
+          "description": "Managed tab-ına keçir və server-i refresh edir"
+        },
+        "loadUnmanagedContainers": {
+          "logic": "$this->activeTab = 'unmanaged'; $this->unmanagedContainers = $this->server->loadUnmanagedContainers()->toArray()",
+          "description": "Unmanaged tab-ına keçir və container siyahısını yükləyir",
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "refreshStatus": {
+          "logic": "$this->server->refresh(); activeTab-ə görə load çağırır; dispatch('success', 'Resource statuses refreshed.')",
+          "description": "Server-i refresh edir və cari tab-ın məlumatlarını yeniləyir"
+        },
+        "startUnmanaged": {
+          "signature": "startUnmanaged($id)",
+          "validation": "ValidationPatterns::isValidContainerName($id)",
+          "authorization": "authorize('update', $this->server)",
+          "logic": "$this->server->startUnmanaged($id); dispatch('success'); loadUnmanagedContainers()",
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "restartUnmanaged": {
+          "signature": "restartUnmanaged($id)",
+          "validation": "ValidationPatterns::isValidContainerName($id)",
+          "authorization": "authorize('update', $this->server)",
+          "logic": "$this->server->restartUnmanaged($id); dispatch('success'); loadUnmanagedContainers()",
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "stopUnmanaged": {
+          "signature": "stopUnmanaged($id)",
+          "validation": "ValidationPatterns::isValidContainerName($id)",
+          "authorization": "authorize('update', $this->server)",
+          "logic": "$this->server->stopUnmanaged($id); dispatch('success'); loadUnmanagedContainers()",
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "render": {
+          "returns": "view('livewire.server.resources')"
+        }
+      },
+      "auth_and_authorization": {
+        "gate": "update",
+        "resource": "$this->server",
+        "applied_to": [
+          "startUnmanaged",
+          "restartUnmanaged",
+          "stopUnmanaged"
+        ]
+      },
+      "events_dispatched": [
+        {
+          "name": "success",
+          "payload": "string message"
+        },
+        {
+          "name": "error",
+          "payload": "string message"
+        }
+      ],
+      "dependencies": {
+        "models": [
+          "Server"
+        ],
+        "helpers": [
+          "ValidationPatterns",
+          "handleError()",
+          "get_route_parameters()"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

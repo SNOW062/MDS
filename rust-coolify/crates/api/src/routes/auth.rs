@@ -27,8 +27,43 @@ pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/api/login", post(login_handler))
         .route("/api/register", post(register_handler))
+        .route("/api/auth/status", axum::routing::get(auth_status_handler))
         .with_state(state)
 }
+
+#[derive(Debug, Serialize)]
+pub struct AuthStatusResponse {
+    pub is_first_user: bool,
+    pub is_registration_enabled: bool,
+}
+
+/// GET /api/auth/status
+/// Coolify FortifyServiceProvider view-larındakı yoxlama məntiqinin eynisidir
+async fn auth_status_handler(
+    State(state): State<AppState>,
+) -> Result<Json<AuthStatusResponse>, (StatusCode, Json<serde_json::Value>)> {
+    let user_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM users")
+        .fetch_one(&state.db)
+        .await
+        .unwrap_or(0);
+
+    // is_registration_enabled parametrini instance_settings-dən alırıq
+    // Coolify: $settings->is_registration_enabled (bizdə yoxdursa default false edirik)
+    let is_reg_enabled: bool = sqlx::query_scalar(
+        "SELECT COALESCE(is_registration_enabled, false) FROM instance_settings LIMIT 1"
+    )
+    .fetch_optional(&state.db)
+    .await
+    .unwrap_or(None)
+    .unwrap_or(false);
+
+    Ok(Json(AuthStatusResponse {
+        is_first_user: user_count == 0,
+        is_registration_enabled: is_reg_enabled,
+    }))
+}
+
+
 
 /// POST /api/login
 async fn login_handler(

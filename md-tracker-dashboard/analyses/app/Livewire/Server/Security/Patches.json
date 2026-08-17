@@ -1,0 +1,193 @@
+{
+  "php_analysis": {
+    "file_path": "app/Livewire/Server/Security/Patches.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server-in təhlükəsizlik yamaqlarını (package updates) yoxlamaq, siyahılamaq və yeniləmək. apt/dnf/zypper dəstəyi var.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server\\Security",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Actions\\Server\\CheckUpdates",
+          "App\\Actions\\Server\\UpdatePackage",
+          "App\\Events\\ServerPackageUpdated",
+          "App\\Models\\Server",
+          "App\\Notifications\\Server\\ServerPatchCheck"
+        ]
+      },
+      "public_properties": [
+        {
+          "name": "parameters",
+          "type": "array",
+          "description": "Route parametrləri"
+        },
+        {
+          "name": "server",
+          "type": "Server",
+          "description": "Cari server modeli"
+        },
+        {
+          "name": "totalUpdates",
+          "type": "?int",
+          "default": "null",
+          "description": "Yenilənə bilən paketlərin sayı"
+        },
+        {
+          "name": "updates",
+          "type": "?array",
+          "default": "null",
+          "description": "Yenilənə bilən paketlərin siyahısı"
+        },
+        {
+          "name": "error",
+          "type": "?string",
+          "default": "null",
+          "description": "Yeniləmə yoxlama xətası"
+        },
+        {
+          "name": "osId",
+          "type": "?string",
+          "default": "null",
+          "description": "Əməliyyat sistemi ID-si"
+        },
+        {
+          "name": "packageManager",
+          "type": "?string",
+          "default": "null",
+          "description": "Paket meneceri (apt, dnf, zypper)"
+        }
+      ],
+      "event_listeners": {
+        "method": "getListeners()",
+        "events": [
+          {
+            "event": "echo-private:team.{teamId},ServerPackageUpdated",
+            "handler": "checkForUpdatesDispatch"
+          }
+        ]
+      },
+      "methods": {
+        "mount": {
+          "steps": [
+            "get_route_parameters()",
+            "Server::ownedByCurrentTeam()->whereUuid($this->parameters['server_uuid'])->firstOrFail()",
+            "authorize('viewSecurity', $this->server)"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "checkForUpdatesDispatch": {
+          "description": "State-ləri sıfırlayır və frontend event dispatch edir",
+          "logic": "totalUpdates=null; updates=null; error=null; osId=null; packageManager=null; dispatch('checkForUpdatesDispatch')"
+        },
+        "checkForUpdates": {
+          "description": "Server-də yenilənə bilən paketləri yoxlayır",
+          "logic": "CheckUpdates::run($this->server)",
+          "output": [
+            "totalUpdates",
+            "updates",
+            "osId",
+            "packageManager",
+            "error"
+          ]
+        },
+        "updateAllPackages": {
+          "authorization": "authorize('update', $this->server)",
+          "validation": "packageManager && osId olmalıdır",
+          "logic": "UpdatePackage::run(server, packageManager, osId, all: true)",
+          "dispatch": "activityMonitor event with activity ID and ServerPackageUpdated::class",
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "updatePackage": {
+          "signature": "updatePackage($package)",
+          "authorization": "authorize('update', $this->server)",
+          "logic": "UpdatePackage::run(server, packageManager, osId, package: $package)",
+          "dispatch": "activityMonitor event",
+          "error_handling": "try/catch → dispatch('error', message: $e->getMessage())"
+        },
+        "sendTestEmail": {
+          "condition": "isDev() olmalıdır",
+          "logic": "createTestPatchData() + ServerPatchCheck notification dispatch",
+          "description": "Test email göndərir (yalnız dev mühitində)"
+        },
+        "createTestPatchData": {
+          "visibility": "private",
+          "description": "Test patch data yaradır. Əgər real data varsa onu istifadə edir, yoxsa mock data.",
+          "mock_data": {
+            "total_updates": 8,
+            "packages": [
+              "docker-ce",
+              "nginx",
+              "kernel-generic",
+              "openssh-server",
+              "curl",
+              "git",
+              "python3",
+              "htop"
+            ]
+          }
+        },
+        "render": {
+          "returns": "view('livewire.server.security.patches')"
+        }
+      },
+      "auth_and_authorization": {
+        "mount": {
+          "gate": "viewSecurity",
+          "resource": "$this->server"
+        },
+        "update_actions": {
+          "gate": "update",
+          "resource": "$this->server",
+          "applied_to": [
+            "updateAllPackages",
+            "updatePackage"
+          ]
+        }
+      },
+      "events_dispatched": [
+        {
+          "name": "checkForUpdatesDispatch",
+          "description": "Frontend-dən checkForUpdates çağırmaq üçün"
+        },
+        {
+          "name": "activityMonitor",
+          "payload": "activityId, ServerPackageUpdated::class",
+          "description": "Activity monitor slide-over açmaq üçün"
+        },
+        {
+          "name": "success",
+          "payload": "string message"
+        },
+        {
+          "name": "error",
+          "payload": "string message"
+        }
+      ],
+      "dependencies": {
+        "models": [
+          "Server"
+        ],
+        "actions": [
+          "CheckUpdates",
+          "UpdatePackage"
+        ],
+        "events": [
+          "ServerPackageUpdated"
+        ],
+        "notifications": [
+          "ServerPatchCheck"
+        ],
+        "helpers": [
+          "handleError()",
+          "get_route_parameters()",
+          "isDev()",
+          "data_get()"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

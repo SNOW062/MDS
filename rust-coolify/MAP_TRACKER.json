@@ -8385,6 +8385,12 @@
       "path": "crates/storage/src/s3/upload.rs",
       "source": "app/Actions/S3Storage",
       "status": "todo"
+    },
+    {
+      "id": "ui_create_server",
+      "path": "ui/src/pages/server/CreateServerPage.tsx",
+      "source": "app/Livewire/Server/Create.php",
+      "status": "wip"
     }
   ]
 }

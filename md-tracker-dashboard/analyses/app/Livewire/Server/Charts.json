@@ -1,0 +1,174 @@
+{
+  "php_analysis": {
+    "file": "app/Livewire/Server/Charts.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server metriklərini (CPU, Memory) idarə edən Livewire komponenti. Sentinel ilə metrikləri aktivləşdirir/deaktiv edir, interval əsaslı data yükləyir və ApexCharts üçün real-time data dispatch edir.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Actions\\Server\\StartSentinel",
+          "App\\Models\\Server",
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests",
+          "Livewire\\Component"
+        ]
+      },
+      "public_properties": [
+        {
+          "name": "server",
+          "type": "Server",
+          "description": "Cari server modeli. mount() ilə yüklənir."
+        },
+        {
+          "name": "chartId",
+          "type": "string",
+          "default": "'server'",
+          "description": "Chart elementlərinin ID prefiksi. DOM-da {chartId}-cpu və {chartId}-memory olur."
+        },
+        {
+          "name": "data",
+          "type": "mixed|null",
+          "default": "null",
+          "description": "Chart data placeholder (blade-də birbaşa istifadə edilmir, dispatch ilə ötürülür)."
+        },
+        {
+          "name": "categories",
+          "type": "mixed|null",
+          "default": "null",
+          "description": "Chart categories placeholder."
+        },
+        {
+          "name": "interval",
+          "type": "int",
+          "default": "5",
+          "description": "Metrik intervalı (dəqiqələrlə). 5, 10, 30, 60, 720, 10080, 43200 dəyərləri mümkündür."
+        },
+        {
+          "name": "poll",
+          "type": "bool",
+          "default": "true",
+          "description": "Auto-polling aktivliyini təyin edir. interval > 10 olduqda false olur."
+        }
+      ],
+      "lifecycle_methods": {
+        "mount": {
+          "signature": "mount(string $server_uuid)",
+          "steps": [
+            "Server::ownedByCurrentTeam()->whereUuid($server_uuid)->firstOrFail()",
+            "Tapılmazsa handleError($e, $this) ilə xəta tutulur"
+          ],
+          "error_handling": "try/catch — \\Throwable"
+        },
+        "render": {
+          "note": "Explicit render metodu yoxdur, default Livewire behavior işləyir (charts.blade.php)"
+        }
+      },
+      "core_methods": {
+        "toggleMetrics": {
+          "signature": "toggleMetrics(): void",
+          "authorization": "authorize('update', $this->server)",
+          "logic": [
+            "$this->server->settings->is_metrics_enabled toggle (boolean invert)",
+            "$this->server->settings->save()",
+            "$this->server->refresh()"
+          ],
+          "enabled_branch": {
+            "condition": "isMetricsEnabled() === true",
+            "actions": [
+              "StartSentinel::run($this->server, true)",
+              "dispatch('success', 'Metrics enabled. Starting Sentinel.')",
+              "dispatch('refreshServerShow')",
+              "redirect(route('server.metrics', ['server_uuid' => $this->server->uuid]), navigate: true)"
+            ]
+          },
+          "disabled_branch": {
+            "condition": "isMetricsEnabled() === false",
+            "actions": [
+              "$this->server->restartSentinel()",
+              "dispatch('success', 'Metrics disabled. Restarting Sentinel.')",
+              "dispatch('refreshServerShow')"
+            ]
+          },
+          "error_handling": "try/catch — handleError($e, $this)"
+        },
+        "pollData": {
+          "signature": "pollData()",
+          "logic": [
+            "if ($this->poll || $this->interval <= 10) → $this->loadData()",
+            "if ($this->interval > 10) → $this->poll = false"
+          ],
+          "note": "wire:poll.5000ms ilə blade-dən trigger olunur. Interval 10-dan böyükdürsə polling dayanır."
+        },
+        "loadData": {
+          "signature": "loadData()",
+          "logic": [
+            "$cpuMetrics = $this->server->getCpuMetrics($this->interval)",
+            "$memoryMetrics = $this->server->getMemoryMetrics($this->interval)",
+            "dispatch('refreshChartData-{chartId}-cpu', ['seriesData' => $cpuMetrics])",
+            "dispatch('refreshChartData-{chartId}-memory', ['seriesData' => $memoryMetrics])"
+          ],
+          "error_handling": "try/catch — handleError($e, $this)",
+          "note": "Blade-dəki ApexCharts instance-ləri bu event-ləri dinləyir və chart data-nı yeniləyir."
+        },
+        "setInterval": {
+          "signature": "setInterval()",
+          "logic": [
+            "if ($this->interval <= 10) → $this->poll = true",
+            "$this->loadData()"
+          ],
+          "note": "Interval dəyişəndə dərhal yeni data yüklənir. 10 dəqiqədən kiçik interval-larda polling aktivləşir."
+        }
+      },
+      "auth_and_authorization": {
+        "gate": "update",
+        "resource": "$this->server",
+        "note": "toggleMetrics() metodunda authorize('update', $this->server) yoxlanılır."
+      },
+      "event_system": {
+        "dispatched_events": [
+          {
+            "event": "success",
+            "payload": "'Metrics enabled. Starting Sentinel.' | 'Metrics disabled. Restarting Sentinel.'"
+          },
+          {
+            "event": "refreshServerShow",
+            "note": "Server Show komponentini yeniləyir"
+          },
+          {
+            "event": "refreshChartData-{chartId}-cpu",
+            "payload": "{ seriesData: array }",
+            "listeners": "Blade-dəki ApexCharts CPU chart"
+          },
+          {
+            "event": "refreshChartData-{chartId}-memory",
+            "payload": "{ seriesData: array }",
+            "listeners": "Blade-dəki ApexCharts Memory chart"
+          }
+        ]
+      },
+      "dependencies": {
+        "models": [
+          "Server"
+        ],
+        "actions": [
+          "StartSentinel"
+        ],
+        "services": [
+          "Server model methods: getCpuMetrics(), getMemoryMetrics(), restartSentinel()"
+        ]
+      },
+      "missing_parts": {
+        "gaps": [
+          "getCpuMetrics() və getMemoryMetrics() metodlarının return type-ı (array formatı) aydın deyil — [{x: timestamp, y: value}] formatı gözlənilir.",
+          "handleError() funksiyasının tətbiqi bu faylda görünmür (global helper).",
+          "categories property blade-də istifadə edilmir, yalnız data/seriesData istifadə olunur."
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

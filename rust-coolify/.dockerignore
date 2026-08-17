@@ -1,0 +1,30 @@
+# completed file_0824
+# Docker build context-i yüngülləşdirmək üçün ignore faylı
+# Bu fayllar Docker build daemon-a göndərilməyəcək, nəticədə build anında başlayacaq
+
+.git
+.github
+.gitignore
+*.md
+LICENSE
+
+# Rust build target (Ən böyük qovluq)
+target/
+**/target/
+
+# Node modules və frontend build (İkinci ən böyük qovluqlar)
+node_modules/
+**/node_modules/
+ui/dist/
+ui/node_modules/
+ui/.svelte-kit/
+ui/.next/
+
+# Yerli verilənlər bazası və müvəqqəti fayllar
+pgdata/
+postgres-data/
+*.log
+*.sqlite
+.env
+.env.*
+!.env.example

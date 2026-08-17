@@ -46,9 +46,107 @@ async fn main() -> anyhow::Result<()> {
 
     let state = state::AppState::new().await?;
 
-    // Static UI fayllarını (Vite dist qovluğundan) serve edən route
     let ui_dist_path = std::env::var("UI_DIST_PATH").unwrap_or_else(|_| "ui/dist".to_string());
     tracing::info!("Serving static UI files from: {}", ui_dist_path);
+
+    // SPA Fallback və Local Dev Proxy
+    // APP_ENV=local olarsa, backend sorğuları arxa fondakı Vite dev server-ə (frontend:5173) ötürür
+    let is_local = std::env::var("APP_ENV").unwrap_or_default() == "local";
+    
+    // Axum 0.7 Handler-i xidmətə (Service) çevirmək üçün tower::service_fn istifadə edirik
+    let ui_dist_path_clone = ui_dist_path.clone();
+    let fallback_service = tower::service_fn(move |req: axum::extract::Request| {
+        let ui_dist_path = ui_dist_path_clone.clone();
+        async move {
+            // Əgər istək static fayldırsa və dist qovluğunda mövcuddursa, onu serve edirik
+            let path = req.uri().path();
+            let filepath = format!("{}{}", ui_dist_path, path);
+            if std::path::Path::new(&filepath).is_file() {
+                use tower::ServiceExt;
+                let serve_dir = tower_http::services::ServeDir::new(&ui_dist_path);
+                let res = serve_dir.oneshot(req).await.unwrap();
+                return Ok::<_, std::convert::Infallible>(res.map(axum::body::Body::new));
+            }
+
+            if is_local {
+                // Vite dev server-ə proxy edirik
+                let client = reqwest::Client::builder()
+                    .no_proxy() // Docker daxilindəki adlar üçün system proxy-ni atla
+                    .build()
+                    .unwrap_or_default();
+
+                let path_query = req.uri().path_and_query().map(|pq| pq.as_str()).unwrap_or("");
+                let target_url = format!("http://frontend:5173{}", path_query);
+                tracing::info!("🔮 [Vite Proxy] Routing: {} -> {}", req.uri(), target_url);
+
+                // Hop-by-hop header-ləri atlamaq lazımdır, əks halda response builder uğursuz olur
+                const HOP_BY_HOP: &[&str] = &[
+                    "host", "connection", "keep-alive", "transfer-encoding",
+                    "te", "trailer", "proxy-authorization", "proxy-authenticate",
+                ];
+
+                let method = req.method().clone();
+                let mut proxy_req = client.request(method, &target_url);
+
+                // Yalnız təhlükəsiz header-ləri kopyalayırıq
+                for (name, value) in req.headers() {
+                    let lower = name.as_str().to_lowercase();
+                    if !HOP_BY_HOP.contains(&lower.as_str()) {
+                        proxy_req = proxy_req.header(name.as_str(), value.as_bytes());
+                    }
+                }
+
+                // Göndəririk və cavabı axum response-a çeviririk
+                match proxy_req.send().await {
+                    Ok(res) => {
+                        let status = res.status();
+                        tracing::info!("🔮 [Vite Proxy] Response from Vite: {} -> Status: {}", target_url, status);
+                        
+                        // Copy headers to a HeaderMap first before moving `res`
+                        let mut headers = axum::http::HeaderMap::new();
+                        for (key, val) in res.headers() {
+                            let lower = key.as_str().to_lowercase();
+                            if !HOP_BY_HOP.contains(&lower.as_str()) {
+                                headers.insert(key.clone(), val.clone());
+                            }
+                        }
+
+                        match res.bytes().await {
+                            Ok(bytes) => {
+                                let mut response = axum::response::Response::new(axum::body::Body::from(bytes));
+                                *response.status_mut() = status;
+                                *response.headers_mut() = headers;
+                                return Ok::<_, std::convert::Infallible>(response);
+                            }
+                            Err(e) => {
+                                tracing::warn!("Proxy response body oxunarkən xəta: {}", e);
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        tracing::warn!("Proxy sorğusu uğursuz oldu (frontend:5173): {}", e);
+                    }
+                }
+            }
+
+            // Production rejimində və ya proxy alınmadıqda statik index.html-i serve edirik
+            let ui_dist = std::env::var("UI_DIST_PATH").unwrap_or_else(|_| "ui/dist".to_string());
+            let index_path = format!("{}/index.html", ui_dist);
+            let resp = if let Ok(content) = std::fs::read_to_string(&index_path) {
+                axum::response::Response::builder()
+                    .header("content-type", "text/html")
+                    .body(axum::body::Body::from(content))
+                    .unwrap()
+            } else {
+                axum::response::Response::builder()
+                    .status(404)
+                    .body(axum::body::Body::from("Frontend build tapılmadı. Zəhmət olmasa docker build edin."))
+                    .unwrap()
+            };
+            Ok::<_, std::convert::Infallible>(resp)
+        }
+    });
+
 
     let app = Router::new()
         .merge(routes::health::router(state.clone()))
@@ -60,6 +158,7 @@ async fn main() -> anyhow::Result<()> {
         .merge(routes::deployments::router(state.clone()))
         .merge(routes::services::router(state.clone()))
         .merge(routes::private_keys::router(state.clone()))
+        .merge(routes::cloud_provider_tokens::router(state.clone()))
         .merge(routes::teams::router(state.clone()))
         .merge(routes::users::router(state.clone()))
         .merge(routes::settings::router(state.clone()))
@@ -67,11 +166,7 @@ async fn main() -> anyhow::Result<()> {
         .merge(routes::scheduled_tasks::router(state.clone()))
         .merge(routes::webhooks::router(state.clone()))
         .merge(websocket::router(state.clone()))
-        // UI static faylların paylanması (ServeDir)
-        .fallback_service(
-            tower_http::services::ServeDir::new(&ui_dist_path)
-                .not_found_service(tower_http::services::ServeFile::new(format!("{}/index.html", ui_dist_path)))
-        )
+        .fallback_service(fallback_service)
         .layer(from_fn(log_requests))
         .layer(middleware::cors::cors_layer())
         .layer(middleware::rate_limit::request_size_limit());
@@ -84,3 +179,4 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+

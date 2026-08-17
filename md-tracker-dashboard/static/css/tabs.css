@@ -1,0 +1,192 @@
+/* TAB NAVIGATION STILLƏRİ */
+.tab-navigation {
+    display: flex;
+    gap: 10px;
+    padding: 2px 5px;
+    background: rgba(13, 16, 27, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    width: fit-content;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.tab-btn.active {
+    color: var(--text-primary);
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Yığılma sırası listi üçün xüsusi faza başlıqları stili */
+.phase-group-header {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #a5b4fc;
+    letter-spacing: 0.05em;
+    margin: 12px 0 6px 0;
+    border-left: 3px solid #6366f1;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Modal daxilindəki fayl sıraları */
+.seq-file-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+.seq-file-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+/* Kliklənən və aktiv olan faylın işıqlandırılması */
+.highlight-file {
+    background: rgba(99, 102, 241, 0.15) !important;
+    border: 1px solid rgba(99, 102, 241, 0.5) !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    font-weight: bold;
+}
+
+/* ⚠️ YARIMÇIQ İŞLƏR SİYAHISI TAB STILLƏRİ */
+.yarimciq-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+    height: calc(100vh - 145px);
+}
+
+.yarimciq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.yarimciq-header-left h2 {
+    font-size: 18px;
+    margin: 0 0 4px 0;
+    color: #f87171;
+}
+
+.yarimciq-header-left p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.yarimciq-filter-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.yarimciq-filter-group input, .yarimciq-filter-group select {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    outline: none;
+}
+
+.yarimciq-table-container {
+    flex: 1;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.yarimciq-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    color: #1e293b;
+}
+
+.yarimciq-table th {
+    position: sticky;
+    top: 0;
+    background: #f1f5f9;
+    padding: 12px 15px;
+    text-align: left;
+    color: #312e81;
+    font-weight: 700;
+    border-bottom: 2px solid #cbd5e1;
+    z-index: 10;
+}
+
+.yarimciq-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+    color: #334155;
+}
+
+.yarimciq-table tr {
+    background: #ffffff;
+}
+
+.yarimciq-table tr:hover {
+    filter: brightness(0.97);
+}
+
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-badge.missing {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.status-badge.skelet {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-badge.yarimciq {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.status-badge.wip {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}

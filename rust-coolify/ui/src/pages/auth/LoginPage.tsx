@@ -18,6 +18,21 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isRegEnabled, setIsRegEnabled] = useState(true);
+
+  React.useEffect(() => {
+    // Fortify::loginView logikası: istifadəçi yoxdursa /register-ə yönləndir
+    fetch('/api/auth/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.is_first_user) {
+          navigate('/register', { replace: true });
+        }
+        setIsRegEnabled(data.is_registration_enabled);
+      })
+      .catch((err) => console.error('Status fetch error:', err));
+  }, [navigate]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,23 +74,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f] px-4">
-      <div className="max-w-md w-full bg-[#18181b] border border-[#27272a] rounded-2xl p-8 shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)] px-4">
+      <div className="max-w-md w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-8 shadow-2xl">
         <div className="flex flex-col items-center mb-8">
           <img src={mdLogo} className="h-12 w-12 object-contain rounded-lg mb-3" alt="MasterDeploy Logo" />
-          <h2 className="text-xl font-bold text-white">{t.login.title}</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">{t.login.title}</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
               EMAIL VƏ YADA İSTİFADƏÇİ ADI
             </label>
             <input
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg px-4 py-2.5 text-sm text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 transition-colors"
               placeholder="admin və ya user@example.com"
               required
             />
@@ -83,7 +98,7 @@ export default function LoginPage() {
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                 {t.login.password}
               </label>
               <Link to="/forgot-password" className="text-xs text-indigo-400 hover:underline">
@@ -95,14 +110,14 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 pr-10 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg px-4 py-2.5 pr-10 text-sm text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 transition-colors"
                 placeholder="••••••••"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-white transition-colors"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -115,9 +130,9 @@ export default function LoginPage() {
               id="remember"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
-              className="h-4 w-4 rounded bg-[#27272a] border-[#3f3f46] text-indigo-600 focus:ring-0"
+              className="h-4 w-4 rounded bg-[var(--bg-tertiary)] border-[var(--border-color)] text-indigo-600 focus:ring-0"
             />
-            <label htmlFor="remember" className="ml-2 text-xs text-[#a1a1aa]">
+            <label htmlFor="remember" className="ml-2 text-xs text-[var(--text-secondary)]">
               {t.login.remember_me}
             </label>
           </div>
@@ -131,11 +146,14 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 text-center border-t border-[#27272a] pt-6">
-          <Link to="/register" className="text-xs text-[#a1a1aa] hover:text-white transition-colors">
-            {t.login.register_link}
-          </Link>
-        </div>
+        {isRegEnabled && (
+          <div className="mt-8 text-center border-t border-[var(--border-color)] pt-6">
+            <Link to="/register" className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors">
+              {t.login.register_link}
+            </Link>
+          </div>
+        )}
+
       </div>
     </div>
   );

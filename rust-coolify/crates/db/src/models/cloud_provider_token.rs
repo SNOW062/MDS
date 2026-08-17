@@ -1,8 +1,11 @@
 // completed file_0828
 use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 
 #[derive(Debug, Clone, sqlx::FromRow, Serialize, Deserialize)]
 pub struct CloudProviderToken {
-    pub id: Uuid,
+    pub uuid: String,
+    pub provider: String,
+    pub token: String,
+    pub name: String,
+    pub description: Option<String>,
 }

@@ -35,7 +35,7 @@ export default function ToastContainer() {
           </div>
           <button
             onClick={() => toastActions.removeToast(toast.id)}
-            className="p-0.5 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+            className="p-0.5 rounded-lg hover:bg-white/10 text-[var(--text-secondary)] hover:text-white transition-colors"
           >
             <X className="h-3.5 w-3.5" />
           </button>

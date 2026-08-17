@@ -47,14 +47,16 @@ import ServerPrivateKeyPage from '../pages/server/ServerPrivateKeyPage';
 import ServerCaCertificatePage from '../pages/server/ServerCaCertificatePage';
 import NotificationsPage from '../pages/notifications/NotificationsPage';
 import ProfilePage from '../pages/profile/ProfilePage';
+import AppearancePage from '../pages/profile/AppearancePage';
 import AdminPage from '../pages/admin/AdminPage';
 import SourcesPage from '../pages/sources/SourcesPage';
 
-// Protected layout wrapper (Coolify: token/istifadəçi yoxdursa ilk dəfə /register-ə yönləndirilir)
+
+// Protected layout wrapper (Coolify: token/istifadəçi yoxdursa /login-ə yönləndirilir)
 const AppLayout = () => {
   const token = localStorage.getItem('md_token');
   if (!token) {
-    return <Navigate to="/register" replace />;
+    return <Navigate to="/login" replace />;
   }
   return (
     <Layout>
@@ -62,6 +64,7 @@ const AppLayout = () => {
     </Layout>
   );
 };
+
 
 export const router = createBrowserRouter([
   // Auth routes
@@ -141,10 +144,12 @@ export const router = createBrowserRouter([
       { path: '/storages', element: <StoragePage /> },
       { path: '/team', element: <TeamsPage /> },
       { path: '/profile', element: <ProfilePage /> },
+      { path: '/profile/appearance', element: <AppearancePage /> },
       { path: '/admin', element: <AdminPage /> },
       { path: '/sources', element: <SourcesPage /> }
     ]
   },
+
 
   // Fallback redirect to dashboard
   { path: '*', element: <Navigate to="/" replace /> }

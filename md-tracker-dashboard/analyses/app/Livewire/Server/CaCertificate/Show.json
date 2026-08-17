@@ -1,0 +1,161 @@
+{
+  "php_analysis": {
+    "file": "app/Livewire/Server/CaCertificate/Show.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server-in CA (Certificate Authority) sertifikatını idarə etmək: mövcud sertifikatı göstərmək, yeni sertifikat yükləmək, regenerate etmək və server-ə yazmaq.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server\\CaCertificate",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Helpers\\SslHelper",
+          "App\\Jobs\\RegenerateSslCertJob",
+          "App\\Models\\Server",
+          "App\\Models\\SslCertificate",
+          "Illuminate\\Support\\Carbon"
+        ]
+      },
+      "public_properties": [
+        {
+          "name": "server",
+          "type": "Server",
+          "attributes": [
+            "#[Locked]"
+          ],
+          "description": "Cari server modeli"
+        },
+        {
+          "name": "caCertificate",
+          "type": "?SslCertificate",
+          "default": "null",
+          "description": "Server-ə aid CA sertifikatı"
+        },
+        {
+          "name": "showCertificate",
+          "type": "bool",
+          "default": "false",
+          "description": "Sertifikat məzmununun göstərilməsi"
+        },
+        {
+          "name": "certificateContent",
+          "type": "string",
+          "default": "''",
+          "description": "Sertifikatın PEM məzmunu"
+        },
+        {
+          "name": "certificateValidUntil",
+          "type": "?Carbon",
+          "default": "null",
+          "description": "Sertifikatın etibarlılıq tarixi"
+        }
+      ],
+      "methods": {
+        "mount": {
+          "signature": "mount(string $server_uuid)",
+          "steps": [
+            "Server::ownedByCurrentTeam()->whereUuid($server_uuid)->firstOrFail()",
+            "loadCaCertificate()"
+          ],
+          "error_handling": "catch → redirect()->route('server.index')"
+        },
+        "loadCaCertificate": {
+          "description": "Server-in CA sertifikatını yükləyir",
+          "logic": "$this->server->sslCertificates()->where('is_ca_certificate', true)->first()",
+          "state_updates": [
+            "certificateContent",
+            "certificateValidUntil"
+          ]
+        },
+        "toggleCertificate": {
+          "description": "Sertifikat məzmununun görünürlüyünü dəyişir",
+          "logic": "$this->showCertificate = ! $this->showCertificate"
+        },
+        "saveCaCertificate": {
+          "signature": "saveCaCertificate()",
+          "authorization": "authorize('manageCaCertificate', $this->server)",
+          "validation": [
+            "certificateContent boş ola bilməz",
+            "openssl_x509_read() ilə validasiya",
+            "openssl_x509_export() ilə formatlanma"
+          ],
+          "steps": [
+            "Sertifikatı parse et və təmizlə",
+            "Əgər caCertificate varsa update et",
+            "loadCaCertificate() yenilə",
+            "writeCertificateToServer() server-ə yaz",
+            "RegenerateSslCertJob dispatch et (force_regeneration: true)",
+            "dispatch('success')"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "regenerateCaCertificate": {
+          "signature": "regenerateCaCertificate()",
+          "authorization": "authorize('manageCaCertificate', $this->server)",
+          "steps": [
+            "SslHelper::generateSslCertificate(commonName: 'Coolify CA Certificate', serverId, isCaCertificate: true, validityDays: 10 * 365)",
+            "loadCaCertificate()",
+            "writeCertificateToServer()",
+            "RegenerateSslCertJob dispatch",
+            "loadCaCertificate() təkrar",
+            "dispatch('success')"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "writeCertificateToServer": {
+          "visibility": "private",
+          "description": "Sertifikatı server-in fayl sistemində /ssl/coolify-ca.crt path-ə yazır",
+          "steps": [
+            "base64 encode certificateContent",
+            "mkdir -p, chown, chmod, rm, tee, chmod 644 komandaları",
+            "remote_process($commands, $this->server)"
+          ],
+          "path": "config('constants.coolify.base_config_path') . '/ssl/'"
+        },
+        "render": {
+          "returns": "view('livewire.server.ca-certificate.show')"
+        }
+      },
+      "auth_and_authorization": {
+        "gates": [
+          {
+            "action": "saveCaCertificate",
+            "gate": "manageCaCertificate",
+            "resource": "$this->server"
+          },
+          {
+            "action": "regenerateCaCertificate",
+            "gate": "manageCaCertificate",
+            "resource": "$this->server"
+          }
+        ]
+      },
+      "events_dispatched": [
+        {
+          "name": "success",
+          "payload": "string message"
+        }
+      ],
+      "dependencies": {
+        "models": [
+          "Server",
+          "SslCertificate"
+        ],
+        "helpers": [
+          "SslHelper",
+          "remote_process()",
+          "handleError()"
+        ],
+        "jobs": [
+          "RegenerateSslCertJob"
+        ],
+        "php_extensions": [
+          "openssl"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

@@ -1,0 +1,75 @@
+{
+  "last_updated": "2026-08-03T01:07:01.045139",
+  "added_files": [
+    {
+      "id": "ui_create_server",
+      "php_file": "app/Livewire/Server/Create.php",
+      "added_at": "2026-08-02T14:27:56.781478"
+    },
+    {
+      "id": "ui_page_046",
+      "php_file": "resources/views/livewire/server/create.blade.php",
+      "added_at": "2026-08-02T14:27:39.327582"
+    },
+    {
+      "id": "file_0756",
+      "php_file": "app/Livewire/Server/Show.php",
+      "added_at": "2026-08-02T14:27:13.585022"
+    },
+    {
+      "id": "src_40ccaf97",
+      "php_file": "",
+      "added_at": "2026-08-02T14:26:16.819872"
+    },
+    {
+      "id": "file_0765",
+      "php_file": "app/Livewire/Server/PrivateKey/Show.php",
+      "added_at": "2026-08-02T14:24:19.927548"
+    },
+    {
+      "id": "ui_page_057",
+      "php_file": "resources/views/livewire/server/private-key/show.blade.php",
+      "added_at": "2026-08-02T18:37:52.891131"
+    },
+    {
+      "id": "ui_page_058",
+      "php_file": "app/Livewire/Server/CaCertificate/Show.php",
+      "added_at": "2026-08-02T18:46:15.150488"
+    },
+    {
+      "id": "ui_page_047",
+      "php_file": "resources/views/livewire/server/proxy.blade.php",
+      "added_at": "2026-08-02T14:36:00.349941"
+    },
+    {
+      "id": "src_78273caf",
+      "php_file": "",
+      "added_at": "2026-08-02T18:38:21.119318"
+    },
+    {
+      "id": "ui_server_proxy",
+      "php_file": "",
+      "added_at": "2026-08-02T19:02:46.537560"
+    },
+    {
+      "id": "ui_server_security",
+      "php_file": "",
+      "added_at": "2026-08-03T01:01:29.074360"
+    },
+    {
+      "id": "ui_server_resources",
+      "php_file": "",
+      "added_at": "2026-08-03T01:02:59.342469"
+    },
+    {
+      "id": "ui_server_logdrains",
+      "php_file": "",
+      "added_at": "2026-08-03T01:05:47.530856"
+    },
+    {
+      "id": "ui_server_charts",
+      "php_file": "",
+      "added_at": "2026-08-03T01:07:01.045131"
+    }
+  ]
+}

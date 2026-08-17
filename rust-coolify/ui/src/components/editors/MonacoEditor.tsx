@@ -11,7 +11,7 @@ export default function MonacoEditor({ value, onChange, language = 'yaml' }: Mon
       <textarea
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
-        className="w-full bg-[#0c0c0c] border border-[#27272a] rounded-lg p-4 font-mono text-xs text-[#a1a1aa] min-h-[300px] focus:outline-none focus:border-indigo-500"
+        className="w-full bg-[#0c0c0c] border border-[var(--border-color)] rounded-lg p-4 font-mono text-xs text-[var(--text-secondary)] min-h-[300px] focus:outline-none focus:border-indigo-500"
         placeholder={`Code Editor (${language})`}
       />
     </div>

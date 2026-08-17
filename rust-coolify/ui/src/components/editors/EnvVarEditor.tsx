@@ -43,8 +43,8 @@ export default function EnvVarEditor({ variables, onSave }: EnvVarEditorProps) {
 
       <div className="space-y-2">
         {list.map((item, idx) => (
-          <div key={idx} className="flex justify-between items-center bg-[#27272a]/30 p-2.5 rounded-lg border border-[#3f3f46]/30 text-xs">
-            <span className="font-bold text-white">{item.key}</span>
+          <div key={idx} className="flex justify-between items-center bg-[var(--bg-tertiary)]/30 p-2.5 rounded-lg border border-[var(--border-color)]/30 text-xs">
+            <span className="font-bold text-[var(--text-primary)]">{item.key}</span>
             <div className="flex items-center gap-3">
               <span className="text-zinc-500">{item.value}</span>
               <button onClick={() => handleRemove(idx)} className="text-red-400 hover:text-red-300">

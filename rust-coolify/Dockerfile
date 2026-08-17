@@ -8,16 +8,25 @@ COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
 COPY migrations ./migrations
 
-RUN cargo build --release -p rc-api
+# Cargo asılılıqlarını və target-i keşləmək üçün mount-dan istifadə edirik
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/app/target \
+    cargo build --release -p rc-api && \
+    cp target/release/rc-api /app/rc-api-bin
+
 
 # 2. Build Stage: Vite Frontend UI
 FROM node:20-alpine as frontend-builder
 
 WORKDIR /app/ui
 COPY ui/package*.json ./
-RUN npm install
+
+# npm keşini mount edərək install prosesini sürətləndiririk
+RUN --mount=type=cache,target=/root/.npm \
+    npm install
 
 COPY ui/ ./
+
 RUN npm run build
 
 # 3. Final Runtime Stage
@@ -28,7 +37,8 @@ RUN apk add --no-cache ca-certificates tzdata openssl curl
 WORKDIR /app
 
 # Copy Rust Binary
-COPY --from=backend-builder /app/target/release/rc-api /app/rc-api
+COPY --from=backend-builder /app/rc-api-bin /app/rc-api
+
 
 # Copy UI Dist Artifacts
 COPY --from=frontend-builder /app/ui/dist /app/ui/dist

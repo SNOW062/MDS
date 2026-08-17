@@ -9,17 +9,23 @@ pub async fn create_server(
     name: &str, 
     ip: &str, 
     port: i32, 
-    user: &str
+    user: &str,
+    description: Option<&str>,
+    private_key_id: Option<Uuid>,
+    is_build_server: bool,
 ) -> anyhow::Result<Server> {
     let server = sqlx::query_as::<_, Server>(
-        r#"INSERT INTO servers (id, team_id, name, ip, port, "user", is_reachable, is_build_server, proxy_type, sentinel_enabled, sentinel_metrics_refresh_rate, sentinel_metrics_history_days, sentinel_push_interval, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, true, false, 'none', false, 5, 7, 60, NOW(), NOW()) RETURNING *"#
+        r#"INSERT INTO servers (id, team_id, private_key_id, name, description, ip, port, "user", is_reachable, is_build_server, proxy_type, sentinel_enabled, sentinel_metrics_refresh_rate, sentinel_metrics_history_days, sentinel_push_interval, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, $9, 'traefik', false, 5, 7, 60, NOW(), NOW()) RETURNING *"#
     )
     .bind(Uuid::new_v4())
     .bind(team_id)
+    .bind(private_key_id)
     .bind(name)
+    .bind(description)
     .bind(ip)
     .bind(port)
     .bind(user)
+    .bind(is_build_server)
     .fetch_one(pool)
     .await?;
     Ok(server)

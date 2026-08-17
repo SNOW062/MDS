@@ -1,0 +1,205 @@
+{
+  "php_analysis": {
+    "file": "resources/views/livewire/server/proxy/configuration.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server proxy konfiqurasiya interfeysi. Proxy seçimi (Traefik/Caddy/None), advanced settings, konfiqurasiya faylı redaktəsi və Traefik xəbərdarlıqlarını göstərmək.",
+    "analysis": {
+      "layout_structure": {
+        "wrapper": "<div>",
+        "condition": "@if ($server->proxyType())"
+      },
+      "proxy_configuration_form": {
+        "condition": "$selectedProxy !== 'NONE'",
+        "form": "<form wire:submit='submit'>",
+        "header_actions": {
+          "title": "Configuration",
+          "switch_proxy_button": {
+            "condition": "$server->proxy->status === 'exited' || $server->proxy->status === 'removing'",
+            "component": "<x-modal-confirmation>",
+            "title": "Confirm Proxy Switching?",
+            "button": "Switch Proxy",
+            "submit_action": "changeProxy",
+            "warning": "Custom proxy configs reset + switching guide link",
+            "confirm_with_text": false,
+            "confirm_with_password": false
+          },
+          "else": {
+            "component": "<x-forms.button>",
+            "action": "$dispatch('error', 'Currently running proxy must be stopped before switching proxy')",
+            "label": "Switch Proxy"
+          },
+          "save_button": {
+            "component": "<x-forms.button type=\"submit\">",
+            "label": "Save"
+          }
+        },
+        "description": "Configure your proxy settings and advanced options.",
+        "out_of_sync_warning": {
+          "condition": "$server->proxy->last_applied_settings && $server->proxy->last_saved_settings !== $server->proxy->last_applied_settings",
+          "component": "<x-callout type=\"warning\" title=\"Configuration Out of Sync\">",
+          "message": "Saved config differs from running config. Restart proxy to apply changes."
+        },
+        "advanced_settings": {
+          "title": "Advanced",
+          "fields": [
+            {
+              "name": "generateExactLabels",
+              "component": "<x-forms.checkbox>",
+              "label": "Generate labels only for {{ str($server->proxyType())->title() }}",
+              "helper": "All resources will only have docker container labels for current proxy type",
+              "instant_save": true,
+              "canGate": "update",
+              "canResource": "$server"
+            },
+            {
+              "name": "redirectEnabled",
+              "component": "<x-forms.checkbox>",
+              "label": "Override default request handler",
+              "helper": "Requests to unknown hosts receive 503 or redirect to URL below",
+              "instant_save": "instantSaveRedirect",
+              "canGate": "update",
+              "canResource": "$server"
+            },
+            {
+              "name": "redirectUrl",
+              "condition": "$redirectEnabled",
+              "component": "<x-forms.input>",
+              "placeholder": "https://app.coolify.io",
+              "label": "Redirect to (optional)",
+              "canGate": "update",
+              "canResource": "$server"
+            }
+          ]
+        },
+        "proxy_specific_section": {
+          "condition": "$server->proxyType() === 'TRAEFIK' || $server->proxyType() === 'CADDY'",
+          "proxy_title": "Traefik (Coolify Proxy) | Caddy (Coolify Proxy)",
+          "traefik_warnings": {
+            "alpine_state": "traefikWarningsDismissed (localStorage)",
+            "dismiss_button": "localStorage.removeItem('callout-dismissed-traefik-warnings-{{ $server->id }}')",
+            "warning_types": [
+              {
+                "condition": "$server->detected_traefik_version === 'latest'",
+                "type": "warning",
+                "title": "Using 'latest' Traefik Tag",
+                "message": "latest tag breaking changes risk, recommendation: pin specific version"
+              },
+              {
+                "condition": "$this->isTraefikOutdated",
+                "type": "warning",
+                "title": "Traefik Patch Update Available",
+                "message": "Current version vs latest patch, test in non-production first"
+              },
+              {
+                "condition": "$this->newerTraefikBranchAvailable",
+                "type": "info",
+                "title": "New Minor Traefik Version Available",
+                "message": "New minor version features, read changelog, test first"
+              }
+            ],
+            "callout_props": "dismissible, onDismiss localStorage"
+          },
+          "reset_configuration": {
+            "condition": "$proxySettings",
+            "component": "<x-modal-confirmation>",
+            "title": "Reset Proxy Configuration?",
+            "button": "Reset Configuration",
+            "submit_action": "resetProxyConfiguration",
+            "confirm_with_text": true,
+            "confirmation_text": "{{ $server->name }}",
+            "actions": [
+              "Reset to default settings",
+              "All custom configs lost",
+              "Custom ports and entrypoints removed"
+            ]
+          }
+        },
+        "proxy_config_editor": {
+          "condition": "$proxySettings",
+          "component": "<x-forms.textarea>",
+          "editor": "Monaco Editor (YAML)",
+          "label": "Configuration file ( {{ $this->configurationFilePath }} )",
+          "name": "proxySettings",
+          "rows": 30,
+          "canGate": "update",
+          "canResource": "$server"
+        }
+      },
+      "no_proxy_selected": {
+        "condition": "$selectedProxy === 'NONE'",
+        "title": "Configuration",
+        "switch_proxy_button": {
+          "component": "<x-forms.button wire:click.prevent=\"changeProxy\">",
+          "canGate": "update",
+          "label": "Switch Proxy"
+        },
+        "message": "Custom (None) Proxy Selected"
+      },
+      "proxy_selection": {
+        "condition": "!$server->proxyType()",
+        "title": "Configuration",
+        "subtitle": "Select a proxy you would like to use on this server.",
+        "options": [
+          {
+            "label": "Custom (None)",
+            "action": "wire:click=\"selectProxy('NONE')\"",
+            "class": "coolbox"
+          },
+          {
+            "label": "Traefik",
+            "action": "wire:click=\"selectProxy('TRAEFIK')\"",
+            "class": "coolbox"
+          },
+          {
+            "label": "Caddy",
+            "action": "wire:click=\"selectProxy('CADDY')\"",
+            "class": "coolbox"
+          }
+        ],
+        "permission": "@can('update', $server)",
+        "no_permission": {
+          "component": "<x-callout type=\"danger\" title=\"Insufficient Permissions\">",
+          "message": "You don't have permission to configure proxy settings for this server."
+        }
+      },
+      "livewire_directives_used": [
+        "wire:submit",
+        "wire:click",
+        "wire:click.prevent",
+        "wire:click=\"$dispatch('error', ...)\""
+      ],
+      "blade_components_used": [
+        "x-forms.button",
+        "x-forms.checkbox",
+        "x-forms.input",
+        "x-forms.textarea",
+        "x-modal-confirmation",
+        "x-callout"
+      ],
+      "alpine_js_components": [
+        "traefikWarningsDismissed state (localStorage)",
+        "x-show, x-transition for warnings"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix",
+        "custom_classes": [
+          "coolbox",
+          "box-without-bg",
+          "bg-coolgray-100",
+          "bg-coolgray-200",
+          "bg-coolgray-300"
+        ]
+      },
+      "conditional_rendering_rules": [
+        "Form yalnız proxy seçilib və 'NONE' deyilsə göstərilir",
+        "Switch Proxy modal yalnız proxy exited/removing olduqda aktivdir",
+        "Redirect URL input yalnız redirectEnabled true olduqda görünür",
+        "Traefik warnings yalnız Traefik proxy seçilibsə göstərilir",
+        "Reset Configuration yalnız proxySettings varsa və update icazəsi varsa göstərilir",
+        "Proxy selection grid yalnız heç bir proxy seçilməyibsə göstərilir"
+      ]
+    }
+  },
+  "target_analysis": null
+}

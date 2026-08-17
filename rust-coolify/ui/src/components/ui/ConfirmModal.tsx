@@ -14,7 +14,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
       <div className="space-y-6">
-        <p className="text-xs text-[#a1a1aa] leading-relaxed">{message}</p>
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{message}</p>
         <div className="flex justify-end gap-3">
           <Button variant="secondary" onClick={onClose}>
             İptal

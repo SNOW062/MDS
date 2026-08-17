@@ -1,0 +1,150 @@
+{
+  "php_analysis": {
+    "file_path": "resources/views/livewire/server/resources.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server resurslarını (managed və unmanaged container-ları) tab formatında göstərmək, idarə etmək və statuslarını izləmək interfeysi.",
+    "analysis": {
+      "layout_structure": {
+        "title_slot": "{{ data_get_str($server, 'name')->limit(10) }} > Server Resources | Coolify",
+        "navbar": "<livewire:server.navbar :server=\"$server\">",
+        "main_wrapper": "flex flex-col h-full gap-4 md:gap-8 md:flex-row",
+        "alpine_state": "x-data=\"{ activeTab: 'managed' }\""
+      },
+      "header_section": {
+        "title": "Resources",
+        "refresh_button": {
+          "component": "<x-forms.button>",
+          "action": "wire:click=\"refreshStatus\"",
+          "label": "Refresh"
+        },
+        "description": "Here you can find all resources that are managed by Coolify."
+      },
+      "tabs": {
+        "managed_tab": {
+          "trigger": {
+            "classes": "box-without-bg cursor-pointer w-full text-center",
+            "active_classes": "dark:bg-coollabs bg-coollabs text-white",
+            "action": "wire:click=\"loadManagedContainers\"",
+            "loading": "<x-loading wire:loading wire:target=\"loadManagedContainers\" />"
+          },
+          "condition": "$activeTab === 'managed'",
+          "data_source": "$server->definedResources()->sortBy('name', SORT_NATURAL)",
+          "empty_state": "<div>No managed resources found.</div>",
+          "table": {
+            "columns": [
+              "Project",
+              "Environment",
+              "Name",
+              "Type",
+              "Status"
+            ],
+            "rows": {
+              "project": "data_get($resource->project(), 'name')",
+              "environment": "data_get($resource, 'environment.name')",
+              "name": {
+                "content": "$resource->name",
+                "link": "{{ $resource->link() }}",
+                "navigation": "wireNavigate()"
+              },
+              "type": "str($resource->type())->headline()",
+              "status": {
+                "service_type": "<x-status.services :service=\"$resource\">",
+                "other_type": "<x-status.index :resource=\"$resource\">",
+                "show_refresh_button": false
+              }
+            }
+          }
+        },
+        "unmanaged_tab": {
+          "trigger": {
+            "classes": "box-without-bg cursor-pointer w-full text-center",
+            "active_classes": "dark:bg-coollabs bg-coollabs text-white",
+            "action": "wire:click=\"loadUnmanagedContainers\"",
+            "loading": "<x-loading wire:loading wire:target=\"loadUnmanagedContainers\" />"
+          },
+          "condition": "$activeTab === 'unmanaged'",
+          "data_source": "collect($unmanagedContainers)->sortBy('name', SORT_NATURAL)",
+          "empty_state": "<div>No unmanaged resources found.</div>",
+          "table": {
+            "columns": [
+              "Name",
+              "Image",
+              "Status",
+              "Action"
+            ],
+            "rows": {
+              "name": "data_get($resource, 'Names')",
+              "image": "data_get($resource, 'Image')",
+              "state": "data_get($resource, 'State')",
+              "actions": {
+                "running": [
+                  {
+                    "label": "Restart",
+                    "action": "wire:click=\"restartUnmanaged('{{ data_get($resource, 'ID') }}')\"",
+                    "canGate": "update",
+                    "canResource": "$server"
+                  },
+                  {
+                    "label": "Stop",
+                    "action": "wire:click=\"stopUnmanaged('{{ data_get($resource, 'ID') }}')\"",
+                    "isError": true,
+                    "canGate": "update",
+                    "canResource": "$server"
+                  }
+                ],
+                "exited": [
+                  {
+                    "label": "Start",
+                    "action": "wire:click=\"startUnmanaged('{{ data_get($resource, 'ID') }}')\"",
+                    "canGate": "update",
+                    "canResource": "$server"
+                  }
+                ],
+                "restarting": [
+                  {
+                    "label": "Stop",
+                    "action": "wire:click=\"stopUnmanaged('{{ data_get($resource, 'ID') }}')\"",
+                    "canGate": "update",
+                    "canResource": "$server"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "livewire_directives_used": [
+        "wire:click",
+        "wire:loading",
+        "wire:target",
+        "wire:key"
+      ],
+      "blade_components_used": [
+        "x-slot:title",
+        "livewire:server.navbar",
+        "x-forms.button",
+        "x-loading",
+        "x-status.services",
+        "x-status.index",
+        "x-internal-link"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix",
+        "custom_classes": [
+          "box-without-bg",
+          "bg-coollabs",
+          "bg-coolgray-100"
+        ]
+      },
+      "conditional_rendering_rules": [
+        "Managed tab yalnız $activeTab === 'managed' olduqda görünür",
+        "Unmanaged tab yalnız $activeTab === 'unmanaged' olduqda görünür",
+        "Empty state yalnız collection boş olduqda göstərilir",
+        "Unmanaged action button-ları container State-ə görə dəyişir: running (Restart+Stop), exited (Start), restarting (Stop)",
+        "Status component service type-ə görə dəyişir"
+      ]
+    }
+  },
+  "target_analysis": null
+}

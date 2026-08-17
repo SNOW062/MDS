@@ -15,10 +15,10 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 select-none">
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="bg-[#18181b] border border-[#27272a] rounded-xl max-w-lg w-full p-6 shadow-2xl relative z-10 animate-scale-in">
+      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl max-w-lg w-full p-6 shadow-2xl relative z-10 animate-scale-in">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wide">{title}</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wide">{title}</h3>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/5 text-[var(--text-secondary)] hover:text-white transition-colors">
             <X className="h-4 w-4" />
           </button>
         </div>

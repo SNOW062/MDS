@@ -1,0 +1,183 @@
+{
+  "php_analysis": {
+    "file_path": "app/Livewire/Server/LogDrains.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server-in log drain (New Relic, Axiom, Custom FluentBit) konfiqurasiyasını idarə etmək. Yalnız bir provider eyni anda aktiv ola bilər.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Actions\\Server\\StartLogDrain",
+          "App\\Actions\\Server\\StopLogDrain",
+          "App\\Models\\Server",
+          "Livewire\\Attributes\\Validate"
+        ]
+      },
+      "public_properties": {
+        "server": {
+          "type": "Server",
+          "description": "Cari server modeli"
+        },
+        "newrelic_settings": [
+          {
+            "name": "isLogDrainNewRelicEnabled",
+            "type": "bool",
+            "default": "false",
+            "validation": "boolean"
+          },
+          {
+            "name": "logDrainNewRelicLicenseKey",
+            "type": "?string",
+            "default": "null",
+            "validation": "string|nullable|regex:/^[a-zA-Z0-9_\\-\\.]+$/"
+          },
+          {
+            "name": "logDrainNewRelicBaseUri",
+            "type": "?string",
+            "default": "null",
+            "validation": "url|nullable"
+          }
+        ],
+        "axiom_settings": [
+          {
+            "name": "isLogDrainAxiomEnabled",
+            "type": "bool",
+            "default": "false",
+            "validation": "boolean"
+          },
+          {
+            "name": "logDrainAxiomDatasetName",
+            "type": "?string",
+            "default": "null",
+            "validation": "string|nullable|regex:/^[a-zA-Z0-9_\\-\\.]+$/"
+          },
+          {
+            "name": "logDrainAxiomApiKey",
+            "type": "?string",
+            "default": "null",
+            "validation": "string|nullable|regex:/^[a-zA-Z0-9_\\-\\.]+$/"
+          }
+        ],
+        "custom_settings": [
+          {
+            "name": "isLogDrainCustomEnabled",
+            "type": "bool",
+            "default": "false",
+            "validation": "boolean"
+          },
+          {
+            "name": "logDrainCustomConfig",
+            "type": "?string",
+            "default": "null",
+            "validation": "string|nullable"
+          },
+          {
+            "name": "logDrainCustomConfigParser",
+            "type": "?string",
+            "default": "null",
+            "validation": "string|nullable"
+          }
+        ]
+      },
+      "methods": {
+        "mount": {
+          "signature": "mount(string $server_uuid)",
+          "steps": [
+            "Server::ownedByCurrentTeam()->whereUuid($server_uuid)->firstOrFail()",
+            "syncData()"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "syncDataNewRelic": {
+          "signature": "syncDataNewRelic(bool $toModel)",
+          "toModel_true": "Property-ləri server settings-ə yazır",
+          "toModel_false": "Server settings-dən property-lərə oxuyur"
+        },
+        "syncDataAxiom": {
+          "signature": "syncDataAxiom(bool $toModel)",
+          "description": "Axiom settings üçün iki istiqamətli sync"
+        },
+        "syncDataCustom": {
+          "signature": "syncDataCustom(bool $toModel)",
+          "description": "Custom FluentBit settings üçün iki istiqamətli sync"
+        },
+        "syncData": {
+          "signature": "syncData(bool $toModel, ?string $type)",
+          "description": "Bütün log drain tipləri üçün sync-i idarə edir",
+          "logic": [
+            "$toModel true olduqda customValidation() çağırır",
+            "$type-a görə spesifik sync metodunu çağırır (newrelic/axiom/custom)",
+            "$type null olduqda hamısını sync edir",
+            "$toModel true olduqda $this->server->settings->save()"
+          ]
+        },
+        "customValidation": {
+          "description": "Hansı log drain aktivdirsə onun sahələrini validate edir",
+          "newrelic": [
+            "logDrainNewRelicLicenseKey required|regex",
+            "logDrainNewRelicBaseUri required|url"
+          ],
+          "axiom": [
+            "logDrainAxiomDatasetName required|regex",
+            "logDrainAxiomApiKey required|regex"
+          ],
+          "custom": [
+            "logDrainCustomConfig required",
+            "logDrainCustomConfigParser string|nullable"
+          ],
+          "rollback": "Validation uğursuz olduqda həmin drain-i false edir və exception throw edir"
+        },
+        "instantSave": {
+          "authorization": "authorize('update', $this->server)",
+          "logic": [
+            "syncData(true)",
+            "Əgər server->isLogDrainEnabled() true-dursa: StartLogDrain::run($this->server)",
+            "Əks halda: StopLogDrain::run($this->server)",
+            "dispatch('success')"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "submit": {
+          "signature": "submit(string $type)",
+          "authorization": "authorize('update', $this->server)",
+          "logic": "syncData(true, $type); dispatch('success', 'Settings saved.')",
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "render": {
+          "returns": "view('livewire.server.log-drains')"
+        }
+      },
+      "auth_and_authorization": {
+        "gate": "update",
+        "resource": "$this->server",
+        "applied_to": [
+          "instantSave",
+          "submit"
+        ]
+      },
+      "events_dispatched": [
+        {
+          "name": "success",
+          "payload": "string message"
+        }
+      ],
+      "dependencies": {
+        "models": [
+          "Server"
+        ],
+        "actions": [
+          "StartLogDrain",
+          "StopLogDrain"
+        ],
+        "helpers": [
+          "handleError()"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

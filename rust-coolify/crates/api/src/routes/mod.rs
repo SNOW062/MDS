@@ -19,3 +19,4 @@ pub mod upload_controller;
 pub mod api;
 pub mod webhook;
 pub mod auth;
+pub mod cloud_provider_tokens;

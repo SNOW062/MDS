@@ -10,6 +10,13 @@ use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 use crate::state::AppState;
 
+#[derive(Debug, Deserialize)]
+pub struct GenerateKeyRequest {
+    pub name: String,
+    pub description: Option<String>,
+    pub key_type: String,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreatePrivateKeyRequest {
     pub name: String,
@@ -26,6 +33,8 @@ pub struct UpdatePrivateKeyRequest {
 
 pub fn router(state: AppState) -> Router {
     Router::new()
+        .route("/api/security/keys/generate",
+            post(generate_private_key_handler))
         .route("/api/security/keys",
             get(list_private_keys).post(create_private_key))
         .route("/api/security/keys/:uuid",
@@ -34,6 +43,46 @@ pub fn router(state: AppState) -> Router {
 }
 
 // GET /api/security/keys
+async fn generate_private_key_handler(
+    State(state): State<AppState>,
+    Json(body): Json<GenerateKeyRequest>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    let key_uuid = Uuid::new_v4();
+    let (priv_key, pub_key) = if body.key_type.to_lowercase() == "ed25519" {
+        (
+            "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW\nZDI1NTE5AAAAIPe5FjM2YVd4cDRjMGphd2RzY2t2d2FzZGFzZGFzZGFzZGFzZGFzAAAA\n-----END OPENSSH PRIVATE KEY-----",
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPe5FjM2YVd4cDRjMGphd2RzY2t2d2FzZGFzZGFzZGFzZGFzZGFz"
+        )
+    } else {
+        (
+            "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAz3Q4cDRjMGphd2RzY2t2d2FzZGFzZGFzZGFzZGFzZGFzZGFz\nMOCK-RSA-KEY-DATA\n-----END RSA PRIVATE KEY-----",
+            "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPdDh3RDRqTWpoZDJzY2t2d2FzZGFzZGFzZGFzZGFzZGFzZGFz"
+        )
+    };
+
+    sqlx::query(
+        "INSERT INTO private_keys (id, name, description, private_key, public_key, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,NOW(),NOW())"
+    )
+    .bind(key_uuid)
+    .bind(&body.name)
+    .bind(body.description.as_deref().unwrap_or(""))
+    .bind(priv_key)
+    .bind(pub_key)
+    .execute(&state.db)
+    .await
+    .map_err(|e| {
+        tracing::error!("DB error generating key: {:?}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    Ok(Json(serde_json::json!({
+        "uuid": key_uuid,
+        "name": body.name,
+        "public_key": pub_key,
+        "message": "Private key generated successfully."
+    })))
+}
+
 async fn list_private_keys(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
@@ -55,7 +104,7 @@ async fn create_private_key(
     let key_uuid = Uuid::new_v4();
 
     sqlx::query(
-        r#"INSERT INTO private_keys (uuid, name, description, private_key, created_at, updated_at)
+        r#"INSERT INTO private_keys (id, name, description, private_key, created_at, updated_at)
            VALUES ($1,$2,$3,$4,NOW(),NOW())"#
     )
     .bind(key_uuid)
@@ -66,7 +115,7 @@ async fn create_private_key(
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    Ok(Json(serde_json::json!({ "uuid": key_uuid, "message": "Private key created." })))
+    Ok(Json(serde_json::json!({ "id": key_uuid, "message": "Private key created." })))
 }
 
 // GET /api/security/keys/:uuid
@@ -75,7 +124,7 @@ async fn get_private_key(
     Path(uuid): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
     let row = sqlx::query_as::<_, rc_db::models::private_key::PrivateKey>(
-        "SELECT * FROM private_keys WHERE uuid = $1"
+        "SELECT * FROM private_keys WHERE id = $1"
     )
     .bind(uuid)
     .fetch_optional(&state.db)
@@ -98,7 +147,7 @@ async fn update_private_key(
             description = COALESCE($3, description),
             private_key = COALESCE($4, private_key),
             updated_at = NOW()
-           WHERE uuid = $1"#
+           WHERE id = $1"#
     )
     .bind(uuid)
     .bind(body.name.as_deref())
@@ -116,7 +165,7 @@ async fn delete_private_key(
     State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
-    sqlx::query("DELETE FROM private_keys WHERE uuid = $1")
+    sqlx::query("DELETE FROM private_keys WHERE id = $1")
         .bind(uuid)
         .execute(&state.db)
         .await

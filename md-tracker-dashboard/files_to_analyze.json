@@ -1,0 +1,83 @@
+[
+  {
+    "id": "ui_create_server",
+    "php_file": "app/Livewire/Server/Create.php",
+    "blade_file": "resources/views/livewire/server/create.blade.php",
+    "ts_file": "ui/src/pages/server/CreateServerPage.tsx",
+    "rs_file": "crates/api/src/routes/servers.rs",
+    "description": "Server yaradılması forması (Hetzner, Vultr, DO, Manual)",
+    "status": "ready"
+  },
+  {
+    "id": "ui_server_show",
+    "php_file": "app/Livewire/Server/Show.php",
+    "blade_file": "resources/views/livewire/server/show.blade.php",
+    "ts_file": "ui/src/pages/servers/ServerDetailPage.tsx",
+    "rs_file": "crates/api/src/routes/servers.rs",
+    "description": "Server Ümumi tabı (IP, Port, concurrent builds, Docker status)",
+    "status": "pending"
+  },
+  {
+    "id": "ui_server_key",
+    "php_file": "app/Livewire/Server/PrivateKey/Show.php",
+    "blade_file": "resources/views/livewire/server/private-key/show.blade.php",
+    "ts_file": "ui/src/pages/server/ServerPrivateKeyPage.tsx",
+    "rs_file": "crates/db/src/models/private_key.rs",
+    "description": "Private Key Tabı (SSH açarlarının seçilməsi)",
+    "status": "pending"
+  },
+  {
+    "id": "ui_server_ca",
+    "php_file": "app/Livewire/Server/CaCertificate/Show.php",
+    "blade_file": "resources/views/livewire/server/ca-certificate/show.blade.php",
+    "ts_file": "ui/src/pages/server/ServerCaCertificatePage.tsx",
+    "rs_file": "crates/db/src/models/ssl_certificate.rs",
+    "description": "CA Certificate Tabı (Sertifikat sazlamaları)",
+    "status": "pending"
+  },
+  {
+    "id": "ui_server_proxy",
+    "php_file": "app/Livewire/Server/Proxy.php",
+    "blade_file": "resources/views/livewire/server/proxy.blade.php",
+    "ts_file": "ui/src/pages/server/ServerProxyPage.tsx",
+    "rs_file": "crates/api/src/routes/servers.rs",
+    "description": "Proxy Tabı (Traefik/Caddy, Monaco Editor konfiqurasiya)",
+    "status": "pending"
+  },
+  {
+    "id": "ui_server_security",
+    "php_file": "app/Livewire/Server/Security/Patches.php",
+    "blade_file": "resources/views/livewire/server/security/patches.blade.php",
+    "ts_file": "ui/src/pages/server/ServerSecurityPage.tsx",
+    "rs_file": "crates/api/src/routes/servers.rs",
+    "description": "Security Tabı (Firewall, OS patches, Terminal access)",
+    "status": "pending"
+  },
+  {
+    "id": "ui_server_resources",
+    "php_file": "app/Livewire/Server/Resources.php",
+    "blade_file": "resources/views/livewire/server/resources.blade.php",
+    "ts_file": "ui/src/pages/server/ServerResourcesPage.tsx",
+    "rs_file": "crates/db/src/repos/server_repo.rs",
+    "description": "Resources Tabı (Container siyahısı, start/stop/restart)",
+    "status": "pending"
+  },
+  {
+    "id": "ui_server_logdrains",
+    "php_file": "app/Livewire/Server/LogDrains.php",
+    "blade_file": "resources/views/livewire/server/log-drains.blade.php",
+    "ts_file": "ui/src/pages/server/ServerLogDrainsPage.tsx",
+    "rs_file": "crates/db/src/models/server.rs",
+    "description": "Log Drains Tabı (Vector/Fluentd kənar log ötürücüləri)",
+    "status": "pending"
+  },
+  {
+    "id": "ui_server_charts",
+    "php_file": "app/Livewire/Server/Charts.php",
+    "blade_file": "resources/views/livewire/server/charts.blade.php",
+    "ts_file": "ui/src/pages/server/ServerChartsPage.tsx",
+    "rs_file": "crates/api/src/routes/servers.rs",
+    "description": "Charts Tabı (CPU/RAM qrafikləri)",
+    "status": "pending"
+  }
+]

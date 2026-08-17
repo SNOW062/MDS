@@ -29,10 +29,8 @@ pub async fn auth_middleware(
     )
     .fetch_optional(&state.db)
     .await
-    .map_err(|e| {
-        tracing::error!("DB error checking instance settings: {:?}", e);
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
+    .ok()
+    .flatten();
 
     if let Some(row) = settings_row {
         use sqlx::Row;

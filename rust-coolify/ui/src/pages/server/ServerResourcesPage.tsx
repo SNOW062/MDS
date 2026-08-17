@@ -55,46 +55,52 @@ export default function ServerResourcesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate('/servers')} className="p-1.5 rounded-lg hover:bg-[#18181b] text-zinc-400 hover:text-white transition-colors">
+        <button onClick={() => navigate('/servers')} className="p-1.5 rounded-lg hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-white transition-colors">
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <h1 className="text-2xl font-bold text-white">Server Resources</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Server Resources</h1>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-[#27272a] pb-px">
-        <Link to={`/server/${uuid}`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
-          Configuration
+      <div className="flex flex-wrap gap-2 border-b border-[var(--border-color)] pb-px">
+        <Link to={`/server/${uuid}`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Konfiqurasiya
         </Link>
-        <Link to={`/server/${uuid}/proxy`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
+        <Link to={`/server/${uuid}/private-key`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Private Key
+        </Link>
+        <Link to={`/server/${uuid}/ca-certificate`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          CA Certificate
+        </Link>
+        <Link to={`/server/${uuid}/proxy`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
           Proxy
-        </Link>
-        <Link to={`/server/${uuid}/terminal`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
-          Terminal
-        </Link>
-        <Link to={`/server/${uuid}/charts`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
-          Monitorinq
-        </Link>
-        <Link to={`/server/${uuid}/security`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
-          Security
         </Link>
         <Link to={`/server/${uuid}/resources`} className="px-4 py-2 border-b-2 border-indigo-500 text-xs font-semibold text-indigo-400">
           Resources
         </Link>
-        <Link to={`/server/${uuid}/log-drains`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
+        <Link to={`/server/${uuid}/log-drains`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
           Log Drains
+        </Link>
+        <Link to={`/server/${uuid}/terminal`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Terminal
+        </Link>
+        <Link to={`/server/${uuid}/charts`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Monitorinq
+        </Link>
+        <Link to={`/server/${uuid}/security`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Security
         </Link>
       </div>
 
       {/* Control Actions Bar */}
-      <div className="bg-[#18181b] border border-[#27272a] rounded-xl p-6 space-y-6">
-        <div className="flex justify-between items-center border-b border-[#27272a] pb-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
+      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-6 space-y-6">
+        <div className="flex justify-between items-center border-b border-[var(--border-color)] pb-4">
+          <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
             <LayoutGrid className="h-4 w-4 text-indigo-400" /> Managed & Unmanaged Resources
           </h2>
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-1.5 bg-[#27272a] hover:bg-[#3f3f46] text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+            className="flex items-center gap-1.5 bg-[var(--bg-tertiary)] hover:bg-[#3f3f46] text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
           >
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </button>
@@ -107,7 +113,7 @@ export default function ServerResourcesPage() {
             className={`flex-1 py-3 rounded-lg text-xs font-semibold border transition-all ${
               activeTab === 'managed'
                 ? 'bg-indigo-600/10 border-indigo-500 text-indigo-400'
-                : 'bg-[#09090b] border-[#27272a] text-zinc-400 hover:text-white'
+                : 'bg-[#09090b] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-white'
             }`}
           >
             Managed Containers
@@ -117,7 +123,7 @@ export default function ServerResourcesPage() {
             className={`flex-1 py-3 rounded-lg text-xs font-semibold border transition-all ${
               activeTab === 'unmanaged'
                 ? 'bg-indigo-600/10 border-indigo-500 text-indigo-400'
-                : 'bg-[#09090b] border-[#27272a] text-zinc-400 hover:text-white'
+                : 'bg-[#09090b] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-white'
             }`}
           >
             Unmanaged Containers
@@ -129,10 +135,10 @@ export default function ServerResourcesPage() {
           managedResources.length === 0 ? (
             <p className="text-xs text-zinc-500 text-center py-8">No managed resources found.</p>
           ) : (
-            <div className="border border-[#27272a] rounded-lg overflow-hidden">
+            <div className="border border-[var(--border-color)] rounded-lg overflow-hidden">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#09090b] text-zinc-400 border-b border-[#27272a]">
+                  <tr className="bg-[#09090b] text-[var(--text-secondary)] border-b border-[var(--border-color)]">
                     <th className="p-3">Project</th>
                     <th className="p-3">Environment</th>
                     <th className="p-3">Name</th>
@@ -140,7 +146,7 @@ export default function ServerResourcesPage() {
                     <th className="p-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#27272a] text-zinc-300">
+                <tbody className="divide-y divide-[var(--border-color)] text-zinc-300">
                   {managedResources.map((res, index) => (
                     <tr key={index}>
                       <td className="p-3">{res.project}</td>
@@ -163,23 +169,23 @@ export default function ServerResourcesPage() {
           unmanagedContainers.length === 0 ? (
             <p className="text-xs text-zinc-500 text-center py-8">No unmanaged containers found.</p>
           ) : (
-            <div className="border border-[#27272a] rounded-lg overflow-hidden">
+            <div className="border border-[var(--border-color)] rounded-lg overflow-hidden">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#09090b] text-zinc-400 border-b border-[#27272a]">
+                  <tr className="bg-[#09090b] text-[var(--text-secondary)] border-b border-[var(--border-color)]">
                     <th className="p-3">Container Name</th>
                     <th className="p-3">Docker Image</th>
                     <th className="p-3">Status</th>
                     <th className="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#27272a] text-zinc-300">
+                <tbody className="divide-y divide-[var(--border-color)] text-zinc-300">
                   {unmanagedContainers.map((res, index) => (
                     <tr key={index}>
                       <td className="p-3 font-semibold">{res.Names}</td>
                       <td className="p-3 font-mono">{res.Image}</td>
                       <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${res.State === 'running' ? 'bg-green-950/30 border border-green-900/50 text-green-400' : 'bg-zinc-900 border border-zinc-800 text-zinc-400'}`}>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${res.State === 'running' ? 'bg-green-950/30 border border-green-900/50 text-green-400' : 'bg-zinc-900 border border-zinc-800 text-[var(--text-secondary)]'}`}>
                           {res.State}
                         </span>
                       </td>
@@ -188,7 +194,7 @@ export default function ServerResourcesPage() {
                           <>
                             <button
                               onClick={() => handleUnmanagedAction('restart', res.ID)}
-                              className="bg-[#27272a] hover:bg-[#3f3f46] text-white px-2 py-1 rounded text-[10px] font-semibold transition-colors"
+                              className="bg-[var(--bg-tertiary)] hover:bg-[#3f3f46] text-white px-2 py-1 rounded text-[10px] font-semibold transition-colors"
                             >
                               Restart
                             </button>

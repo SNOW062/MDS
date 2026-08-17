@@ -1,0 +1,162 @@
+{
+  "systematic_analysis_rules": {
+    "1. Data Modelləri və Tiplər": "PHP class/interface/type declaration-larını TS interface və ya Rust struct-larına çevirmək (tiplər, constructor-lar, enums).",
+    "2. API Kontraktı": "Route/controller analizləri: HTTP metodu, URL parametrləri, request body və response strukturları, validation qaydaları.",
+    "3. Business Logic və Funksiyalar": "Pure funksiyaların TS-ə birbaşa köçürülməsi, side-effect-li funksiyaların API call-a çevrilməsi, exception handling.",
+    "4. State və Data Axını": "Session, LocalStorage/Context, flash message-lər, pagination, filtering/sorting qeydləri.",
+    "5. Autentifikasiya və Autorizasiya": "Login/Register flow, JWT/Session idarəedilməsi, RBAC (canEdit, isAdmin) rollar.",
+    "6. Fayl İdarəetməsi": "Upload məhdudiyyətləri, FormData/Base64 formatları.",
+    "7. Event Sistemi və Real-time": "Events/Listeners, WebSockets, background queue status tracking.",
+    "8. Konfiqurasiya və Environment": "Environment variables (.env), base URL, feature flags.",
+    "9. Template və UI Strukturu": "Blade/Twig template-lərinin React/Vite komponentlərinə keçirilməsi, conditional rendering, form data binding.",
+    "10. Xarici Asılılıqlar": "Composer paketlərinin NPM (Zod, Dayjs, Axios) qarşılıqları.",
+    "Praktik İş Rejimi": {
+      "Addım 1": "PHP faylını AST ilə parse et.",
+      "Addım 2": "Class-ları interface-ə çevir (types.ts).",
+      "Addım 3": "Route-ları API client-ə çevir (api.ts).",
+      "Addım 4": "Validation qaydalarını schema-ya çevir (Zod/Yup).",
+      "Addım 5": "Business logic-i pure funksiyalara ayır (utils.ts).",
+      "Addım 6": "Component-ləri UI kitabxanasına uyğunlaşdır (.tsx faylları)."
+    }
+  },
+  "entries": [
+    {
+      "php_file": "file:///d:/MDS/coolify-source/app/Livewire/Server/Create.php",
+      "blade_file": "file:///d:/MDS/coolify-source/resources/views/livewire/server/create.blade.php",
+      "ts_file": "file:///d:/MDS/rust-coolify/ui/src/pages/server/CreateServerPage.tsx",
+      "rs_file": "file:///d:/MDS/rust-coolify/crates/api/src/routes/servers.rs",
+      "analysis": {
+        "data_models_and_types": {
+          "php": {
+            "properties": [
+              {"name": "private_keys", "type": "array"},
+              {"name": "selectedType", "type": "?string"},
+              {"name": "selectedTokenUuid", "type": "?string"},
+              {"name": "limit_reached", "type": "bool"},
+              {"name": "has_hetzner_tokens", "type": "bool"}
+            ]
+          },
+          "typescript": {
+            "interfaces": [
+              {
+                "name": "PrivateKey",
+                "fields": [
+                  {"name": "id", "type": "string"},
+                  {"name": "name", "type": "string"},
+                  {"name": "description", "type": "string"}
+                ]
+              },
+              {
+                "name": "CloudToken",
+                "fields": [
+                  {"name": "uuid", "type": "string"},
+                  {"name": "provider", "type": "string"},
+                  {"name": "token", "type": "string"},
+                  {"name": "name", "type": "string"},
+                  {"name": "description", "type": "string | null"}
+                ]
+              },
+              {
+                "name": "CreateServerFormData",
+                "fields": [
+                  {"name": "name", "type": "string"},
+                  {"name": "description", "type": "string | null"},
+                  {"name": "ip", "type": "string"},
+                  {"name": "port", "type": "number"},
+                  {"name": "user", "type": "string"},
+                  {"name": "private_key_id", "type": "string"},
+                  {"name": "is_build_server", "type": "boolean"}
+                ]
+              }
+            ]
+          }
+        },
+        "api_contract": {
+          "endpoints": [
+            {
+              "method": "GET",
+              "path": "/api/security/keys",
+              "response": "PrivateKey[]",
+              "status_codes": [200, 500]
+            },
+            {
+              "method": "GET",
+              "path": "/api/security/tokens",
+              "response": "CloudToken[]",
+              "status_codes": [200, 500]
+            },
+            {
+              "method": "POST",
+              "path": "/api/servers",
+              "request_body": "CreateServerFormData",
+              "response": "Server",
+              "status_codes": [200, 201, 400, 500]
+            }
+          ],
+          "validation_rules": {
+            "name": "z.string().min(1).max(255)",
+            "ip": "z.string().min(1) (IPv4/IPv6 format or valid domain regex)",
+            "port": "z.number().min(1).max(65535)",
+            "user": "z.string().min(1)",
+            "private_key_id": "z.string().uuid()"
+          }
+        },
+        "business_logic": {
+          "default_values": {
+            "generateDefaultName": "() => `server-${Math.random().toString(36).substring(2, 8)}`",
+            "port": 22,
+            "user": "root"
+          },
+          "pure_functions": [],
+          "side_effects": [
+            {"name": "create_server", "logic": "inserts into servers table and links private_key_id"}
+          ]
+        },
+        "state_and_data_flow": {
+          "state_variables": [
+            {"name": "selectedType", "type": "useState<string | null>(null)", "desc": "Hetzner, Vultr, DO, Manual seçimi"},
+            {"name": "selectedTokenUuid", "type": "useState<string>('')", "desc": "Seçilmiş cloud token UUID-si"},
+            {"name": "privateKeys", "type": "useState<PrivateKey[]>([])", "desc": "Dinamik SSH açarlar listəsi"},
+            {"name": "cloudTokens", "type": "useState<CloudToken[]>([])", "desc": "Mövcud API bulud tokenləri"},
+            {"name": "limitReached", "type": "useState<boolean>(false)", "desc": "Server limitinin dolub dolmaması statusu"},
+            {"name": "hasHetznerTokens", "type": "useState<boolean>(false)", "desc": "Hetzner tokeni mövcudluğu"},
+            {"name": "isLoading", "type": "useState<boolean>(true)", "desc": "İlkin data yüklənməsi statusu"},
+            {"name": "isSubmitting", "type": "useState<boolean>(false)", "desc": "Form göndərilmə statusu"},
+            {"name": "error", "type": "useState<string | null>(null)", "desc": "Ümumi API xətaları"},
+            {"name": "formErrors", "type": "useState<Record<string, string>>({})", "desc": "Sahə-spesifik validasiya xətaları (@error analoqu)"}
+          ],
+          "data_fetching": {
+            "effect": "Promise.all([fetchPrivateKeys(), fetchCloudTokens()]).finally(() => setIsLoading(false))"
+          }
+        },
+        "auth_and_authorization": {
+          "flow": "LocalStorage-dən md_token JWT token yoxlanışı və API headers-də Authorization olaraq ötürülməsi."
+        },
+        "file_management": {
+          "upload": "N/A"
+        },
+        "event_system": {
+          "real_time": "N/A"
+        },
+        "config_and_env": {
+          "variables": [
+            {"name": "Authorization", "value": "Bearer Token"}
+          ]
+        },
+        "template_and_ui": {
+          "blade": "Axtarış və seçim düymələri, şərti render (@if/$selectedType), Hetzner, Vultr, DO, Manual kartları, @error xəta mesajları.",
+          "react": "Grid şəkilli kart renderi, interaktiv hover effekti, seçilən tipə görə alt-form yüklənməsi, formErrors ilə sahəyə bağlı xətaların göstərilməsi, redirect flow (useNavigate)."
+        },
+        "dependencies": {
+          "php_composer": ["Livewire\\Component"],
+          "typescript_npm": ["lucide-react", "react-router-dom"]
+        },
+        "missing_parts": {
+          "gaps": [
+            "Hetzner/Vultr/DigitalOcean real API bağlantısı vasitəsilə region, plan və imic siyahılarının dinamik Hetzner API üzərindən yüklənməsi hələlik mock verilənlərlə göstərilir. Gələcəkdə Rust backend tərəfdə reqwest ilə bulud provayderlərinin rəsmi API-lərinə qoşulmaq lazımdır."
+          ]
+        }
+      }
+    }
+  ]
+}

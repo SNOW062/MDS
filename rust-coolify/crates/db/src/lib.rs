@@ -15,19 +15,11 @@ pub async fn init_db() -> anyhow::Result<DbPool> {
         .max_connections(5)
         .connect_lazy(&database_url)?;
     
-    // SQLx Miqrasiyalarını avtomatik olaraq tətbiq edirik
-    // connect_lazy olduğu üçün biz run_migrations funksiyasını DB-yə ilk qoşulanda çağıra bilərik
-    // və ya birbaşa bu pool ilə işə sala bilərik.
-    let migration_pool = pool.clone();
-    tokio::spawn(async move {
-        tracing::info!("Running database migrations asynchronously...");
-        // miqrasiya qovluğu workspace kökündədir
-        let migrator = sqlx::migrate!("../../migrations");
-        match migrator.run(&migration_pool).await {
-            Ok(_) => tracing::info!("Database migrations applied successfully!"),
-            Err(e) => tracing::error!("Failed to run database migrations: {:?}", e),
-        }
-    });
+    // SQLx Miqrasiyalarını tətbiq edirik
+    tracing::info!("Running database migrations...");
+    let migrator = sqlx::migrate!("../../migrations");
+    migrator.run(&pool).await?;
+    tracing::info!("Database migrations applied successfully!");
     
     Ok(pool)
 }

@@ -17,9 +17,12 @@ use crate::state::AppState;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateServerRequest {
     pub name: String,
+    pub description: Option<String>,
     pub ip: String,
     pub port: i32,
     pub user: String,
+    pub private_key_id: Option<Uuid>,
+    pub is_build_server: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -89,7 +92,10 @@ async fn create_server_handler(
         &payload.name,
         &payload.ip,
         payload.port,
-        &payload.user
+        &payload.user,
+        payload.description.as_deref(),
+        payload.private_key_id,
+        payload.is_build_server.unwrap_or(false)
     ).await.unwrap();
     Json(server)
 }
@@ -159,7 +165,7 @@ async fn update_server_handler(
             user = COALESCE($4, user),
             description = COALESCE($5, description),
             updated_at = NOW()
-        WHERE uuid = $6
+        WHERE id = $6
         "#,
     )
     .bind(payload.name)
@@ -186,7 +192,7 @@ pub async fn get_server_domains(
     let apps = sqlx::query(
         r#"
         SELECT name, fqdn FROM applications
-        WHERE destination_id IN (SELECT id FROM standalone_dockers WHERE server_id = (SELECT id FROM servers WHERE uuid = $1 LIMIT 1))
+        WHERE destination_id IN (SELECT id FROM standalone_dockers WHERE server_id = (SELECT id FROM servers WHERE id = $1 LIMIT 1))
         "#,
     )
     .bind(uuid)
@@ -222,7 +228,7 @@ pub async fn delete_server_handler(
     Path(uuid): Path<Uuid>,
 ) -> impl IntoResponse {
     info!("API: Deleting server {}", uuid);
-    let res = sqlx::query("DELETE FROM servers WHERE uuid = $1").bind(uuid).execute(&state.db).await;
+    let res = sqlx::query("DELETE FROM servers WHERE id = $1").bind(uuid).execute(&state.db).await;
     match res {
         Ok(_) => (StatusCode::OK, Json(json!({"message": "Server deleted successfully"}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),

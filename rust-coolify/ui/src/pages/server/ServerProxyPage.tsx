@@ -81,35 +81,47 @@ http:
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate('/servers')} className="p-1.5 rounded-lg hover:bg-[#18181b] text-zinc-400 hover:text-white transition-colors">
+        <button onClick={() => navigate('/servers')} className="p-1.5 rounded-lg hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-white transition-colors">
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <h1 className="text-2xl font-bold text-white">Proxy Settings</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Proxy Settings</h1>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-[#27272a] pb-px">
-        <Link to={`/server/${uuid}`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
-          Configuration
+      <div className="flex flex-wrap gap-2 border-b border-[var(--border-color)] pb-px">
+        <Link to={`/server/${uuid}`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Konfiqurasiya
+        </Link>
+        <Link to={`/server/${uuid}/private-key`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Private Key
+        </Link>
+        <Link to={`/server/${uuid}/ca-certificate`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          CA Certificate
         </Link>
         <Link to={`/server/${uuid}/proxy`} className="px-4 py-2 border-b-2 border-indigo-500 text-xs font-semibold text-indigo-400">
           Proxy
         </Link>
-        <Link to={`/server/${uuid}/terminal`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
+        <Link to={`/server/${uuid}/resources`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Resources
+        </Link>
+        <Link to={`/server/${uuid}/log-drains`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
+          Log Drains
+        </Link>
+        <Link to={`/server/${uuid}/terminal`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
           Terminal
         </Link>
-        <Link to={`/server/${uuid}/charts`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white">
+        <Link to={`/server/${uuid}/charts`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white">
           Monitorinq
         </Link>
-        <Link to={`/server/${uuid}/security`} className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white flex items-center gap-1">
+        <Link to={`/server/${uuid}/security`} className="px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-white flex items-center gap-1">
           Security
         </Link>
       </div>
 
       {/* Konfiqurasiya Formu */}
-      <form onSubmit={handleSubmit} className="bg-[#18181b] border border-[#27272a] rounded-xl p-6 space-y-6">
-        <div className="flex justify-between items-center border-b border-[#27272a] pb-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-6 space-y-6">
+        <div className="flex justify-between items-center border-b border-[var(--border-color)] pb-4">
+          <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
             <Shield className="h-4 w-4 text-indigo-400" /> Proxy Configuration
           </h2>
           <div className="flex gap-2">
@@ -132,11 +144,11 @@ http:
         {/* Proxy Type Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Proxy Type</label>
+            <label className="text-xs font-medium text-[var(--text-secondary)]">Proxy Type</label>
             <select
               value={selectedProxy}
               onChange={(e) => setSelectedProxy(e.target.value)}
-              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-[#09090b] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
             >
               <option value="TRAEFIK">Traefik (Coolify Proxy)</option>
               <option value="CADDY">Caddy (Coolify Proxy)</option>
@@ -147,8 +159,8 @@ http:
 
         {/* Advanced Options */}
         {selectedProxy !== 'NONE' && (
-          <div className="space-y-4 pt-4 border-t border-[#27272a]">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Advanced Options</h3>
+          <div className="space-y-4 pt-4 border-t border-[var(--border-color)]">
+            <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Advanced Options</h3>
             
             {/* Generate exact labels */}
             <div className="flex items-start gap-3">
@@ -157,7 +169,7 @@ http:
                 id="generateExactLabels"
                 checked={generateExactLabels}
                 onChange={(e) => setGenerateExactLabels(e.target.checked)}
-                className="rounded bg-[#09090b] border-[#27272a] text-indigo-600 focus:ring-indigo-500 mt-0.5"
+                className="rounded bg-[#09090b] border-[var(--border-color)] text-indigo-600 focus:ring-indigo-500 mt-0.5"
               />
               <div className="space-y-0.5">
                 <label htmlFor="generateExactLabels" className="text-xs font-medium text-zinc-300">
@@ -176,7 +188,7 @@ http:
                 id="redirectEnabled"
                 checked={redirectEnabled}
                 onChange={(e) => setRedirectEnabled(e.target.checked)}
-                className="rounded bg-[#09090b] border-[#27272a] text-indigo-600 focus:ring-indigo-500 mt-0.5"
+                className="rounded bg-[#09090b] border-[var(--border-color)] text-indigo-600 focus:ring-indigo-500 mt-0.5"
               />
               <div className="space-y-0.5">
                 <label htmlFor="redirectEnabled" className="text-xs font-medium text-zinc-300">
@@ -190,13 +202,13 @@ http:
 
             {redirectEnabled && (
               <div className="space-y-1.5 w-full md:w-96 pl-6">
-                <label className="text-xs font-medium text-zinc-400">Redirect to (optional)</label>
+                <label className="text-xs font-medium text-[var(--text-secondary)]">Redirect to (optional)</label>
                 <input
                   type="text"
                   value={redirectUrl}
                   onChange={(e) => setRedirectUrl(e.target.value)}
                   placeholder="https://app.coolify.io"
-                  className="w-full bg-[#09090b] border border-[#27272a] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#09090b] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
             )}
@@ -205,15 +217,15 @@ http:
 
         {/* Configuration Editor */}
         {selectedProxy !== 'NONE' && (
-          <div className="space-y-2 pt-4 border-t border-[#27272a]">
-            <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
+          <div className="space-y-2 pt-4 border-t border-[var(--border-color)]">
+            <label className="text-xs font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
               Configuration file (YAML)
             </label>
             <textarea
               value={proxySettings}
               onChange={(e) => setProxySettings(e.target.value)}
               rows={20}
-              className="w-full bg-[#09090b] border border-[#27272a] rounded-lg p-4 font-mono text-xs text-zinc-300 focus:outline-none focus:border-indigo-500 leading-relaxed"
+              className="w-full bg-[#09090b] border border-[var(--border-color)] rounded-lg p-4 font-mono text-xs text-zinc-300 focus:outline-none focus:border-indigo-500 leading-relaxed"
             />
           </div>
         )}

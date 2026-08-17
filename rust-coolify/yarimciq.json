@@ -1,4 +1,113 @@
 {
-  "total_count": 0,
-  "files": []
+  "total_count": 12,
+  "files": [
+    {
+      "id": "file_0841",
+      "path": "crates/db/src/models/private_key.rs",
+      "source": "app/Models/PrivateKey.php",
+      "category": "General",
+      "status": "yarimciq",
+      "reason": "PHP orijinalı 11.3 KB-dır, lakin Rust faylı cəmi 0.4 KB (çox funksiya əskikdir)",
+      "size_bytes": 444
+    },
+    {
+      "id": "ui_page_013",
+      "path": "ui/src/pages/teams/TeamsPage.tsx",
+      "source": "resources/views/livewire/dashboard.blade.php",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 31918
+    },
+    {
+      "id": "ui_page_018",
+      "path": "ui/src/pages/security/SshKeysPage.tsx",
+      "source": "app/Http/Controllers/Api/SecurityController.php",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 11829
+    },
+    {
+      "id": "ui_page_030",
+      "path": "ui/src/pages/auth/RegisterPage.tsx",
+      "source": "resources/views/auth/register.blade.php",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 7214
+    },
+    {
+      "id": "ui_page_046",
+      "path": "ui/src/pages/server/CreateServerPage.tsx",
+      "source": "resources/views/livewire/server/create.blade.php",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 47351
+    },
+    {
+      "id": "ui_page_051",
+      "path": "ui/src/pages/profile/ProfilePage.tsx",
+      "source": "resources/views/livewire/profile/index.blade.php",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 21072
+    },
+    {
+      "id": "be_1020",
+      "path": "crates/api/src/middleware/auth.rs",
+      "source": "app/Http/Middleware",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 3837
+    },
+    {
+      "id": "be_1036",
+      "path": "crates/api/src/routes/teams.rs",
+      "source": "app/Http/Controllers/Api",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 24611
+    },
+    {
+      "id": "be_1037",
+      "path": "crates/api/src/routes/users.rs",
+      "source": "app/Http/Controllers/Api",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 5763
+    },
+    {
+      "id": "be_1171",
+      "path": "crates/scheduler/src/cron.rs",
+      "source": "app/Console/Kernel.php",
+      "category": "General",
+      "status": "missing",
+      "reason": "Fayl diski üzərində ümumiyyətlə yaradılmayıb",
+      "size_bytes": 0
+    },
+    {
+      "id": "be_1183",
+      "path": "crates/scheduler/src/manager.rs",
+      "source": "app/Console/Kernel.php",
+      "category": "General",
+      "status": "missing",
+      "reason": "Fayl diski üzərində ümumiyyətlə yaradılmayıb",
+      "size_bytes": 0
+    },
+    {
+      "id": "ui_create_server",
+      "path": "ui/src/pages/server/CreateServerPage.tsx",
+      "source": "app/Livewire/Server/Create.php",
+      "category": "General",
+      "status": "wip",
+      "reason": "Kod yazılıb lakin tamamlanma təsdiq tag-ı (completed) verilməyib",
+      "size_bytes": 47351
+    }
+  ]
 }

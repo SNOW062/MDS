@@ -1,0 +1,182 @@
+{
+  "php_analysis": {
+    "file_path": "resources/views/livewire/server/log-drains.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server log drain konfiqurasiya interfeysi. New Relic, Axiom və Custom FluentBit provider-ləri üçün form-lar göstərir. Yalnız bir provider eyni anda aktiv ola bilər.",
+    "analysis": {
+      "layout_structure": {
+        "title_slot": "{{ data_get_str($server, 'name')->limit(10) }} > Log Drains | Coolify",
+        "navbar": "<livewire:server.navbar :server=\"$server\">",
+        "sidebar": "<x-server.sidebar :server=\"$server\" activeMenu=\"log-drains\">",
+        "main_wrapper": "flex flex-col h-full gap-4 md:gap-8 md:flex-row"
+      },
+      "functional_check": {
+        "condition": "@if ($server->isFunctional())",
+        "else": "<div>Server is not validated. Validate first.</div>"
+      },
+      "header_section": {
+        "title": "Log Drains",
+        "loading": "<x-loading wire:target=\"instantSave\" wire:loading.delay />",
+        "description": "Sends service logs to 3rd party tools."
+      },
+      "provider_forms": {
+        "wrapper": "bordered container: p-4 border dark:border-coolgray-300 border-neutral-200",
+        "mutual_exclusion_rule": "Bir provider aktiv olduqda digər iki provider-in checkbox-u disabled olur"
+      },
+      "newrelic_section": {
+        "form": "<form wire:submit='submit(\"newrelic\")'>",
+        "title": "New Relic",
+        "enabled_checkbox": {
+          "id": "isLogDrainNewRelicEnabled",
+          "disabled_condition": "$isLogDrainAxiomEnabled || $isLogDrainCustomEnabled",
+          "active_state": {
+            "instantSave": true,
+            "canGate": "update",
+            "canResource": "$server"
+          },
+          "disabled_state": {
+            "disabled": true
+          }
+        },
+        "inputs": {
+          "disabled_condition": "$server->isLogDrainEnabled()",
+          "license_key": {
+            "id": "logDrainNewRelicLicenseKey",
+            "type": "password",
+            "required": true,
+            "label": "License Key"
+          },
+          "base_uri": {
+            "id": "logDrainNewRelicBaseUri",
+            "required": true,
+            "placeholder": "https://log-api.eu.newrelic.com/log/v1",
+            "helper": "EU: https://log-api.eu.newrelic.com/log/v1 | US: https://log-api.newrelic.com/log/v1",
+            "label": "Endpoint"
+          }
+        },
+        "save_button": {
+          "canGate": "update",
+          "canResource": "$server",
+          "type": "submit",
+          "label": "Save"
+        }
+      },
+      "axiom_section": {
+        "form": "<form wire:submit='submit(\"axiom\")'>",
+        "title": "Axiom",
+        "enabled_checkbox": {
+          "id": "isLogDrainAxiomEnabled",
+          "disabled_condition": "$isLogDrainNewRelicEnabled || $isLogDrainCustomEnabled",
+          "active_state": {
+            "instantSave": true,
+            "canGate": "update",
+            "canResource": "$server"
+          },
+          "disabled_state": {
+            "disabled": true
+          }
+        },
+        "inputs": {
+          "disabled_condition": "$server->isLogDrainEnabled()",
+          "api_key": {
+            "id": "logDrainAxiomApiKey",
+            "type": "password",
+            "required": true,
+            "label": "API Key"
+          },
+          "dataset_name": {
+            "id": "logDrainAxiomDatasetName",
+            "required": true,
+            "label": "Dataset Name"
+          }
+        },
+        "save_button": {
+          "canGate": "update",
+          "canResource": "$server",
+          "type": "submit",
+          "label": "Save"
+        }
+      },
+      "custom_fluentbit_section": {
+        "form": "<form wire:submit='submit(\"custom\")'>",
+        "title": "Custom FluentBit",
+        "enabled_checkbox": {
+          "id": "isLogDrainCustomEnabled",
+          "disabled_condition": "$isLogDrainNewRelicEnabled || $isLogDrainAxiomEnabled",
+          "active_state": {
+            "instantSave": true,
+            "canGate": "update",
+            "canResource": "$server"
+          },
+          "disabled_state": {
+            "disabled": true
+          }
+        },
+        "inputs": {
+          "disabled_condition": "$server->isLogDrainEnabled()",
+          "config": {
+            "id": "logDrainCustomConfig",
+            "component": "<x-forms.textarea>",
+            "rows": 6,
+            "required": true,
+            "label": "Custom FluentBit Configuration"
+          },
+          "parser": {
+            "id": "logDrainCustomConfigParser",
+            "component": "<x-forms.textarea>",
+            "label": "Custom Parser Configuration"
+          }
+        },
+        "save_button": {
+          "canGate": "update",
+          "canResource": "$server",
+          "type": "submit",
+          "label": "Save"
+        }
+      },
+      "disabled_state_logic": {
+        "description": "Əgər server->isLogDrainEnabled() true-dursa, bütün input-lar disabled olur (service işləyir)",
+        "inputs_affected": [
+          "License Key",
+          "Endpoint",
+          "API Key",
+          "Dataset Name",
+          "Custom Config",
+          "Parser Config"
+        ]
+      },
+      "livewire_directives_used": [
+        "wire:submit",
+        "wire:target",
+        "wire:loading.delay"
+      ],
+      "blade_components_used": [
+        "x-slot:title",
+        "livewire:server.navbar",
+        "x-server.sidebar",
+        "x-forms.checkbox",
+        "x-forms.input",
+        "x-forms.textarea",
+        "x-forms.button",
+        "x-loading"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix",
+        "custom_classes": [
+          "dark:border-coolgray-300",
+          "border-neutral-200"
+        ]
+      },
+      "conditional_rendering_rules": [
+        "Bütün form yalnız $server->isFunctional() olduqda görünür",
+        "New Relic checkbox disabled olur əgər Axiom və ya Custom aktivdirsə",
+        "Axiom checkbox disabled olur əgər New Relic və ya Custom aktivdirsə",
+        "Custom checkbox disabled olur əgər New Relic və ya Axiom aktivdirsə",
+        "Bütün input sahələri disabled olur əgər $server->isLogDrainEnabled() true-dursa",
+        "Save button-lar yalnız @can('update', $server) olduqda aktivdir"
+      ]
+    }
+  },
+  "target_analysis": null
+}

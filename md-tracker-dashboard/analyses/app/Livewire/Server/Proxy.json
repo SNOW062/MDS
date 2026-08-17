@@ -1,0 +1,228 @@
+{
+  "php_analysis": {
+    "file_path": "app/Livewire/Server/Proxy.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server proxy konfiqurasiyasını idarə etmək: proxy tipi seçimi (Traefik/Caddy/None), konfiqurasiya faylı redaktəsi, redirect ayarları, label generasiyası və Traefik versiya yoxlamaları.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Actions\\Proxy\\GetProxyConfiguration",
+          "App\\Actions\\Proxy\\SaveProxyConfiguration",
+          "App\\Enums\\ProxyTypes",
+          "App\\Models\\Server",
+          "App\\Rules\\SafeExternalUrl"
+        ]
+      },
+      "public_properties": [
+        {
+          "name": "server",
+          "type": "Server",
+          "description": "Cari server modeli"
+        },
+        {
+          "name": "selectedProxy",
+          "type": "?string",
+          "default": "null",
+          "description": "Seçilmiş proxy tipi (TRAEFIK, CADDY, NONE)"
+        },
+        {
+          "name": "proxySettings",
+          "type": "null|string",
+          "default": "null",
+          "description": "Proxy konfiqurasiya faylının məzmunu (YAML)"
+        },
+        {
+          "name": "redirectEnabled",
+          "type": "bool",
+          "default": "true",
+          "description": "Default request handler override aktivdir"
+        },
+        {
+          "name": "redirectUrl",
+          "type": "?string",
+          "default": "null",
+          "description": "Redirect URL (unknown host-lar üçün)"
+        },
+        {
+          "name": "generateExactLabels",
+          "type": "bool",
+          "default": "false",
+          "description": "Yalnız cari proxy üçün docker label-ləri generate etmək"
+        }
+      ],
+      "protected_properties": [
+        {
+          "name": "cachedVersionsFile",
+          "type": "?array",
+          "default": "null",
+          "description": "versions.json in-memory cache (per-request)"
+        }
+      ],
+      "event_listeners": {
+        "method": "getListeners()",
+        "events": [
+          {
+            "event": "saveConfiguration",
+            "handler": "submit"
+          },
+          {
+            "event": "echo-private:team.{teamId},ProxyStatusChangedUI",
+            "handler": "$refresh"
+          }
+        ]
+      },
+      "validation": {
+        "method": "rules()",
+        "fields": [
+          {
+            "field": "generateExactLabels",
+            "rules": "required|boolean"
+          },
+          {
+            "field": "redirectUrl",
+            "rules": "nullable|SafeExternalUrl"
+          }
+        ]
+      },
+      "lifecycle_methods": {
+        "mount": {
+          "steps": [
+            "$this->selectedProxy = $this->server->proxyType()",
+            "$this->redirectEnabled = data_get($this->server, 'proxy.redirect_enabled', true)",
+            "$this->redirectUrl = data_get($this->server, 'proxy.redirect_url')",
+            "syncData(false)",
+            "loadProxyConfiguration()"
+          ]
+        }
+      },
+      "core_methods": {
+        "syncData": {
+          "signature": "syncData(bool $toModel = false): void",
+          "toModel_true": "$this->server->settings->generate_exact_labels = $this->generateExactLabels",
+          "toModel_false": "$this->generateExactLabels = $this->server->settings->generate_exact_labels ?? false"
+        },
+        "changeProxy": {
+          "authorization": "authorize('update', $this->server)",
+          "logic": "$this->server->proxy = null; $this->server->save(); dispatch('reloadWindow')",
+          "description": "Proxy-ni sıfırlayır və səhifəni yeniləyir"
+        },
+        "selectProxy": {
+          "signature": "selectProxy($proxy_type)",
+          "authorization": "authorize('update', $this->server)",
+          "logic": "$this->server->changeProxy($proxy_type, async: false); $this->selectedProxy = $this->server->proxy->type; dispatch('reloadWindow')",
+          "description": "Yeni proxy tipi seçir və tətbiq edir"
+        },
+        "instantSave": {
+          "authorization": "authorize('update', $this->server)",
+          "logic": "validate(); syncData(true); $this->server->settings->save(); dispatch('success', 'Settings saved.')",
+          "description": "Generate exact labels setting-ini yadda saxlayır"
+        },
+        "instantSaveRedirect": {
+          "authorization": "authorize('update', $this->server)",
+          "logic": "$this->server->proxy->redirect_enabled = $this->redirectEnabled; $this->server->save(); $this->server->setupDefaultRedirect(); dispatch('success', 'Proxy configuration saved.')",
+          "description": "Redirect enabled setting-ini yadda saxlayır və default redirect setup edir"
+        },
+        "submit": {
+          "authorization": "authorize('update', $this->server)",
+          "logic": "validate(); SaveProxyConfiguration::run($this->server, $this->proxySettings); $this->server->proxy->redirect_url = $this->redirectUrl; $this->server->save(); $this->server->setupDefaultRedirect(); dispatch('success', 'Proxy configuration saved.')",
+          "description": "Proxy konfiqurasiya faylını və redirect URL-i yadda saxlayır"
+        },
+        "resetProxyConfiguration": {
+          "authorization": "authorize('update', $this->server)",
+          "logic": "GetProxyConfiguration::run($this->server, forceRegenerate: true); SaveProxyConfiguration::run($this->server, $this->proxySettings); $this->server->save(); dispatch('success', 'Proxy configuration reset to default.')",
+          "description": "Proxy konfiqurasiyasını default-a reset edir"
+        },
+        "loadProxyConfiguration": {
+          "logic": "$this->proxySettings = GetProxyConfiguration::run($this->server)",
+          "description": "Mövcud proxy konfiqurasiyasını yükləyir"
+        }
+      },
+      "computed_properties": {
+        "configurationFilePath": {
+          "type": "string",
+          "logic": "rtrim($this->server->proxyPath(), '/') . '/docker-compose.yml'"
+        },
+        "latestTraefikVersion": {
+          "type": "?string",
+          "description": "Server-in cari branch-i üçün ən son Traefik patch versiyası",
+          "logic": [
+            "getTraefikVersions() ilə versiya siyahısını al",
+            "detected_traefik_version-dan branch çıxar (məs. 3.5.6 -> v3.5)",
+            "Branch match taparsa həmin versiyanı qaytar",
+            "Yoxsa ən yeni versiyanı qaytar"
+          ]
+        },
+        "isTraefikOutdated": {
+          "type": "bool",
+          "description": "Cari Traefik versiyası köhnədirsə true",
+          "logic": "Proxy tipi TRAEFIK olmalı, current !== 'latest', version_compare(current, latest, '<')"
+        },
+        "newerTraefikBranchAvailable": {
+          "type": "?string",
+          "description": "Ən yeni Traefik minor branch-ı (məs. v3.6)",
+          "logic": [
+            "traefik_outdated_info cache-dən yoxla (minor_upgrade tipi)",
+            "Yoxsa getTraefikVersions() ilə compute et",
+            "Cari branch-dən böyük ən yeni branch-ı tap"
+          ]
+        }
+      },
+      "helper_methods": {
+        "getTraefikVersions": {
+          "visibility": "protected",
+          "description": "versions.json-dan Traefik versiyalarını in-memory cache ilə qaytarır",
+          "cache_strategy": "Per-request in-memory cache ($cachedVersionsFile)",
+          "fallback": "get_versions_data() global helper (Redis + filesystem)"
+        }
+      },
+      "auth_and_authorization": {
+        "gate": "update",
+        "resource": "$this->server",
+        "applied_to": [
+          "changeProxy",
+          "selectProxy",
+          "instantSave",
+          "instantSaveRedirect",
+          "submit",
+          "resetProxyConfiguration"
+        ]
+      },
+      "events_dispatched": [
+        {
+          "name": "reloadWindow",
+          "description": "Proxy dəyişikliyindən sonra səhifəni yeniləmək"
+        },
+        {
+          "name": "success",
+          "payload": "string message"
+        }
+      ],
+      "dependencies": {
+        "models": [
+          "Server"
+        ],
+        "actions": [
+          "GetProxyConfiguration",
+          "SaveProxyConfiguration"
+        ],
+        "enums": [
+          "ProxyTypes"
+        ],
+        "rules": [
+          "SafeExternalUrl"
+        ],
+        "helpers": [
+          "get_versions_data()",
+          "handleError()",
+          "data_get()"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

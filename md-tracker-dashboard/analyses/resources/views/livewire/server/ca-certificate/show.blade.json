@@ -1,0 +1,163 @@
+{
+  "php_analysis": {
+    "file_path": "resources/views/livewire/server/ca-certificate/show.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server CA (Certificate Authority) sertifikatını göstərmək, redaktə etmək, regenerate etmək və bind mount məlumatlarını təqdim etmək interfeysi.",
+    "analysis": {
+      "layout_structure": {
+        "title_slot": "{{ data_get_str($server, 'name')->limit(10) }} > CA Certificate | Coolify",
+        "navbar": "<livewire:server.navbar :server=\"$server\">",
+        "sidebar": "<x-server.sidebar :server=\"$server\" activeMenu=\"ca-certificate\">",
+        "main_wrapper": "flex flex-col h-full gap-4 md:gap-8 md:flex-row",
+        "content_area": "flex flex-col gap-4"
+      },
+      "header_section": {
+        "title": "CA Certificate",
+        "actions": {
+          "condition": "@can('update', $server)",
+          "save_button": {
+            "component": "<x-modal-confirmation>",
+            "title": "Confirm changing of CA Certificate?",
+            "button_title": "Save",
+            "submit_action": "saveCaCertificate",
+            "warning_actions": [
+              "Overwrite existing CA certificate at /data/coolify/ssl/coolify-ca.crt",
+              "Regenerate all SSL certificates for databases on this server",
+              "Manually redeploy all databases to use new SSL certificates",
+              "Because of caching, probably need to redeploy all resources using this CA certificate"
+            ],
+            "confirmation_text": "/data/coolify/ssl/coolify-ca.crt",
+            "short_confirmation_label": "CA Certificate Path",
+            "step3_button_text": "Save Certificate"
+          },
+          "regenerate_button": {
+            "component": "<x-modal-confirmation>",
+            "title": "Confirm Regenerate Certificate?",
+            "button_title": "Regenerate",
+            "submit_action": "regenerateCaCertificate",
+            "warning_actions": [
+              "Generate new CA certificate at /data/coolify/ssl/coolify-ca.crt and replace existing one",
+              "Regenerate all SSL certificates for databases on this server",
+              "Manually redeploy all databases to use new SSL certificates",
+              "Because of caching, probably need to redeploy all resources using this CA certificate"
+            ],
+            "confirmation_text": "/data/coolify/ssl/coolify-ca.crt",
+            "short_confirmation_label": "CA Certificate Path",
+            "step3_button_text": "Regenerate Certificate"
+          }
+        }
+      },
+      "recommended_configuration_section": {
+        "title": "Recommended Configuration",
+        "content": [
+          "Mount this CA certificate of Coolify into all containers that need to connect to one of your databases over SSL",
+          "Link to documentation: https://coolify.io/docs/databases/ssl"
+        ],
+        "copy_button": {
+          "component": "<x-forms.copy-button>",
+          "text": "- /data/coolify/ssl/coolify-ca.crt:/etc/ssl/certs/coolify-ca.crt:ro"
+        }
+      },
+      "certificate_display_section": {
+        "header": {
+          "label": "CA Certificate",
+          "valid_until": {
+            "condition": "$certificateValidUntil",
+            "date_format": "d.m.Y H:i:s",
+            "status_colors": {
+              "expired": "text-red-500 (now()->gt($certificateValidUntil))",
+              "expiring_soon": "text-red-500 (now()->addDays(30)->gt($certificateValidUntil))",
+              "valid": "default text color"
+            },
+            "status_labels": {
+              "expired": "Expired",
+              "expiring_soon": "Expiring soon",
+              "valid": "no extra label"
+            }
+          },
+          "toggle_button": {
+            "condition": "@can('view', $server)",
+            "component": "<x-forms.button>",
+            "action": "wire:click=\"toggleCertificate\"",
+            "label": "{{ $showCertificate ? 'Hide' : 'Show' }}",
+            "classes": "py-1! px-2! text-sm"
+          }
+        },
+        "certificate_content": {
+          "shown_state": {
+            "condition": "$showCertificate",
+            "element": "<textarea>",
+            "classes": "w-full h-[370px] input",
+            "binding": "wire:model=\"certificateContent\"",
+            "placeholder": "Paste or edit CA certificate content here..."
+          },
+          "hidden_state": {
+            "condition": "!$showCertificate",
+            "element": "<div>",
+            "classes": "w-full h-[370px] input",
+            "content": "Placeholder with '━━━━━━━ CERTIFICATE CONTENT ━━━━━━━━' and 'Click \"Show\" to view or edit'"
+          }
+        }
+      },
+      "received_props": [
+        {
+          "name": "server",
+          "type": "Server"
+        },
+        {
+          "name": "certificateValidUntil",
+          "type": "?Carbon"
+        },
+        {
+          "name": "showCertificate",
+          "type": "bool"
+        },
+        {
+          "name": "certificateContent",
+          "type": "string"
+        }
+      ],
+      "auth_and_authorization": {
+        "gates": [
+          {
+            "action": "Save/Regenerate buttons",
+            "gate": "update",
+            "resource": "$server"
+          },
+          {
+            "action": "Show/Hide toggle",
+            "gate": "view",
+            "resource": "$server"
+          }
+        ]
+      },
+      "livewire_directives_used": [
+        "wire:click=\"toggleCertificate\"",
+        "wire:model=\"certificateContent\""
+      ],
+      "blade_components_used": [
+        "x-slot:title",
+        "livewire:server.navbar",
+        "x-server.sidebar",
+        "x-modal-confirmation",
+        "x-forms.button",
+        "x-forms.copy-button"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix",
+        "custom_classes": [
+          "input"
+        ]
+      },
+      "conditional_rendering_rules": [
+        "Save və Regenerate button-ları yalnız @can('update', $server) olduqda görünür",
+        "Valid until tarixi yalnız $certificateValidUntil null deyilsə göstərilir",
+        "Tarix rəngi expiry status-una görə dəyişir: expired (red), expiring soon (red), valid (normal)",
+        "Show/Hide toggle yalnız @can('view', $server) olduqda görünür",
+        "Textarea yalnız $showCertificate true olduqda render olunur, əks halda placeholder div göstərilir"
+      ]
+    }
+  },
+  "target_analysis": null
+}

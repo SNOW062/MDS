@@ -1,0 +1,293 @@
+{
+  "php_analysis": {
+    "file": "resources/views/livewire/server/charts.blade.php",
+    "type": "BLADE_TEMPLATE",
+    "purpose": "Server metriklərinin vizuallaşdırılması: CPU və Memory usage area chart-ları (ApexCharts), interval seçimi, metrics enable/disable button-ları və Sentinel status mesajları.",
+    "analysis": {
+      "layout_structure": {
+        "title_slot": "{{ data_get_str($server, 'name')->limit(10) }} > Metrics | Coolify",
+        "navbar": "<livewire:server.navbar :server=\"$server\">",
+        "sidebar": "<x-server.sidebar :server=\"$server\" activeMenu=\"metrics\">",
+        "main_wrapper": "flex flex-col h-full gap-4 md:gap-8 md:flex-row",
+        "content_area": "w-full"
+      },
+      "header_section": {
+        "title": "Metrics",
+        "actions": [
+          {
+            "condition": "$server->isMetricsEnabled()",
+            "button": "Disable Metrics",
+            "component": "<x-forms.button>",
+            "attributes": {
+              "canGate": "update",
+              "canResource": "$server",
+              "wire:click": "toggleMetrics"
+            }
+          },
+          {
+            "condition": "!$server->isMetricsEnabled() && $server->isSentinelEnabled()",
+            "button": "Enable Metrics",
+            "component": "<x-forms.button>",
+            "attributes": {
+              "canGate": "update",
+              "canResource": "$server",
+              "isHighlighted": true,
+              "wire:click": "toggleMetrics"
+            }
+          }
+        ],
+        "description": "Basic metrics for your server."
+      },
+      "metrics_enabled_state": {
+        "condition": "$server->isMetricsEnabled()",
+        "container_attributes": {
+          "wire:poll.5000ms": "pollData (if $poll)",
+          "x-init": "$wire.loadData()"
+        },
+        "interval_selector": {
+          "component": "<x-forms.select>",
+          "label": "Interval",
+          "wire:change": "setInterval",
+          "id": "interval",
+          "options": [
+            {
+              "value": "5",
+              "label": "5 minutes (live)"
+            },
+            {
+              "value": "10",
+              "label": "10 minutes (live)"
+            },
+            {
+              "value": "30",
+              "label": "30 minutes"
+            },
+            {
+              "value": "60",
+              "label": "1 hour"
+            },
+            {
+              "value": "720",
+              "label": "12 hours"
+            },
+            {
+              "value": "10080",
+              "label": "1 week"
+            },
+            {
+              "value": "43200",
+              "label": "30 days"
+            }
+          ],
+          "note": "5 və 10 dəqiqə seçimlərində 'live' etiketi var, polling aktiv olur."
+        },
+        "cpu_chart": {
+          "title": "CPU Usage",
+          "container": "<div wire:ignore id=\"{!! $chartId !!}-cpu\">",
+          "chart_library": "ApexCharts",
+          "chart_type": "area",
+          "chart_height": "150px",
+          "stroke": {
+            "curve": "straight",
+            "width": 2
+          },
+          "fill": {
+            "type": "gradient"
+          },
+          "colors": "[cpuColor] — global JS variable",
+          "xaxis": {
+            "type": "datetime"
+          },
+          "dataLabels": {
+            "enabled": false
+          },
+          "grid": {
+            "show": true,
+            "borderColor": ""
+          },
+          "toolbar": {
+            "show": true,
+            "tools": {
+              "download": false,
+              "selection": false,
+              "zoom": true,
+              "zoomin": false,
+              "zoomout": false,
+              "pan": false,
+              "reset": true
+            }
+          },
+          "series": [
+            {
+              "name": "CPU %",
+              "data": []
+            }
+          ],
+          "noData": {
+            "text": "Loading...",
+            "style": {
+              "color": "textColor"
+            }
+          },
+          "tooltip": {
+            "enabled": true,
+            "marker": {
+              "show": false
+            },
+            "custom": "HTML tooltip with value + UTC timestamp (YYYY-MM-DD, HH:MM:SS format)"
+          },
+          "legend": {
+            "show": false
+          },
+          "livewire_integration": {
+            "event": "refreshChartData-{chartId}-cpu",
+            "action": "serverCpuChart.updateOptions({ series, colors, xaxis.labels.style.colors, yaxis.labels.style.colors, noData })",
+            "note": "checkTheme() çağırılır (dark/light mode)"
+          }
+        },
+        "memory_chart": {
+          "title": "Memory Usage",
+          "container": "<div wire:ignore id=\"{!! $chartId !!}-memory\">",
+          "chart_library": "ApexCharts",
+          "chart_type": "area",
+          "chart_height": "150px",
+          "stroke": {
+            "curve": "straight",
+            "width": 2
+          },
+          "fill": {
+            "type": "gradient"
+          },
+          "colors": "[ramColor] — global JS variable",
+          "xaxis": {
+            "type": "datetime",
+            "labels": {
+              "show": true,
+              "style": {
+                "colors": "textColor"
+              }
+            }
+          },
+          "yaxis": {
+            "min": 0,
+            "labels": {
+              "show": true,
+              "style": {
+                "colors": "textColor"
+              },
+              "formatter": "Math.round(value) + ' %'"
+            }
+          },
+          "dataLabels": {
+            "enabled": false
+          },
+          "grid": {
+            "show": true,
+            "borderColor": ""
+          },
+          "toolbar": "Same as CPU chart",
+          "series": [
+            {
+              "name": "Memory (%)",
+              "data": []
+            }
+          ],
+          "noData": {
+            "text": "Loading...",
+            "style": {
+              "color": "textColor"
+            }
+          },
+          "tooltip": {
+            "enabled": true,
+            "marker": {
+              "show": false
+            },
+            "custom": "HTML tooltip with value + UTC timestamp"
+          },
+          "legend": {
+            "show": false
+          },
+          "livewire_integration": {
+            "event": "refreshChartData-{chartId}-memory",
+            "action": "serverMemoryChart.updateOptions({ series, colors, xaxis, yaxis, noData })",
+            "note": "checkTheme() çağırılır"
+          }
+        }
+      },
+      "metrics_disabled_state": {
+        "condition": "!$server->isMetricsEnabled()",
+        "branches": [
+          {
+            "condition": "$server->isSentinelEnabled()",
+            "component": "<x-callout type=\"info\" title=\"Metrics Disabled\">",
+            "content": "Metrics are disabled for this server. Click 'Enable Metrics' above to start collecting metrics."
+          },
+          {
+            "condition": "!$server->isSentinelEnabled()",
+            "component": "<x-callout type=\"info\" title=\"Sentinel Required\">",
+            "content": "Metrics require Sentinel to be enabled.",
+            "link": {
+              "text": "enable Sentinel",
+              "href": "route('server.sentinel', ['server_uuid' => $server->uuid])",
+              "attributes": "wireNavigate()",
+              "style": "underline font-semibold"
+            }
+          }
+        ]
+      },
+      "conditional_rendering_rules": [
+        "Metrics button yalnız update gate-i varsa görünür (canGate)",
+        "Enable Metrics button yalnız Sentinel enabled olduqda görünür",
+        "Chart container yalnız isMetricsEnabled() olduqda render olunur",
+        "wire:poll.5000ms yalnız $poll true olduqda aktivdir",
+        "Charts yalnız wire:ignore div-lərdə render olunur (ApexCharts DOM manipulyasiyası üçün)"
+      ],
+      "livewire_directives_used": [
+        "wire:poll.5000ms='pollData'",
+        "wire:click='toggleMetrics'",
+        "wire:change='setInterval'",
+        "wire:ignore (chart container-ları)",
+        "x-init='$wire.loadData()'"
+      ],
+      "alpine_js": {
+        "x-init": "$wire.loadData() — Mount-da dərhal data yüklənir",
+        "note": "Blade-də explicit x-data yoxdur, yalnız x-init istifadə olunur"
+      },
+      "javascript_dependencies": {
+        "apexcharts": "CPU və Memory chart-ları üçün area chart",
+        "global_variables": [
+          "cpuColor",
+          "ramColor",
+          "textColor",
+          "checkTheme()"
+        ],
+        "livewire_events": [
+          "refreshChartData-{chartId}-cpu",
+          "refreshChartData-{chartId}-memory"
+        ]
+      },
+      "blade_components_used": [
+        "x-slot:title",
+        "livewire:server.navbar",
+        "x-server.sidebar",
+        "x-forms.select",
+        "x-forms.button",
+        "x-callout"
+      ],
+      "styling": {
+        "framework": "Tailwind CSS",
+        "dark_mode": "dark: prefix + JS-based theme switching (checkTheme, textColor variables)"
+      },
+      "missing_parts": {
+        "gaps": [
+          "cpuColor, ramColor, textColor, checkTheme() global JS variable/funksiyalarının tərifi bu faylda yoxdur (layout və ya global script-də olmalıdır).",
+          "Chart data formatı [{x: timestamp, y: value}] olmalıdır, amma PHP tərəfdən gələn array strukturu aydın deyil.",
+          "Memory chart-da yaxis formatter var, CPU chart-da yaxis formatter yoxdur (updateOptions-da əlavə olunur).",
+          "data və categories properties blade-də birbaşa istifadə edilmir."
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

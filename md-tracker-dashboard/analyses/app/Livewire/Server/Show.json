@@ -1,0 +1,511 @@
+{
+  "php_analysis": {
+    "file": "app/Livewire/Server/Show.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server detallarını göstərmək, redaktə etmək, cloud provayder-lərlə linkləmək, Sentinel idarəetməsi və validasiya əməliyyatlarını yerinə yetirmək.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Actions\\Server\\StartSentinel",
+          "App\\Actions\\Server\\StopSentinel",
+          "App\\Events\\ServerReachabilityChanged",
+          "App\\Models\\CloudProviderToken",
+          "App\\Models\\Server",
+          "App\\Rules\\ValidServerIp",
+          "App\\Services\\DigitalOceanService",
+          "App\\Services\\HetznerService",
+          "App\\Services\\VultrService",
+          "App\\Support\\ValidationPatterns"
+        ]
+      },
+      "public_properties": {
+        "server_model": [
+          {
+            "name": "server",
+            "type": "Server",
+            "description": "Cari server modeli. mount() ilə yüklənir."
+          }
+        ],
+        "server_settings_form": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "ip",
+            "type": "string"
+          },
+          {
+            "name": "user",
+            "type": "string"
+          },
+          {
+            "name": "port",
+            "type": "string"
+          },
+          {
+            "name": "connectionTimeout",
+            "type": "int"
+          },
+          {
+            "name": "validationLogs",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "wildcardDomain",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "isReachable",
+            "type": "bool"
+          },
+          {
+            "name": "isUsable",
+            "type": "bool"
+          },
+          {
+            "name": "isSwarmManager",
+            "type": "bool"
+          },
+          {
+            "name": "isSwarmWorker",
+            "type": "bool"
+          },
+          {
+            "name": "isBuildServer",
+            "type": "bool"
+          },
+          {
+            "name": "isBuildServerLocked",
+            "type": "bool",
+            "default": "false",
+            "attributes": [
+              "#[Locked]"
+            ],
+            "description": "Server boş deyilsə və build server deyilsə true olur."
+          },
+          {
+            "name": "isMetricsEnabled",
+            "type": "bool"
+          },
+          {
+            "name": "sentinelToken",
+            "type": "string"
+          },
+          {
+            "name": "sentinelUpdatedAt",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "sentinelMetricsRefreshRateSeconds",
+            "type": "int"
+          },
+          {
+            "name": "sentinelMetricsHistoryDays",
+            "type": "int"
+          },
+          {
+            "name": "sentinelPushIntervalSeconds",
+            "type": "int"
+          },
+          {
+            "name": "sentinelCustomUrl",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "isSentinelEnabled",
+            "type": "bool"
+          },
+          {
+            "name": "isSentinelDebugEnabled",
+            "type": "bool"
+          },
+          {
+            "name": "sentinelCustomDockerImage",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "serverTimezone",
+            "type": "string"
+          }
+        ],
+        "cloud_provider_status": [
+          {
+            "name": "hetznerServerStatus",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "vultrInstanceStatus",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "digitalOceanDropletStatus",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "hetznerServerManuallyStarted",
+            "type": "bool",
+            "default": "false"
+          },
+          {
+            "name": "vultrInstanceManuallyStarted",
+            "type": "bool",
+            "default": "false"
+          },
+          {
+            "name": "digitalOceanDropletManuallyStarted",
+            "type": "bool",
+            "default": "false"
+          }
+        ],
+        "cloud_linking_hetzner": [
+          {
+            "name": "availableHetznerTokens",
+            "type": "Collection"
+          },
+          {
+            "name": "selectedHetznerTokenId",
+            "type": "?int",
+            "default": "null"
+          },
+          {
+            "name": "manualHetznerServerId",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "matchedHetznerServer",
+            "type": "?array",
+            "default": "null"
+          },
+          {
+            "name": "hetznerSearchError",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "hetznerNoMatchFound",
+            "type": "bool",
+            "default": "false"
+          }
+        ],
+        "cloud_linking_vultr": [
+          {
+            "name": "availableVultrTokens",
+            "type": "Collection"
+          },
+          {
+            "name": "selectedVultrTokenId",
+            "type": "?int",
+            "default": "null"
+          },
+          {
+            "name": "manualVultrInstanceId",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "matchedVultrInstance",
+            "type": "?array",
+            "default": "null"
+          },
+          {
+            "name": "vultrSearchError",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "vultrNoMatchFound",
+            "type": "bool",
+            "default": "false"
+          }
+        ],
+        "cloud_linking_digitalocean": [
+          {
+            "name": "availableDigitalOceanTokens",
+            "type": "Collection"
+          },
+          {
+            "name": "selectedDigitalOceanTokenId",
+            "type": "?int",
+            "default": "null"
+          },
+          {
+            "name": "manualDigitalOceanDropletId",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "matchedDigitalOceanDroplet",
+            "type": "?array",
+            "default": "null"
+          },
+          {
+            "name": "digitalOceanSearchError",
+            "type": "?string",
+            "default": "null"
+          },
+          {
+            "name": "digitalOceanNoMatchFound",
+            "type": "bool",
+            "default": "false"
+          }
+        ],
+        "ui_state": [
+          {
+            "name": "isValidating",
+            "type": "bool",
+            "default": "false",
+            "description": "Server validasiya prosesindədirsə true."
+          }
+        ]
+      },
+      "event_listeners": {
+        "method": "getListeners()",
+        "events": [
+          {
+            "event": "refreshServerShow",
+            "handler": "refresh"
+          },
+          {
+            "event": "refreshServer",
+            "handler": "$refresh"
+          },
+          {
+            "event": "echo-private:team.{teamId},SentinelRestarted",
+            "handler": "handleSentinelRestarted"
+          },
+          {
+            "event": "echo-private:team.{teamId},ServerValidated",
+            "handler": "handleServerValidated"
+          }
+        ]
+      },
+      "validation": {
+        "method": "rules()",
+        "fields": [
+          {
+            "field": "name",
+            "rules": "ValidationPatterns::nameRules()"
+          },
+          {
+            "field": "description",
+            "rules": "ValidationPatterns::descriptionRules()"
+          },
+          {
+            "field": "ip",
+            "rules": "['required', new ValidServerIp]"
+          },
+          {
+            "field": "user",
+            "rules": "ValidationPatterns::serverUsernameRules()"
+          },
+          {
+            "field": "port",
+            "rules": "required|integer|between:1,65535"
+          },
+          {
+            "field": "connectionTimeout",
+            "rules": "required|integer|min:1|max:300"
+          },
+          {
+            "field": "validationLogs",
+            "rules": "nullable"
+          },
+          {
+            "field": "wildcardDomain",
+            "rules": "nullable|url"
+          },
+          {
+            "field": "isReachable",
+            "rules": "required"
+          },
+          {
+            "field": "isUsable",
+            "rules": "required"
+          },
+          {
+            "field": "isSwarmManager",
+            "rules": "required"
+          },
+          {
+            "field": "isSwarmWorker",
+            "rules": "required"
+          },
+          {
+            "field": "isBuildServer",
+            "rules": "required"
+          },
+          {
+            "field": "isMetricsEnabled",
+            "rules": "required"
+          },
+          {
+            "field": "sentinelToken",
+            "rules": "required"
+          },
+          {
+            "field": "sentinelUpdatedAt",
+            "rules": "nullable"
+          },
+          {
+            "field": "sentinelMetricsRefreshRateSeconds",
+            "rules": "required|integer|min:1"
+          },
+          {
+            "field": "sentinelMetricsHistoryDays",
+            "rules": "required|integer|min:1"
+          },
+          {
+            "field": "sentinelPushIntervalSeconds",
+            "rules": "required|integer|min:10"
+          },
+          {
+            "field": "sentinelCustomUrl",
+            "rules": "nullable|url"
+          },
+          {
+            "field": "isSentinelEnabled",
+            "rules": "required"
+          },
+          {
+            "field": "isSentinelDebugEnabled",
+            "rules": "required"
+          },
+          {
+            "field": "serverTimezone",
+            "rules": "required"
+          }
+        ],
+        "custom_messages": "ValidationPatterns::combinedMessages() + spesifik sahə mesajları"
+      },
+      "lifecycle_methods": {
+        "mount": {
+          "signature": "mount(string $server_uuid)",
+          "steps": [
+            "Server::ownedByCurrentTeam()->whereUuid($server_uuid)->firstOrFail()",
+            "syncData() — property-ləri modeldən yükləyir",
+            "isBuildServerLock yoxlanılır",
+            "Cloud provider status-ları yüklənir",
+            "isValidating state-i yüklənir",
+            "loadHetznerTokens(), loadVultrTokens(), loadDigitalOceanTokens()"
+          ]
+        },
+        "render": {
+          "returns": "view('livewire.server.show')"
+        }
+      },
+      "core_methods": {
+        "syncData": {
+          "description": "İki istiqamətli sinxronizasiya",
+          "toModel_true": [
+            "validate()",
+            "authorize('update', $this->server)",
+            "IP unikallığı yoxlanılır (başqa team-də varsa exception)",
+            "Server və ServerSettings yenilənir",
+            "Timezone validasiyası"
+          ],
+          "toModel_false": [
+            "Bütün property-lər modeldən yüklənir"
+          ]
+        },
+        "refresh": "syncData(false) — property-ləri modeldən yeniləyir",
+        "submit": "syncData(true) + success dispatch",
+        "instantSave": "syncData(true) — anlıq yadda saxlama"
+      },
+      "cloud_provider_methods": {
+        "status_checkers": {
+          "checkHetznerServerStatus(bool $manual)": "HetznerService ilə status yoxlayır, DB-yə yazır, IP backfill edir, manual=true olduqda toast göndərir",
+          "checkVultrInstanceStatus(bool $manual)": "refreshVultrState() çağırır",
+          "checkDigitalOceanDropletStatus(bool $manual)": "refreshDigitalOceanState() çağırır"
+        },
+        "power_controls": {
+          "startHetznerServer": "powerOnServer + status='starting' + manuallyStarted=true",
+          "startVultrInstance": "startInstance + status='starting' + manuallyStarted=true",
+          "startDigitalOceanDroplet": "powerOnDroplet + status='new' + manuallyStarted=true"
+        },
+        "search_methods": {
+          "searchHetznerServer": "IP ilə axtarır",
+          "searchHetznerServerById": "ID ilə axtarır",
+          "searchVultrInstance": "IP ilə axtarır",
+          "searchVultrInstanceById": "ID ilə axtarır",
+          "searchDigitalOceanDroplet": "IP ilə axtarır",
+          "searchDigitalOceanDropletById": "ID ilə axtarır"
+        },
+        "link_methods": {
+          "linkToHetzner": "Token + server ID ilə link edir, state təmizləyir",
+          "linkToVultr": "Token + instance ID ilə link edir",
+          "linkToDigitalOcean": "Token + droplet ID ilə link edir, IP update edə bilər"
+        },
+        "token_loaders": {
+          "loadHetznerTokens": "CloudProviderToken::ownedByCurrentTeam()->where('provider', 'hetzner')->get()",
+          "loadVultrTokens": "CloudProviderToken::ownedByCurrentTeam()->where('provider', 'vultr')->get()",
+          "loadDigitalOceanTokens": "CloudProviderToken::ownedByCurrentTeam()->where('provider', 'digitalocean')->get()"
+        }
+      },
+      "sentinel_methods": {
+        "restartSentinel": "customImage ilə restart, isDev() olduqda custom image",
+        "updatedIsSentinelDebugEnabled": "submit + restartSentinel",
+        "updatedIsMetricsEnabled": "submit + restartSentinel",
+        "updatedIsSentinelEnabled": "Toggle, build server-də qadağan, StartSentinel/StopSentinel",
+        "regenerateSentinelToken": "Yeni token generate edir"
+      },
+      "validation_methods": {
+        "validateServer": "Vultr status check + init dispatch",
+        "checkLocalhostConnection": "validateConnection + reachability update",
+        "handleServerValidated": "Event gəldikdə display-only state-ləri yeniləyir, text-input-ləri clobber etmir"
+      },
+      "other_methods": {
+        "updatedIsBuildServer": "Boş olmayan server build ola bilməz, build olduqda Sentinel disable olur",
+        "handleSentinelRestarted": "Yalnız display-only state yeniləyir (sentinelUpdatedAt)",
+        "refreshServerMetadata": "gatherServerMetadata çağırır"
+      },
+      "computed_properties": {
+        "timezones": "timezone_identifiers_list() sort edilmiş array",
+        "limaStartCommand": "isDev() olduqda Lima VM start komandası"
+      },
+      "auth_gates": [
+        "update",
+        "manageSentinel",
+        "view"
+      ],
+      "dependencies": {
+        "models": [
+          "Server",
+          "CloudProviderToken"
+        ],
+        "services": [
+          "HetznerService",
+          "VultrService",
+          "DigitalOceanService"
+        ],
+        "actions": [
+          "StartSentinel",
+          "StopSentinel"
+        ],
+        "events": [
+          "ServerReachabilityChanged"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

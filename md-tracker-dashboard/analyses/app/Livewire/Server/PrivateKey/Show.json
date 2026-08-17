@@ -1,0 +1,141 @@
+{
+  "php_analysis": {
+    "file": "app/Livewire/Server/PrivateKey/Show.php",
+    "type": "BACKEND_LIVEWIRE_COMPONENT",
+    "purpose": "Server-in private key-lərini idarə etmək: mövcud key-ləri siyahılamaq, yeni key generate etmək (ED25519/RSA), manual key əlavə etmək, server-ə yeni key təyin etmək və bağlantı yoxlamaq.",
+    "analysis": {
+      "class_definition": {
+        "namespace": "App\\Livewire\\Server\\PrivateKey",
+        "extends": "Livewire\\Component",
+        "traits": [
+          "Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests"
+        ],
+        "imports": [
+          "App\\Models\\PrivateKey",
+          "App\\Models\\Server",
+          "Illuminate\\Support\\Facades\\DB"
+        ]
+      },
+      "public_properties": [
+        {
+          "name": "server",
+          "type": "Server",
+          "description": "Cari server modeli"
+        },
+        {
+          "name": "privateKeys",
+          "type": "array",
+          "default": "[]",
+          "description": "Team-ə aid, git ilə əlaqəli olmayan private key-lər"
+        },
+        {
+          "name": "parameters",
+          "type": "array",
+          "default": "[]",
+          "description": "Route parametrləri"
+        }
+      ],
+      "methods": {
+        "mount": {
+          "signature": "mount(string $server_uuid)",
+          "steps": [
+            "Server::ownedByCurrentTeam()->whereUuid($server_uuid)->firstOrFail()",
+            "PrivateKey::ownedByCurrentTeam()->get()->where('is_git_related', false)"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "setPrivateKey": {
+          "signature": "setPrivateKey($privateKeyId)",
+          "steps": [
+            "PrivateKey::ownedByCurrentTeam()->find($privateKeyId) — ownership yoxlanılır",
+            "authorize('update', $this->server)",
+            "DB::transaction() — atomic operation",
+            "$server->privateKey()->associate($ownedPrivateKey)",
+            "$server->save()",
+            "validateConnection(justCheckingNewKey: true) — yeni key ilə qoşulma testi",
+            "Uğursuz olarsa exception throw, rollback",
+            "Success: 'Private key updated successfully.' + refreshServerShow event"
+          ],
+          "rollback_behavior": "Exception olduqda server refresh edilir, köhnə key ilə validateConnection çağırılır, error dispatch edilir"
+        },
+        "generatePrivateKey": {
+          "signature": "generatePrivateKey(string $type): void",
+          "validation": "in_array($type, ['ed25519', 'rsa'], true)",
+          "steps": [
+            "authorize('create', PrivateKey::class)",
+            "PrivateKey::generateNewKeyPair($type)",
+            "PrivateKey::createAndStore([name, description, private_key, team_id])",
+            "privateKeys listəsini yenilə",
+            "dispatch('copyPublicKeyToClipboard', publicKey: ...)",
+            "dispatch('success', 'Private key created successfully.')"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "checkConnection": {
+          "signature": "checkConnection()",
+          "steps": [
+            "$server->validateConnection()",
+            "Uğurlu: 'Server is reachable.' + refreshServerShow",
+            "Uğursuz: HTML error message (documentation link + sanitized error)"
+          ],
+          "error_handling": "try/catch → handleError($e, $this)"
+        },
+        "render": {
+          "returns": "view('livewire.server.private-key.show')"
+        }
+      },
+      "auth_and_authorization": {
+        "gates": [
+          {
+            "action": "setPrivateKey",
+            "gate": "update",
+            "resource": "$this->server"
+          },
+          {
+            "action": "generatePrivateKey",
+            "gate": "create",
+            "resource": "PrivateKey::class"
+          },
+          {
+            "action": "checkConnection",
+            "gate": "implicit (no explicit authorize)"
+          }
+        ],
+        "ownership_check": "PrivateKey::ownedByCurrentTeam() ilə ownership hər dəfə yoxlanılır"
+      },
+      "events_dispatched": [
+        {
+          "name": "success",
+          "payload": "string message"
+        },
+        {
+          "name": "error",
+          "payload": "string message | HTML string"
+        },
+        {
+          "name": "refreshServerShow",
+          "payload": "none"
+        },
+        {
+          "name": "copyPublicKeyToClipboard",
+          "payload": "{publicKey: string}"
+        }
+      ],
+      "dependencies": {
+        "models": [
+          "Server",
+          "PrivateKey"
+        ],
+        "facades": [
+          "DB"
+        ],
+        "helpers": [
+          "handleError()",
+          "currentTeam()",
+          "htmlspecialchars()"
+        ]
+      }
+    }
+  },
+  "target_analysis": null
+}

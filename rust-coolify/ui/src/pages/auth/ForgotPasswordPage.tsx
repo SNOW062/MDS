@@ -20,21 +20,21 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f] px-4">
-      <div className="max-w-md w-full bg-[#18181b] border border-[#27272a] rounded-2xl p-8 shadow-2xl">
-        <h2 className="text-xl font-bold text-white mb-2">Şifrəmi Unutdum</h2>
-        <p className="text-xs text-[#a1a1aa] mb-6">Şifrənizi yeniləmək üçün e-poçt ünvanınızı daxil edin.</p>
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)] px-4">
+      <div className="max-w-md w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-8 shadow-2xl">
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Şifrəmi Unutdum</h2>
+        <p className="text-xs text-[var(--text-secondary)] mb-6">Şifrənizi yeniləmək üçün e-poçt ünvanınızı daxil edin.</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xs font-semibold text-[#a1a1aa] uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
               E-poçt
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#27272a] border border-[#3f3f46] rounded-lg px-4 py-2.5 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-color)] rounded-lg px-4 py-2.5 text-sm text-[#e4e4e7] focus:outline-none focus:border-indigo-500 transition-colors"
               placeholder="user@example.com"
               required
             />
@@ -49,8 +49,8 @@ export default function ForgotPasswordPage() {
           </button>
         </form>
 
-        <div className="mt-8 text-center border-t border-[#27272a] pt-6">
-          <Link to="/login" className="text-xs text-[#a1a1aa] hover:text-white transition-colors">
+        <div className="mt-8 text-center border-t border-[var(--border-color)] pt-6">
+          <Link to="/login" className="text-xs text-[var(--text-secondary)] hover:text-white transition-colors">
             Giriş səhifəsinə qayıt
           </Link>
         </div>
